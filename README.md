@@ -1,0 +1,2 @@
+grails-vaadin-core-plugin
+=========================
