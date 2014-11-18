@@ -28,3 +28,12 @@
 
 # "temporary" build files
 /target
+
+# IntelliJ files
+work
+target
+wrapper/*
+.idea/*
+*.iml
+*.zip
+*.zip.sha1
