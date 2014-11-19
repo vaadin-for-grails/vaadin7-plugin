@@ -96,10 +96,7 @@ class DefaultMappingsProvider implements MappingsProvider {
                             .find { it.logicalPropertyName == mapping.getUIName() }
                     if (artefact) {
                         mapping.setUIClass(artefact.clazz)
-                    } else {
-                        throw new RuntimeException("Unable to resolve artefact for name [${mapping.getUIName()}]")
                     }
-
                 }
             }
 
@@ -119,11 +116,12 @@ class DefaultMappingsProvider implements MappingsProvider {
             }
 
             println "built mappin ${mapping}"
+            mappings.put(mapping.path, mapping)
             mapping
         }
     }
 
-    protected final def mappings = new ConcurrentHashMap<String, DefaultMapping>()
+    final def mappings = new ConcurrentHashMap<String, DefaultMapping>()
 
     DefaultMappingsProvider() {
 
@@ -161,6 +159,7 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init(Closure mappingsClosure) {
         def builder = new MappingsBuilder(mappingsClosure)
         mappings.putAll(builder.build())
+        println "built: ${mappings}"
     }
 
     @Override

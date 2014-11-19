@@ -1,4 +1,5 @@
 import com.vaadin.grails.DefaultMappingsProvider
+import com.vaadin.grails.VaadinMappingsClass
 import grails.util.Environment
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
@@ -43,8 +44,13 @@ Brief summary/description of the plugin.
         }
 
         def mappingsClass = application.classLoader.loadClass("VaadinMappings")
-        def mappingsProvider = new DefaultMappingsProvider(mappingsClass)
-        def mappings = mappingsProvider.getUIMappings()
+//        def mappingsProvider = new DefaultMappingsProvider(mappingsClass)
+//        def mappings = mappingsProvider.getUIMappings()
+        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
+        def map = [:]
+        mappingsClosure.delegate = map
+        def mappings = mappingsClosure.call()
+        println "mappings to be reigstered: ${map}"
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
