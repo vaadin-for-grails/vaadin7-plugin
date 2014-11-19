@@ -8,7 +8,5 @@ import com.vaadin.ui.UI
 class DefaultUI extends UI {
 
     @Override
-    protected void init(VaadinRequest request) {
-
-    }
+    protected void init(VaadinRequest request) { }
 }

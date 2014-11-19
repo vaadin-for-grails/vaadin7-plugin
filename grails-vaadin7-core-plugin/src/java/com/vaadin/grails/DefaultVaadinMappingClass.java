@@ -17,10 +17,9 @@ public class DefaultVaadinMappingClass extends AbstractGrailsClass implements Va
 
     @Override
     public Closure getMappingsClosure() {
-//        DefaultGrailsUrlMappingsClass
         Closure mappingsClosure = getStaticPropertyValue(MAPPINGS_CLOSURE, Closure.class);
         if (mappingsClosure == null) {
-            throw new RuntimeException("No mappings closure found for class ${clazz.name}");
+            throw new RuntimeException("No mappings closure found for class " + getClazz().getName());
         }
         return mappingsClosure;
     }

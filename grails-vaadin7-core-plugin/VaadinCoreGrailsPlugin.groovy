@@ -1,4 +1,4 @@
-import com.vaadin.grails.VaadinMappingsBuilder
+import com.vaadin.grails.DefaultMappingsProvider
 import grails.util.Environment
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
@@ -18,7 +18,23 @@ Brief summary/description of the plugin.
 '''
     def documentation = "http://grails.org/plugin/grails-vaadin7-core-plugin"
 
-    def artefacts = [ com.vaadin.grails.VaadinMappingsArtefactHandler ]
+    def artefacts = [
+            com.vaadin.grails.VaadinMappingsArtefactHandler,
+            com.vaadin.grails.VaadinUIArtefactHandler]
+
+    def doWithSpring = {
+        application.getArtefacts("UI").each { uiClass ->
+            "${uiClass.propertyName}"(uiClass.clazz) { bean ->
+                bean.scope = "prototype"
+                bean.autowire = "byName"
+            }
+        }
+        "uiProvider"(com.vaadin.grails.server.DefaultUIProvider) { bean ->
+            bean.scope = "prototype"
+            bean.autowire = "byName"
+        }
+        "mappingsProvider"(com.vaadin.grails.DefaultMappingsProvider)
+    }
 
     def doWithWebDescriptor = { xml ->
         def config = application.config.vaadin
@@ -26,11 +42,9 @@ Brief summary/description of the plugin.
             return
         }
 
-
-        def mappingsClass = Class.forName("VaadinMappings") as Class<?>
-        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings")
-        def builder = new VaadinMappingsBuilder(mappingsClosure)
-        def mappings = builder.build()
+        def mappingsClass = application.classLoader.loadClass("VaadinMappings")
+        def mappingsProvider = new DefaultMappingsProvider(mappingsClass)
+        def mappings = mappingsProvider.getUIMappings()
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -52,18 +66,11 @@ Brief summary/description of the plugin.
                     "servlet-name"(servletName + i)
                     "servlet-class"("com.vaadin.server.VaadinServlet")
 
-//                    "init-param" {
-//                        "description"("Vaadin UI provider")
-//                        "param-name"("UIProvider")
-//                        "param-value"(obj.value)
-//                    }
-
-                    if (obj.value.ui) {
-                        "init-param" {
-                            "description"("Vaadin UI")
-                            "param-name"("UI")
-                            "param-value"(obj.value.ui.name)
-                        }
+                    "init-param" {
+                        "description"("Vaadin UI Provider")
+                        "param-name"("UIProvider")
+//                        "param-value"(obj.value.ui.name)
+                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
                     }
 
                     "load-on-startup"("1")
@@ -76,10 +83,17 @@ Brief summary/description of the plugin.
         def lastServletMapping = servletMappings[servletMappings.size() - 1]
 
         mappings.eachWithIndex() { obj, i ->
+//            Transform "/myui" or "/myui/" into "/myui/*"
+            def pattern = obj.key
+            if (!pattern.endsWith("/")) {
+                pattern += "/"
+            }
+            pattern += "*"
+
             lastServletMapping + {
                 "servlet-mapping" {
                     "servlet-name"(servletName + i)
-                    "url-pattern"(obj.key)
+                    "url-pattern"(pattern)
                 }
             }
         }
