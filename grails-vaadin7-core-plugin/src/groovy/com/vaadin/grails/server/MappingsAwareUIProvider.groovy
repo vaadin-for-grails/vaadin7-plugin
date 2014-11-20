@@ -1,6 +1,5 @@
 package com.vaadin.grails.server
 
-import com.vaadin.grails.MappingsProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
@@ -10,29 +9,23 @@ import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
 
-import javax.annotation.PostConstruct
-
+/**
+ * An {@link com.vaadin.server.UIProvider} implementation that uses mappings
+ * defined with {@link com.vaadin.grails.VaadinMappingsClass} artefacts.
+ *
+ * @author Stephan Grundner
+ */
 class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
-//    private final def urlPathHelper = new UrlPathHelper()
-
     MappingsProvider mappingsProvider
-
-    Map<String, MappingsProvider.UIMapping> uiMappings
 
     MappingsAwareUIProvider() {
 
     }
 
-    @PostConstruct
-    void init() {
-        uiMappings = mappingsProvider.getUIMappings()
-        println "ui mappings: ${uiMappings}"
-    }
-
     protected MappingsProvider.UIMapping getMapping(UIProviderEvent event) {
         String path = event.request.pathInfo ?: "/"
-        uiMappings[path]
+        mappingsProvider.getMapping(path)
     }
 
     @Override
@@ -50,30 +43,32 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
             ui = super.createInstance(event)
         }
 
-        def viewsFound = mappingsProvider.viewMappings.find {
-            it.value.owners.contains(uiClass)
-        }
-
-        if (viewsFound) {
-            applyViewProvider(ui)
-        }
+        applyNavigator(ui)
 
         ui
     }
 
-    protected void applyViewProvider(UI ui) {
-        def navigator = new Navigator(ui, ui)
-        def viewProvider = Holders.applicationContext
-                .getBean("viewProvider")
-        navigator.addProvider(viewProvider)
-        ui.navigator = navigator
+    protected void applyNavigator(UI ui) {
+        def viewMappings = mappingsProvider.allMappings.findAll { it instanceof MappingsProvider.ViewMapping }
+        def viewsFound = viewMappings.find { MappingsProvider.ViewMapping viewMapping ->
+            viewMapping.owners.contains(ui.getClass())
+        }
+        if (viewsFound) {
+            def navigator = new Navigator(ui, ui)
+
+            def viewProvider = Holders.applicationContext
+                    .getBean("viewProvider")
+
+            navigator.addProvider(viewProvider)
+            ui.navigator = navigator
+        }
     }
 
     @Override
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
         def mapping = getMapping(event)
 
-        mapping.getClazz()
+        mapping.clazz
     }
 
     @Override

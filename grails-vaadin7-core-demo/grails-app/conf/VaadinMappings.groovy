@@ -1,3 +1,4 @@
+import demo.Demo3UI
 import demo.DemoUI
 import demo.SimpleView
 
@@ -10,10 +11,11 @@ class VaadinMappings {
 
     static mappings = {
 
-        "/" (ui: "default")
+        "/" (ui: "default", pageTitle: "Default UI")
 
         "/demo2"(ui: "demo2", theme: "valo")
         "/demo"(ui: DemoUI)
-        "#simple"(view: SimpleView, ui: ["demo2", DemoUI])
+        "/demo3"(ui: Demo3UI)
+        "#!simple"(view: SimpleView, ui: ["demo2", DemoUI])
     }
 }

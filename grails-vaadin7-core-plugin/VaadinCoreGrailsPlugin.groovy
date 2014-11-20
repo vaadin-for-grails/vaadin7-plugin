@@ -1,4 +1,4 @@
-
+import com.vaadin.grails.VaadinUtils
 import grails.util.Environment
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
@@ -29,6 +29,9 @@ Brief summary/description of the plugin.
                 bean.autowire = "byName"
             }
         }
+        "vaadinUtil"(VaadinUtils)
+        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
+        "mappingsProvider"(com.vaadin.grails.server.DefaultMappingsProvider)
         "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider) { bean ->
             bean.scope = "prototype"
             bean.autowire = "byName"
@@ -37,7 +40,6 @@ Brief summary/description of the plugin.
             bean.scope = "prototype"
             bean.autowire = "byName"
         }
-        "mappingsProvider"(com.vaadin.grails.DefaultMappingsProvider)
     }
 
     def doWithWebDescriptor = { xml ->

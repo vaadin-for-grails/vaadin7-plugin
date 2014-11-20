@@ -1,14 +1,21 @@
-package com.vaadin.grails
+package com.vaadin.grails.server
 
+import com.vaadin.grails.VaadinMappingsClass
 import com.vaadin.navigator.View
 import com.vaadin.ui.UI
 import grails.util.GrailsNameUtils
 import grails.util.Holders
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
 import javax.annotation.PostConstruct
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * The default implementation for {@link  MappingsProvider}.
+ * <p>
+ *     This class is accessible as a bean with the name <code>mappingsProvider</code>.
+ * </p>
+ * @author Stephan Grundner
+ */
 class DefaultMappingsProvider implements MappingsProvider {
 
     static abstract class AbstractMapping implements MappingsProvider.Mapping {
@@ -44,9 +51,14 @@ class DefaultMappingsProvider implements MappingsProvider {
 
         Map<String, MappingsProvider.Mapping> build() {
             mappings = new HashMap<String, MappingsProvider.Mapping>()
-            mappingsClosure.delegate = this
-            mappingsClosure.call()
-//            TODO reset original delegate
+            def delegate = mappingsClosure.delegate
+            try {
+                mappingsClosure.delegate = this
+                mappingsClosure.call()
+            } finally {
+                mappingsClosure.delegate = delegate
+            }
+
             mappings
         }
 
@@ -140,19 +152,10 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
     }
 
-    final def mappings = new ConcurrentHashMap<String, MappingsProvider.Mapping>()
+    protected final def mappings = new ConcurrentHashMap<String, MappingsProvider.Mapping>()
 
     DefaultMappingsProvider() {
 
-    }
-
-    DefaultMappingsProvider(Closure mappingsClosure) {
-        init(mappingsClosure)
-    }
-
-    DefaultMappingsProvider(Class mappingsClass) {
-        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings")
-        init(mappingsClosure)
     }
 
     @Override
@@ -169,15 +172,16 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init() {
         def mappingsClass = getMappingsClass()
         if (mappingsClass) {
-            init(mappingsClass.mappingsClosure)
+            def builder = new MappingsBuilder(mappingsClass.mappingsClosure)
+            mappings.putAll(builder.build())
         } else {
             throw new RuntimeException("No VaadinMappings class found")
         }
     }
 
-    protected void init(Closure mappingsClosure) {
-        def builder = new MappingsBuilder(mappingsClosure)
-        mappings.putAll(builder.build())
+    @Override
+    boolean containsMapping(String path) {
+        mappings.contains(path)
     }
 
     @Override
@@ -186,12 +190,12 @@ class DefaultMappingsProvider implements MappingsProvider {
     }
 
     @Override
-    Map<String, MappingsProvider.UIMapping> getUIMappings() {
-        mappings.findAll { it.value instanceof MappingsProvider.UIMapping }
+    MappingsProvider.Mapping getMapping(Class<?> clazz) {
+        mappings.values().find { it.clazz == clazz }
     }
 
     @Override
-    Map<String, MappingsProvider.ViewMapping> getViewMappings() {
-        mappings.findAll { it.value instanceof MappingsProvider.ViewMapping }
+    Collection<MappingsProvider.Mapping> getAllMappings() {
+        mappings.values()
     }
 }

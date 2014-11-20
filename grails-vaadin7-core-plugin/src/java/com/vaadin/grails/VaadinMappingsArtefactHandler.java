@@ -3,6 +3,8 @@ package com.vaadin.grails;
 import org.codehaus.groovy.grails.commons.ArtefactHandlerAdapter;
 
 /**
+ * The Vaadin mappings artefact handler.
+ *
  * @author Stephan Grundner
  */
 public class VaadinMappingsArtefactHandler extends ArtefactHandlerAdapter {

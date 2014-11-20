@@ -8,6 +8,15 @@ import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
 
+/**
+ * Delegates to instances of the bean <code>uiProvider</code>.
+ * <p>
+ *     This class is used for applying an <code>UIProvider</code>
+ *     when the <code>ApplicationContext</code> isn't available yet.
+ * </p>
+ *
+ * @author Stephan Grundner
+ */
 final class DispatcherUIProvider extends UIProvider {
 
     private UIProvider delegate

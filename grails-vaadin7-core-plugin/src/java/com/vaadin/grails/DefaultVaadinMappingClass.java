@@ -4,6 +4,8 @@ import groovy.lang.Closure;
 import org.codehaus.groovy.grails.commons.AbstractGrailsClass;
 
 /**
+ * Default implementation for {@link com.vaadin.grails.VaadinMappingsClass}.
+ *
  * @author Stephan Grundner
  */
 public class DefaultVaadinMappingClass extends AbstractGrailsClass implements VaadinMappingsClass {
@@ -13,6 +15,11 @@ public class DefaultVaadinMappingClass extends AbstractGrailsClass implements Va
 
     public DefaultVaadinMappingClass(Class<?> clazz) {
         super(clazz, VAADIN_MAPPINGS);
+    }
+
+    @Override
+    public String getBase() {
+        return getStaticPropertyValue("base", String.class);
     }
 
     @Override
