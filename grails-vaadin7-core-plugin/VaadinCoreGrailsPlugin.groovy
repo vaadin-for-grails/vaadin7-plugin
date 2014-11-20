@@ -1,9 +1,10 @@
 import com.vaadin.grails.VaadinUtils
 import grails.util.Environment
+import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
 class VaadinCoreGrailsPlugin {
-    def version = "0.1"
+    def version = "2.0"
     def grailsVersion = "2.4 > *"
     def pluginExcludes = [
             "grails-app/views/error.gsp"
@@ -60,6 +61,31 @@ Brief summary/description of the plugin.
             urlPattern += "/"
         }
         urlPattern += "*"
+
+        def pluginManager = Holders.currentPluginManager()
+        def openSessionInViewFilter = null
+        if (pluginManager.getGrailsPlugin("hibernate3")) {
+            openSessionInViewFilter = 'org.springframework.orm.hibernate3.support.OpenSessionInViewFilter'
+        } else if (pluginManager.getGrailsPlugin("hibernate4")) {
+            openSessionInViewFilter = 'org.springframework.orm.hibernate4.support.OpenSessionInViewFilter'
+        }
+
+        if (openSessionInViewFilter) {
+            def contextParam = xml.'context-param'
+            contextParam[contextParam.size() - 1] + {
+                'filter' {
+                    'filter-name'('openSessionInView')
+                    'filter-class'(openSessionInViewFilter)
+                }
+            }
+            def filter = xml.'filter'
+            filter[filter.size() - 1] + {
+                'filter-mapping' {
+                    'filter-name'('openSessionInView')
+                    'url-pattern'(urlPattern)
+                }
+            }
+        }
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {

@@ -1,16 +1,15 @@
-import com.vaadin.grails.MappingsBuilder
 import grails.util.Environment
 import org.codehaus.gant.GantState
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
 eventCreateWarStart = { name, stagingDir ->
     GantState.verbosity = GantState.VERBOSE
     ant.logger.setMessageOutputLevel(GantState.verbosity)
 
-    def mappingsClass = classLoader.loadClass("VaadinMappings")
-    def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings")
-    def builder = new MappingsBuilder(mappingsClosure)
-    def mappings = builder.build().findAll { it.key.startsWith("/") && it.value["theme"] != null }
+//    def mappingsClass = classLoader.loadClass("VaadinMappings")
+//    def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings")
+//    def builder = new MappingsBuilder(mappingsClosure)
+//    def mappings = builder.build().findAll { it.key.startsWith("/") && it.value["theme"] != null }
+    def mappings = [:]
 
     String sassCompile = null//config.sassCompile
     if (!sassCompile) {
