@@ -44,10 +44,10 @@ Brief summary/description of the plugin.
     }
 
     def doWithWebDescriptor = { xml ->
-        def config = application.config.vaadin
-        if (!config) {
-            return
-        }
+//        def config = application.config.vaadin
+//        if (!config) {
+//            return
+//        }
 
         def mappingsClass = application.classLoader.loadClass("VaadinMappings")
         def base = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "base") as String

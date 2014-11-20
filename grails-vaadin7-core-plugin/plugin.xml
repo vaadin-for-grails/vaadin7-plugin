@@ -1,4 +1,4 @@
-<plugin name='vaadin-core' version='0.1' grailsVersion='2.4 &gt; *'>
+<plugin name='vaadin-core' version='2.0' grailsVersion='2.4 &gt; *'>
   <author>Your name</author>
   <title>Grails Vaadin7 Core Plugin Plugin</title>
   <description>Brief summary/description of the plugin.
