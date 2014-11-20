@@ -46,11 +46,12 @@ Brief summary/description of the plugin.
         def mappingsClass = application.classLoader.loadClass("VaadinMappings")
 //        def mappingsProvider = new DefaultMappingsProvider(mappingsClass)
 //        def mappings = mappingsProvider.getUIMappings()
-        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
-        def map = [:]
-        mappingsClosure.delegate = map
-        def mappings = mappingsClosure.call()
-        println "mappings to be reigstered: ${map}"
+//        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
+//        def map = [:]
+
+        def cs = new ConfigSlurper()
+        def c = cs.parse(mappingsClass)
+        println "mappings to be reigstered: ${c}"
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
