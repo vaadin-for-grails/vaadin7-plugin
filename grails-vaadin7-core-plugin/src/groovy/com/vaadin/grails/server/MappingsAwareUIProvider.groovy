@@ -1,7 +1,6 @@
 package com.vaadin.grails.server
 
 import com.vaadin.grails.MappingsProvider
-import com.vaadin.grails.VaadinUIClass
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
@@ -10,21 +9,30 @@ import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
-import org.springframework.web.util.UrlPathHelper
 
-class DefaultUIProvider extends com.vaadin.server.UIProvider {
+import javax.annotation.PostConstruct
 
-    private final def urlPathHelper = new UrlPathHelper()
+class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
+
+//    private final def urlPathHelper = new UrlPathHelper()
 
     MappingsProvider mappingsProvider
 
-    DefaultUIProvider() {
+    Map<String, MappingsProvider.UIMapping> uiMappings
+
+    MappingsAwareUIProvider() {
 
     }
 
-    protected MappingsProvider.Mapping getMapping(UIProviderEvent event) {
-        String path = urlPathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getMapping(path)
+    @PostConstruct
+    void init() {
+        uiMappings = mappingsProvider.getUIMappings()
+        println "ui mappings: ${uiMappings}"
+    }
+
+    protected MappingsProvider.UIMapping getMapping(UIProviderEvent event) {
+        String path = event.request.pathInfo ?: "/"
+        uiMappings[path]
     }
 
     @Override
@@ -42,55 +50,59 @@ class DefaultUIProvider extends com.vaadin.server.UIProvider {
             ui = super.createInstance(event)
         }
 
+        def viewsFound = mappingsProvider.viewMappings.find {
+            it.value.owners.contains(uiClass)
+        }
+
+        if (viewsFound) {
+            applyViewProvider(ui)
+        }
+
         ui
     }
 
-//    protected void assignViews(UI ui) {
-//        ui.navigator = new Navigator(ui, ui)
-//        def viewMappings = mappingsProvider.viewMappings
-//        viewMappings.each { entry ->
-//            def path = entry.key.substring(1)
-////            TODO assign to specific UIs
-//            def viewClass = entry.value["view"]
-//            ui.navigator.addView(path, viewClass)
-//        }
-//    }
+    protected void applyViewProvider(UI ui) {
+        def navigator = new Navigator(ui, ui)
+        def viewProvider = Holders.applicationContext
+                .getBean("viewProvider")
+        navigator.addProvider(viewProvider)
+        ui.navigator = navigator
+    }
 
     @Override
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-        println "available mappings: ${mappingsProvider.getUIMappings()}"
         def mapping = getMapping(event)
 
-        mapping.getUIClass()
+        mapping.getClazz()
     }
 
     @Override
     String getTheme(UICreateEvent event) {
-        getMappingValue(event, "theme") ?: super.getTheme(event)
+        getMapping(event)?.theme ?: super.getTheme(event)
     }
 
     @Override
     String getWidgetset(UICreateEvent event) {
-        getMappingValue(event, "widgetset") ?: super.getWidgetset(event)
+        getMapping(event)?.widgetset ?: super.getWidgetset(event)
     }
 
     @Override
     boolean isPreservedOnRefresh(UICreateEvent event) {
-        getMappingValue(event, "preservedOnRefresh") ?:  super.isPreservedOnRefresh(event)
+        getMapping(event)?.preservedOnRefresh ?: super.isPreservedOnRefresh(event)
     }
 
     @Override
     String getPageTitle(UICreateEvent event) {
-        getMappingValue(event, "pageTitle") ?:  super.getPageTitle(event)
+        getMapping(event)?.pageTitle ?: super.getPageTitle(event)
     }
 
     @Override
     PushMode getPushMode(UICreateEvent event) {
-        getMappingValue(event, "pushMode") ?:  super.getPushMode(event)
+        getMapping(event)?.pushMode ?: super.getPushMode(event)
     }
 
     @Override
     Transport getPushTransport(UICreateEvent event) {
-        getMappingValue(event, "pushTransport") ?:  super.getPushTransport(event)
+        getMapping(event)?.pushTransport ?: super.getPushTransport(event)
     }
 }

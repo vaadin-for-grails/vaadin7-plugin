@@ -1,5 +1,4 @@
-import com.vaadin.grails.DefaultMappingsProvider
-import com.vaadin.grails.VaadinMappingsClass
+
 import grails.util.Environment
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 
@@ -30,7 +29,11 @@ Brief summary/description of the plugin.
                 bean.autowire = "byName"
             }
         }
-        "uiProvider"(com.vaadin.grails.server.DefaultUIProvider) { bean ->
+        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider) { bean ->
+            bean.scope = "prototype"
+            bean.autowire = "byName"
+        }
+        "viewProvider"(com.vaadin.grails.navigator.MappingsAwareViewProvider) { bean ->
             bean.scope = "prototype"
             bean.autowire = "byName"
         }
@@ -44,14 +47,17 @@ Brief summary/description of the plugin.
         }
 
         def mappingsClass = application.classLoader.loadClass("VaadinMappings")
-//        def mappingsProvider = new DefaultMappingsProvider(mappingsClass)
-//        def mappings = mappingsProvider.getUIMappings()
-//        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
-//        def map = [:]
+        def base = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "base") as String
 
-        def cs = new ConfigSlurper()
-        def c = cs.parse(mappingsClass)
-        println "mappings to be reigstered: ${c}"
+        if (base == null) {
+            throw new RuntimeException("Base not specified")
+        }
+
+        def urlPattern = base
+        if (!urlPattern.endsWith("/")) {
+            urlPattern += "/"
+        }
+        urlPattern += "*"
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -62,52 +68,31 @@ Brief summary/description of the plugin.
             }
         }
 
-        def servletName = "VaadinServlet "
         def servlets = xml."servlet"
-        def lastServletDefinition = servlets[servlets.size() - 1]
-
-        mappings.eachWithIndex() { obj, i ->
-
-            lastServletDefinition + {
-                "servlet" {
-                    "servlet-name"(servletName + i)
-                    "servlet-class"("com.vaadin.server.VaadinServlet")
-
-                    "init-param" {
-                        "description"("Vaadin UI Provider")
-                        "param-name"("UIProvider")
-//                        "param-value"(obj.value.ui.name)
-                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
-                    }
-
-                    "load-on-startup"("1")
+        servlets[servlets.size() - 1] + {
+            "servlet" {
+                "servlet-name"("vaadin")
+                "servlet-class"("com.vaadin.server.VaadinServlet")
+                "init-param" {
+                    "description"("Vaadin UI Provider")
+                    "param-name"("UIProvider")
+                    "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
                 }
+                "load-on-startup"("1")
             }
-
         }
 
         def servletMappings = xml."servlet-mapping"
-        def lastServletMapping = servletMappings[servletMappings.size() - 1]
-
-        mappings.eachWithIndex() { obj, i ->
-//            Transform "/myui" or "/myui/" into "/myui/*"
-            def pattern = obj.key
-            if (!pattern.endsWith("/")) {
-                pattern += "/"
-            }
-            pattern += "*"
-
-            lastServletMapping + {
-                "servlet-mapping" {
-                    "servlet-name"(servletName + i)
-                    "url-pattern"(pattern)
-                }
+        servletMappings[servletMappings.size() - 1] + {
+            "servlet-mapping" {
+                "servlet-name"("vaadin")
+                "url-pattern"(urlPattern)
             }
         }
 
         servletMappings[servletMappings.size() - 1] + {
             "servlet-mapping" {
-                "servlet-name"(servletName + 0)
+                "servlet-name"("vaadin")
                 "url-pattern"("/VAADIN/*")
             }
         }

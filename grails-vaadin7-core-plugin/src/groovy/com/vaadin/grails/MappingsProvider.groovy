@@ -8,6 +8,11 @@ public interface MappingsProvider {
     static interface Mapping {
 
         String getPath()
+        String getName()
+        Class<?> getClazz()
+    }
+
+    static interface UIMapping {
         String getTheme()
         String getWidgetset()
         String getPreservedOnRefresh()
@@ -15,17 +20,18 @@ public interface MappingsProvider {
         String getPushMode()
         String getPushTransport()
 
-        String getUIName()
-        Class<? extends UI> getUIClass()
+        Class<? extends UI> getClazz()
+    }
 
-        String getViewName()
-        Class<? extends View> getViewClass()
+    static interface ViewMapping {
+
+        Collection<Class<? extends UI>> getOwners()
+        Class<? extends View> getClazz()
     }
 
     VaadinMappingsClass getMappingsClass()
     Mapping getMapping(String path)
-    Mapping getMapping(Class<? extends UI> uiClass)
-    Map<String, Mapping> getUIMappings()
-    Map<String, Mapping> getViewMappings()
+    Map<String, UIMapping> getUIMappings()
+    Map<String, ViewMapping> getViewMappings()
 
 }

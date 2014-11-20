@@ -6,12 +6,14 @@ import demo.SimpleView
  */
 class VaadinMappings {
 
+    static base = "/vaadin"
+
     static mappings = {
 
-        "/vaadin" (ui: "default")
+        "/" (ui: "default")
 
         "/demo2"(ui: "demo2", theme: "valo")
         "/demo"(ui: DemoUI)
-        "#list"(view: SimpleView)
+        "#simple"(view: SimpleView, ui: ["demo2", DemoUI])
     }
 }

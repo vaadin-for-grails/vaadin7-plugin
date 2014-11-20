@@ -11,50 +11,39 @@ import java.util.concurrent.ConcurrentHashMap
 
 class DefaultMappingsProvider implements MappingsProvider {
 
-    static class DefaultMapping implements MappingsProvider.Mapping {
+    static abstract class AbstractMapping implements MappingsProvider.Mapping {
 
         String path
+        String name
+        Class clazz
+    }
+
+    static class DefaultUIMapping extends AbstractMapping implements MappingsProvider.UIMapping {
+
         String theme
         String widgetset
         String preservedOnRefresh
         String pageTitle
         String pushMode
         String pushTransport
+    }
 
-        private String uiName
-        private Class<? extends UI> uiClass
+    static class DefaultViewMapping extends AbstractMapping implements MappingsProvider.ViewMapping {
 
-        String viewName
-        Class<? extends View> viewClass
-
-        String getUIName() {
-            return uiName
-        }
-
-        void setUIName(String uiName) {
-            this.uiName = uiName
-        }
-
-        Class<? extends UI> getUIClass() {
-            uiClass
-        }
-
-        void setUIClass(Class<? extends UI> uiClass) {
-            this.uiClass = uiClass
-        }
+        Collection<Class<? extends UI>> owners = []
     }
 
     static class MappingsBuilder extends BuilderSupport {
 
         final Closure mappingsClosure
-        private Map<String, DefaultMapping> mappings
+        private Map<String, MappingsProvider.Mapping> mappings
 
         MappingsBuilder(Closure mappingsClosure) {
             this.mappingsClosure = mappingsClosure
         }
 
-        Map<String, DefaultMapping> build() {
-            mappings = new HashMap<String, DefaultMapping>()
+        Map<String, MappingsProvider.Mapping> build() {
+            mappings = new HashMap<String, MappingsProvider.Mapping>()
             mappingsClosure.delegate = this
             mappingsClosure.call()
 //            TODO reset original delegate
@@ -79,49 +68,79 @@ class DefaultMappingsProvider implements MappingsProvider {
             createNode(name, attributes, null)
         }
 
+        protected Class<? extends UI> _resolveUIClass(Object value) {
+            if (value instanceof Class) {
+                return value
+            } else {
+                def artefact = Holders.grailsApplication.getArtefacts("UI")
+                        .find { it.logicalPropertyName == value }
+                if (artefact) {
+                    return artefact.clazz
+                }
+            }
+            throw new RuntimeException("Unable to resolve ui class for [${value}]")
+        }
+
+        protected Class<? extends View> _resolveViewClass(Object value) {
+            if (value instanceof Class) {
+                return value
+            } else {
+                def artefact = Holders.grailsApplication.getArtefacts("View")
+                        .find { it.logicalPropertyName == value }
+                if (artefact) {
+                    return artefact.clazz
+                }
+            }
+            throw new RuntimeException("Unable to resolve view class for [${value}]")
+        }
+
         @Override
         protected Object createNode(Object name, Map attributes, Object value) {
-            def mapping = new DefaultMapping()
+            def mapping
 
-            mapping.setPath(attributes.remove("path"))
+            if (((String) name).startsWith("/")) {
+                mapping = new DefaultUIMapping()
+                def ui = attributes.remove("ui")
+                Class<? extends UI> uiClass = _resolveUIClass(ui)
+                mapping.setClazz(uiClass)
+                mapping.setName(GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI"))
 
-            def ui = attributes.remove("ui")
-            if (ui) {
-                if (ui instanceof Class) {
-                    mapping.setUIClass(ui)
-                    mapping.setUIName(GrailsNameUtils.getLogicalPropertyName(ui.name, "UI"))
-                } else {
-                    mapping.setUIName(ui)
-                    def artefact = Holders.grailsApplication.getArtefacts("UI")
-                            .find { it.logicalPropertyName == mapping.getUIName() }
-                    if (artefact) {
-                        mapping.setUIClass(artefact.clazz)
+                mapping.theme = attributes["theme"]
+                mapping.widgetset = attributes["widgetset"]
+                mapping.preservedOnRefresh = attributes["preservedOnRefresh"]
+                mapping.pageTitle = attributes["pageTitle"]
+                mapping.pushMode = attributes["pushMode"]
+                mapping.pushTransport = attributes["pushTransport"]
+            } else if (((String) name).startsWith("#")) {
+                mapping = new DefaultViewMapping()
+                def view = attributes.remove("view")
+                def viewClass = _resolveViewClass(view)
+                mapping.setClazz(view)
+                mapping.setName(GrailsNameUtils.getLogicalPropertyName(viewClass.name, "View"))
+
+                def owners = attributes["ui"]
+                if (owners) {
+                    if (!(owners instanceof Collection)) {
+                        owners = [owners]
                     }
-                }
-            }
-
-            def view = attributes.remove("view")
-            if (view) {
-                if (view instanceof Class) {
-                    mapping.setViewClass(view)
-                    mapping.setViewName(GrailsNameUtils.getLogicalPropertyName(view.name, "View"))
+                    owners.each { owner ->
+                        def ownerClass = _resolveUIClass(owner)
+                        mapping.owners.add(ownerClass)
+                    }
                 } else {
-                    throw new UnsupportedOperationException("Views must be specified as classes")
+                    throw new RuntimeException("Missing ui attribute for [${name}]")
                 }
+            } else {
+                throw new RuntimeException("Illegal mapping")
             }
 
-//            Other attributes like "theme", "widgetset", ...
-            attributes.each { entry ->
-                mapping[entry.key] = entry.value
-            }
-
-            println "built mappin ${mapping}"
+            mapping.setPath(name)
             mappings.put(mapping.path, mapping)
             mapping
         }
     }
 
-    final def mappings = new ConcurrentHashMap<String, DefaultMapping>()
+    final def mappings = new ConcurrentHashMap<String, MappingsProvider.Mapping>()
 
     DefaultMappingsProvider() {
 
@@ -159,7 +178,6 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init(Closure mappingsClosure) {
         def builder = new MappingsBuilder(mappingsClosure)
         mappings.putAll(builder.build())
-        println "built: ${mappings}"
     }
 
     @Override
@@ -168,17 +186,12 @@ class DefaultMappingsProvider implements MappingsProvider {
     }
 
     @Override
-    MappingsProvider.Mapping getMapping(Class<? extends UI> uiClass) {
-        mappings.find { path, mapping -> mapping.uiClass == uiClass }
+    Map<String, MappingsProvider.UIMapping> getUIMappings() {
+        mappings.findAll { it.value instanceof MappingsProvider.UIMapping }
     }
 
     @Override
-    Map<String, MappingsProvider.Mapping> getUIMappings() {
-        mappings.findAll { it.key.startsWith("/") }
-    }
-
-    @Override
-    Map<String, MappingsProvider.Mapping> getViewMappings() {
-        mappings.findAll { it.key.startsWith("#") }
+    Map<String, MappingsProvider.ViewMapping> getViewMappings() {
+        mappings.findAll { it.value instanceof MappingsProvider.ViewMapping }
     }
 }
