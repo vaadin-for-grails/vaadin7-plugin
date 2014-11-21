@@ -1,3 +1,5 @@
+import grails.plugin.springsecurity.SecurityConfigType
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -120,8 +122,22 @@ log4j.main = {
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'demo.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'demo.UserRole'
 grails.plugin.springsecurity.authority.className = 'demo.Role'
-grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-	'/':                              ['permitAll'],
+//grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+//	'/':                              ['permitAll'],
+//	'/index':                         ['permitAll'],
+//	'/index.gsp':                     ['permitAll'],
+//	'/assets/**':                     ['permitAll'],
+//	'/**/js/**':                      ['permitAll'],
+//	'/**/css/**':                     ['permitAll'],
+//	'/**/images/**':                  ['permitAll'],
+//	'/**/favicon.ico':                ['permitAll'],
+//	'/VAADIN/**':                      ['permitAll'],
+//	'/demo1':                         ['ROLE_ADMIN']
+//]
+
+grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+grails.plugin.springsecurity.interceptUrlMap = [
+    '/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
 	'/index.gsp':                     ['permitAll'],
 	'/assets/**':                     ['permitAll'],
@@ -129,7 +145,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
 	'/**/favicon.ico':                ['permitAll'],
-	'/VAADIN/**':                      ['permitAll'],
-	'/demo1':                         ['ROLE_ADMIN']
+    '/VAADIN/**':                     ['permitAll'],
+    '/login/**':                      ['permitAll'],
+    '/logout/**':                     ['permitAll'],
+    '/demo1':                         ['ROLE_ADMIN'],
+    '/demo1#!second':                 ['ROLE_USER']
 ]
 
