@@ -53,12 +53,11 @@ Brief summary/description of the plugin.
 
         def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
         if (mappingsClosure == null) {
-            throw new RuntimeException("Base not specified")
+            return
         }
 
         def mappingsProvider = new DefaultMappingsProvider(mappingsClosure)
         def mappings = mappingsProvider.allMappings
-
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
@@ -68,30 +67,28 @@ Brief summary/description of the plugin.
             openSessionInViewFilter = 'org.springframework.orm.hibernate4.support.OpenSessionInViewFilter'
         }
 
-//        if (openSessionInViewFilter) {
-//            def contextParam = xml.'context-param'
-//            def lastContextParam = contextParam[contextParam.size() - 1]
-//            mappings.eachWithIndex { mapping, i ->
-//                lastContextParam + {
-//                    'filter' {
-//                        'filter-name'('openSessionInView')
-//                        'filter-class'(openSessionInViewFilter)
-//                    }
-//                }
-//            }
-//
-//            def filterDefintions = xml.'filter'
-//            def lastFilterDefinition = filterDefintions[filterDefintions.size() - 1]
-//            mappings.eachWithIndex { mapping, i ->
-//                def urlPattern = mapping.path + "/*"
-//                lastFilterDefinition + {
-//                    'filter-mapping' {
-//                        'filter-name'('openSessionInView')
-//                        'url-pattern'(urlPattern)
-//                    }
-//                }
-//            }
-//        }
+        if (openSessionInViewFilter) {
+            def contextParam = xml.'context-param'
+            mappings.eachWithIndex { mapping, i ->
+                contextParam[contextParam.size() - 1] + {
+                    'filter' {
+                        'filter-name'('openSessionInView')
+                        'filter-class'(openSessionInViewFilter)
+                    }
+                }
+            }
+
+            def filter = xml.'filter'
+            mappings.eachWithIndex { mapping, i ->
+                def urlPattern = mapping.path + "/*"
+                filter[filter.size() - 1] + {
+                    'filter-mapping' {
+                        'filter-name'('openSessionInView')
+                        'url-pattern'(urlPattern)
+                    }
+                }
+            }
+        }
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -103,7 +100,6 @@ Brief summary/description of the plugin.
         }
 
         def servlets = xml."servlet"
-//        def lastServlet = servlets[servlets.size() - 1]
         mappings.eachWithIndex { mapping, i ->
             servlets[servlets.size() - 1] + {
                 "servlet" {
@@ -120,7 +116,6 @@ Brief summary/description of the plugin.
         }
 
         def servletMappings = xml."servlet-mapping"
-//        def lastServletMapping = servletMappings[servletMappings.size() - 1]
         mappings.eachWithIndex { mapping, i ->
             def urlPattern = mapping.path + "/*"
             servletMappings[servletMappings.size() - 1] + {
@@ -130,7 +125,6 @@ Brief summary/description of the plugin.
                 }
             }
         }
-
 
         servletMappings[servletMappings.size() - 1] + {
             "servlet-mapping" {
