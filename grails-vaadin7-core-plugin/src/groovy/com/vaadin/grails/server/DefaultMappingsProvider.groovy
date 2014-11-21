@@ -77,7 +77,7 @@ class DefaultMappingsProvider implements MappingsProvider {
             Object node
 
             def resolveAttribute = { String attributeName ->
-                def resolved = attributes[attributeName]
+                def resolved = attributes.remove(attributeName)
                 if (resolved == null) {
                     throw new RuntimeException("Missing required attribute [${name}]")
                 }
@@ -95,13 +95,13 @@ class DefaultMappingsProvider implements MappingsProvider {
                     def m = new DefaultMapping()
                     m.path = path
                     m.ui = resolveAttribute("ui")
-                    m.namespace = attributes["namespace"]
-                    m.theme = attributes["theme"]
-                    m.widgetset = attributes["widgetset"]
-                    m.preservedOnRefresh = attributes["preservedOnRefresh"]
-                    m.pageTitle = attributes["pageTitle"]
-                    m.pushMode = attributes["pushMode"]
-                    m.pushTransport = attributes["pushTransport"]
+                    m.namespace = attributes.remove("namespace")
+                    m.theme = attributes.remove("theme")
+                    m.widgetset = attributes.remove("widgetset")
+                    m.preservedOnRefresh = attributes.remove("preservedOnRefresh")
+                    m.pageTitle = attributes.remove("pageTitle")
+                    m.pushMode = attributes.remove("pushMode")
+                    m.pushTransport = attributes.remove("pushTransport")
                     mappings.put(path, m)
                     node = m
                 } else {
