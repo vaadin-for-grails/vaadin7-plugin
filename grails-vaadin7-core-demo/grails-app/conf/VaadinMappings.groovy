@@ -1,8 +1,10 @@
 class VaadinMappings {
 
-    static base = "/vaadin"
-
     static mappings = {
-        "/"(ui: "default", pageTitle: "Vaadin UI", theme: "valo")
+
+        "/demo1" (ui: "demo", namespace: "ns1")
+        "/vaadin" (ui: "demo", namespace: "ns2", theme: "valo") {
+            "list" (view: "index")
+        }
     }
 }

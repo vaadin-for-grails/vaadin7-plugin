@@ -1,4 +1,5 @@
 import com.vaadin.grails.VaadinUtils
+import com.vaadin.grails.server.DefaultMappingsProvider
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
@@ -21,7 +22,8 @@ Brief summary/description of the plugin.
 
     def artefacts = [
             com.vaadin.grails.VaadinMappingsArtefactHandler,
-            com.vaadin.grails.VaadinUIArtefactHandler]
+            com.vaadin.grails.VaadinUIArtefactHandler,
+            com.vaadin.grails.VaadinViewArtefactHandler]
 
     def doWithSpring = {
         application.getArtefacts("UI").each { uiClass ->
@@ -37,30 +39,26 @@ Brief summary/description of the plugin.
             bean.scope = "prototype"
             bean.autowire = "byName"
         }
-        "viewProvider"(com.vaadin.grails.navigator.MappingsAwareViewProvider) { bean ->
-            bean.scope = "prototype"
-            bean.autowire = "byName"
-        }
     }
 
     def doWithWebDescriptor = { xml ->
 //        def config = application.config.vaadin
-//        if (!config) {
-//            return
-//        }
 
-        def mappingsClass = application.classLoader.loadClass("VaadinMappings")
-        def base = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "base") as String
+        def mappingsClass
+        try {
+            mappingsClass = application.classLoader.loadClass("VaadinMappings")
+        } catch (ClassNotFoundException e) {
+            return
+        }
 
-        if (base == null) {
+        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
+        if (mappingsClosure == null) {
             throw new RuntimeException("Base not specified")
         }
 
-        def urlPattern = base
-        if (!urlPattern.endsWith("/")) {
-            urlPattern += "/"
-        }
-        urlPattern += "*"
+        def mappingsProvider = new DefaultMappingsProvider(mappingsClosure)
+        def mappings = mappingsProvider.allMappings
+
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
@@ -70,22 +68,30 @@ Brief summary/description of the plugin.
             openSessionInViewFilter = 'org.springframework.orm.hibernate4.support.OpenSessionInViewFilter'
         }
 
-        if (openSessionInViewFilter) {
-            def contextParam = xml.'context-param'
-            contextParam[contextParam.size() - 1] + {
-                'filter' {
-                    'filter-name'('openSessionInView')
-                    'filter-class'(openSessionInViewFilter)
-                }
-            }
-            def filter = xml.'filter'
-            filter[filter.size() - 1] + {
-                'filter-mapping' {
-                    'filter-name'('openSessionInView')
-                    'url-pattern'(urlPattern)
-                }
-            }
-        }
+//        if (openSessionInViewFilter) {
+//            def contextParam = xml.'context-param'
+//            def lastContextParam = contextParam[contextParam.size() - 1]
+//            mappings.eachWithIndex { mapping, i ->
+//                lastContextParam + {
+//                    'filter' {
+//                        'filter-name'('openSessionInView')
+//                        'filter-class'(openSessionInViewFilter)
+//                    }
+//                }
+//            }
+//
+//            def filterDefintions = xml.'filter'
+//            def lastFilterDefinition = filterDefintions[filterDefintions.size() - 1]
+//            mappings.eachWithIndex { mapping, i ->
+//                def urlPattern = mapping.path + "/*"
+//                lastFilterDefinition + {
+//                    'filter-mapping' {
+//                        'filter-name'('openSessionInView')
+//                        'url-pattern'(urlPattern)
+//                    }
+//                }
+//            }
+//        }
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -97,30 +103,38 @@ Brief summary/description of the plugin.
         }
 
         def servlets = xml."servlet"
-        servlets[servlets.size() - 1] + {
-            "servlet" {
-                "servlet-name"("vaadin")
-                "servlet-class"("com.vaadin.server.VaadinServlet")
-                "init-param" {
-                    "description"("Vaadin UI Provider")
-                    "param-name"("UIProvider")
-                    "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
+//        def lastServlet = servlets[servlets.size() - 1]
+        mappings.eachWithIndex { mapping, i ->
+            servlets[servlets.size() - 1] + {
+                "servlet" {
+                    "servlet-name"("vaadin ${i}")
+                    "servlet-class"("com.vaadin.server.VaadinServlet")
+                    "init-param" {
+                        "description"("Vaadin UI Provider")
+                        "param-name"("UIProvider")
+                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
+                    }
+                    "load-on-startup"("1")
                 }
-                "load-on-startup"("1")
             }
         }
 
         def servletMappings = xml."servlet-mapping"
-        servletMappings[servletMappings.size() - 1] + {
-            "servlet-mapping" {
-                "servlet-name"("vaadin")
-                "url-pattern"(urlPattern)
+//        def lastServletMapping = servletMappings[servletMappings.size() - 1]
+        mappings.eachWithIndex { mapping, i ->
+            def urlPattern = mapping.path + "/*"
+            servletMappings[servletMappings.size() - 1] + {
+                "servlet-mapping" {
+                    "servlet-name"("vaadin ${i}")
+                    "url-pattern"(urlPattern)
+                }
             }
         }
 
+
         servletMappings[servletMappings.size() - 1] + {
             "servlet-mapping" {
-                "servlet-name"("vaadin")
+                "servlet-name"("vaadin 0")
                 "url-pattern"("/VAADIN/*")
             }
         }

@@ -14,4 +14,9 @@ public class DefaultVaadinUIClass extends AbstractGrailsClass implements VaadinU
     public DefaultVaadinUIClass(Class<?> clazz) {
         super(clazz, UI);
     }
+
+    @Override
+    public String getNamespace() {
+        return getStaticPropertyValue("namespace", String.class);
+    }
 }

@@ -1,10 +1,4 @@
 package com.vaadin.grails.server
-
-import com.vaadin.grails.VaadinMappingsClass
-import com.vaadin.navigator.View
-import com.vaadin.ui.UI
-import org.codehaus.groovy.grails.web.mapping.UrlMapping
-
 /**
  * Provides mappings between URIs such as /vaadin/book#!show/id=1 and Vaadin UIs or Views.
  *
@@ -25,29 +19,26 @@ public interface MappingsProvider {
         String getPath()
 
         /**
-         * Return the name representation of the View/UI.
-         * <p>
-         *     This may be name of the Grails artefact.
-         * </p>
+         * Return the artefact name for the UI.
          *
-         * @return The name representation of the View/UI
+         * @return The artefact name for the UI
          */
-        String getName()
+        String getUI()
 
         /**
-         * Return the class of the View/UI.
+         * Return the namespace if specified.
          *
-         * @return The class of the View/UI
+         * @return The namespace if specified, otherwise null
          */
-        Class<?> getClazz()
-    }
+        String getNamespace()
 
-    /**
-     * UI mappings must start with "/".
-     *
-     * ^/([a-zA-Z0-9_]/?)*$
-     */
-    static interface UIMapping extends Mapping {
+//        /**
+//         * Return the class of the UI.
+//         *
+//         * @return The class of the UI
+//         */
+//        Class<? extends UI> getClazz()
+
         String getTheme()
         String getWidgetset()
         String getPreservedOnRefresh()
@@ -55,26 +46,8 @@ public interface MappingsProvider {
         String getPushMode()
         String getPushTransport()
 
-        Class<? extends UI> getClazz()
+        Map<String, String> getViewMappings()
     }
-
-    /**
-     * View mappings must start with "#!".
-     *
-     * ^#\!([a-zA-Z0-9_]/?)*$
-     */
-    static interface ViewMapping extends Mapping {
-
-        Collection<Class<? extends UI>> getOwners()
-        Class<? extends View> getClazz()
-    }
-
-    /**
-     * Return the Vaadin mappings artefact class.
-     *
-     * @return The Vaadin mappings artefact class
-     */
-    VaadinMappingsClass getMappingsClass()
 
     /**
      * Return true if there is a mapping for the specified path.
@@ -91,14 +64,6 @@ public interface MappingsProvider {
      * @return The mapping for the specified path, or null if no mapping was found
      */
     Mapping getMapping(String path)
-
-    /**
-     * Return the mapping for the specified class.
-     *
-     * @param path The URI fragment specified in <code>VaadinMappings</code>
-     * @return The mapping for the specified class, or null if no mapping was found
-     */
-    Mapping getMapping(Class<?> clazz)
 
     /**
      * Return all defined mappings.

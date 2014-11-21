@@ -1,5 +1,8 @@
 package com.vaadin.grails.server
 
+import com.vaadin.grails.Vaadin
+import com.vaadin.grails.navigator.MappingsAwareViewProvider
+import com.vaadin.grails.server.MappingsProvider.Mapping
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
@@ -8,6 +11,7 @@ import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
+import org.springframework.web.util.UrlPathHelper
 
 /**
  * An {@link com.vaadin.server.UIProvider} implementation that uses mappings
@@ -17,14 +21,16 @@ import grails.util.Holders
  */
 class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
+    final def pathHelper = new UrlPathHelper()
+
     MappingsProvider mappingsProvider
 
     MappingsAwareUIProvider() {
 
     }
 
-    protected MappingsProvider.UIMapping getMapping(UIProviderEvent event) {
-        String path = event.request.pathInfo ?: "/"
+    protected MappingsProvider.Mapping getMapping(UIProviderEvent event) {
+        def path = pathHelper.getPathWithinApplication(event.request)
         mappingsProvider.getMapping(path)
     }
 
@@ -43,32 +49,40 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
             ui = super.createInstance(event)
         }
 
-        applyNavigator(ui)
+        applyNavigator(ui, getMapping(event))
 
         ui
     }
 
-    protected void applyNavigator(UI ui) {
-        def viewMappings = mappingsProvider.allMappings.findAll { it instanceof MappingsProvider.ViewMapping }
-        def viewsFound = viewMappings.find { MappingsProvider.ViewMapping viewMapping ->
-            viewMapping.owners.contains(ui.getClass())
-        }
-        if (viewsFound) {
+    protected void applyNavigator(UI ui, Mapping mapping) {
+        if (!mapping.viewMappings.isEmpty()) {
             def navigator = new Navigator(ui, ui)
-
-            def viewProvider = Holders.applicationContext
-                    .getBean("viewProvider")
-
-            navigator.addProvider(viewProvider)
+            navigator.addProvider(new MappingsAwareViewProvider(mapping))
             ui.navigator = navigator
         }
+    }
+
+    protected Class<? extends UI> resolveUIClass(String name, String namespace = null) {
+        def found = Vaadin.vaadinUtils.getVaadinUIClass(name, namespace)
+        if (found == null) {
+            def message = "Unable to resolve Vaadin UI for name [${name}]"
+            if (namespace) {
+                message += " and namespace [${namespace}]"
+            }
+            throw new RuntimeException(message)
+        }
+        found?.clazz
     }
 
     @Override
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
         def mapping = getMapping(event)
 
-        mapping.clazz
+        if (mapping == null) {
+            throw new RuntimeException("No UI mapped for path [${event.request.pathInfo}]")
+        }
+
+        resolveUIClass(mapping.getUI(), mapping.getNamespace())
     }
 
     @Override

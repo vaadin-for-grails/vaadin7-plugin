@@ -10,6 +10,5 @@ import org.codehaus.groovy.grails.commons.GrailsClass;
  */
 public interface VaadinMappingsClass extends GrailsClass {
 
-    public String getBase();
     public Closure getMappingsClosure();
 }

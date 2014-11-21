@@ -1,10 +1,6 @@
 package com.vaadin.grails.server
 
-import com.vaadin.grails.VaadinMappingsClass
-import com.vaadin.navigator.View
-import com.vaadin.ui.UI
-import grails.util.GrailsNameUtils
-import grails.util.Holders
+import com.vaadin.grails.Vaadin
 
 import javax.annotation.PostConstruct
 import java.util.concurrent.ConcurrentHashMap
@@ -18,14 +14,12 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class DefaultMappingsProvider implements MappingsProvider {
 
-    static abstract class AbstractMapping implements MappingsProvider.Mapping {
+    static class DefaultMapping implements MappingsProvider.Mapping {
 
+        private String ui
         String path
-        String name
-        Class clazz
-    }
-
-    static class DefaultUIMapping extends AbstractMapping implements MappingsProvider.UIMapping {
+        String namespace
+        Map<String, String> viewMappings = [:]
 
         String theme
         String widgetset
@@ -33,37 +27,35 @@ class DefaultMappingsProvider implements MappingsProvider {
         String pageTitle
         String pushMode
         String pushTransport
-    }
 
-    static class DefaultViewMapping extends AbstractMapping implements MappingsProvider.ViewMapping {
+        @Override
+        String getUI() {
+            ui
+        }
 
-        Collection<Class<? extends UI>> owners = []
+        void setUI(String ui) {
+            this.ui = ui
+        }
     }
 
     static class MappingsBuilder extends BuilderSupport {
 
-        final Closure mappingsClosure
-        private Map<String, MappingsProvider.Mapping> mappings
+        Map<String, MappingsProvider.Mapping> mappings
 
-        MappingsBuilder(Closure mappingsClosure) {
-            this.mappingsClosure = mappingsClosure
-        }
-
-        Map<String, MappingsProvider.Mapping> build() {
-            mappings = new HashMap<String, MappingsProvider.Mapping>()
-            def delegate = mappingsClosure.delegate
+        public Map<String, MappingsProvider.Mapping> build(Closure closure) {
+            def delegate = closure.delegate
             try {
-                mappingsClosure.delegate = this
-                mappingsClosure.call()
+                mappings = new HashMap<String, MappingsProvider.Mapping>()
+                closure.delegate = this
+                closure.call()
             } finally {
-                mappingsClosure.delegate = delegate
+                closure.delegate = delegate
             }
-
             mappings
         }
 
         @Override
-        protected void setParent(Object parent, Object child) { }
+        protected void setParent(Object parent, Object child) {}
 
         @Override
         protected Object createNode(Object name) {
@@ -80,75 +72,43 @@ class DefaultMappingsProvider implements MappingsProvider {
             createNode(name, attributes, null)
         }
 
-        protected Class<? extends UI> _resolveUIClass(Object value) {
-            if (value instanceof Class) {
-                return value
-            } else {
-                def artefact = Holders.grailsApplication.getArtefacts("UI")
-                        .find { it.logicalPropertyName == value }
-                if (artefact) {
-                    return artefact.clazz
-                }
-            }
-            throw new RuntimeException("Unable to resolve ui class for [${value}]")
-        }
-
-        protected Class<? extends View> _resolveViewClass(Object value) {
-            if (value instanceof Class) {
-                return value
-            } else {
-                def artefact = Holders.grailsApplication.getArtefacts("View")
-                        .find { it.logicalPropertyName == value }
-                if (artefact) {
-                    return artefact.clazz
-                }
-            }
-            throw new RuntimeException("Unable to resolve view class for [${value}]")
-        }
-
         @Override
         protected Object createNode(Object name, Map attributes, Object value) {
-            def mapping
+            Object node
 
-            if (((String) name).startsWith("/")) {
-                mapping = new DefaultUIMapping()
-                def ui = attributes.remove("ui")
-                Class<? extends UI> uiClass = _resolveUIClass(ui)
-                mapping.setClazz(uiClass)
-                mapping.setName(GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI"))
-
-                mapping.theme = attributes["theme"]
-                mapping.widgetset = attributes["widgetset"]
-                mapping.preservedOnRefresh = attributes["preservedOnRefresh"]
-                mapping.pageTitle = attributes["pageTitle"]
-                mapping.pushMode = attributes["pushMode"]
-                mapping.pushTransport = attributes["pushTransport"]
-            } else if (((String) name).startsWith("#")) {
-                mapping = new DefaultViewMapping()
-                def view = attributes.remove("view")
-                def viewClass = _resolveViewClass(view)
-                mapping.setClazz(view)
-                mapping.setName(GrailsNameUtils.getLogicalPropertyName(viewClass.name, "View"))
-
-                def owners = attributes["ui"]
-                if (owners) {
-                    if (!(owners instanceof Collection)) {
-                        owners = [owners]
-                    }
-                    owners.each { owner ->
-                        def ownerClass = _resolveUIClass(owner)
-                        mapping.owners.add(ownerClass)
-                    }
-                } else {
-                    throw new RuntimeException("Missing ui attribute for [${name}]")
+            def resolveAttribute = { String attributeName ->
+                def resolved = attributes[attributeName]
+                if (resolved == null) {
+                    throw new RuntimeException("Missing required attribute [${name}]")
                 }
-            } else {
-                throw new RuntimeException("Illegal mapping")
+                resolved
             }
 
-            mapping.setPath(name)
-            mappings.put(mapping.path, mapping)
-            mapping
+            if (current instanceof MappingsProvider.Mapping) {
+                def m = current.viewMappings
+                def view = resolveAttribute("view")
+                m.put(name, view)
+                node = m
+            } else {
+                def path = name as String
+                if (path?.startsWith("/")) {
+                    def m = new DefaultMapping()
+                    m.path = path
+                    m.ui = resolveAttribute("ui")
+                    m.namespace = attributes["namespace"]
+                    m.theme = attributes["theme"]
+                    m.widgetset = attributes["widgetset"]
+                    m.preservedOnRefresh = attributes["preservedOnRefresh"]
+                    m.pageTitle = attributes["pageTitle"]
+                    m.pushMode = attributes["pushMode"]
+                    m.pushTransport = attributes["pushTransport"]
+                    mappings.put(path, m)
+                    node = m
+                } else {
+//                TODO Illegal mapping!
+                }
+            }
+            node
         }
     }
 
@@ -158,24 +118,17 @@ class DefaultMappingsProvider implements MappingsProvider {
 
     }
 
-    @Override
-    VaadinMappingsClass getMappingsClass() {
-        def artefacts = Holders.grailsApplication.getArtefacts("VaadinMappings")
-        if (artefacts?.size() > 0) {
-            return artefacts.first()
-        }
-//        TODO merge artefacts
-        null
+    DefaultMappingsProvider(Closure mappingsClosure) {
+        def builder = new MappingsBuilder()
+        mappings.putAll builder.build(mappingsClosure)
     }
 
     @PostConstruct
     protected void init() {
-        def mappingsClass = getMappingsClass()
-        if (mappingsClass) {
-            def builder = new MappingsBuilder(mappingsClass.mappingsClosure)
-            mappings.putAll(builder.build())
-        } else {
-            throw new RuntimeException("No VaadinMappings class found")
+        def builder = new MappingsBuilder()
+        def vaadinMappingsClasses = Vaadin.vaadinUtils.vaadinMappingsClasses
+        vaadinMappingsClasses.each { vaadinMappingsClass ->
+            mappings.putAll builder.build(vaadinMappingsClass.mappingsClosure)
         }
     }
 
@@ -187,11 +140,6 @@ class DefaultMappingsProvider implements MappingsProvider {
     @Override
     MappingsProvider.Mapping getMapping(String path) {
         mappings.get(path)
-    }
-
-    @Override
-    MappingsProvider.Mapping getMapping(Class<?> clazz) {
-        mappings.values().find { it.clazz == clazz }
     }
 
     @Override

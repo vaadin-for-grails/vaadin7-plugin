@@ -1,6 +1,8 @@
 package com.vaadin.grails
 
 import com.vaadin.server.VaadinSession
+import com.vaadin.ui.UI
+import grails.util.GrailsNameUtils
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
@@ -52,5 +54,52 @@ class VaadinUtils {
             result = "[${key}]"
         }
         result
+    }
+
+    Collection<VaadinComponentClass> getVaadinComponentClasses(String name, String type, String namespace = null) {
+        def found = Holders.grailsApplication.getArtefacts(type).findAll {
+            it instanceof VaadinComponentClass &&
+                it.logicalPropertyName == name &&
+                    it["namespace"] == namespace
+        }
+        found
+    }
+
+    VaadinUIClass getVaadinUIClass(Class<? extends UI> uiClass) {
+        def artefactName = GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI")
+        Holders.grailsApplication.getArtefact("UI", artefactName)
+    }
+
+    VaadinUIClass getVaadinUIClass() {
+        getVaadinUIClass(UI.getCurrent().class)
+    }
+
+    VaadinUIClass getVaadinUIClass(String name, String namespace = null) {
+        def found = getVaadinComponentClasses(name, "UI", namespace)
+        if (found?.size() > 1) {
+            def message = "Multiple Vaadin UIs found for name [${name}]"
+            if (namespace) {
+                message += " and namespace [${namespace}]"
+            }
+            throw new RuntimeException(message)
+        }
+        found.empty ? null : (VaadinUIClass) found.first()
+    }
+
+    VaadinViewClass getVaadinViewClass(String name, String namespace = null) {
+        def found = getVaadinComponentClasses(name, "View", namespace)
+
+        if (found?.size() > 1) {
+            def message = "Multiple Vaadin Views found for name [${name}]"
+            if (namespace) {
+                message += " and namespace [${namespace}]"
+            }
+            throw new RuntimeException(message)
+        }
+        found.empty ? null : (VaadinViewClass) found.first()
+    }
+
+    Collection<VaadinMappingsClass> getVaadinMappingsClasses() {
+        Holders.grailsApplication.getArtefacts("VaadinMappings")
     }
 }

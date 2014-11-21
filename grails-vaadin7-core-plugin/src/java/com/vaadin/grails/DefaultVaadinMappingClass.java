@@ -18,11 +18,6 @@ public class DefaultVaadinMappingClass extends AbstractGrailsClass implements Va
     }
 
     @Override
-    public String getBase() {
-        return getStaticPropertyValue("base", String.class);
-    }
-
-    @Override
     public Closure getMappingsClosure() {
         Closure mappingsClosure = getStaticPropertyValue(MAPPINGS_CLOSURE, Closure.class);
         if (mappingsClosure == null) {
