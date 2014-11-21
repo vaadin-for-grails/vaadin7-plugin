@@ -21,10 +21,9 @@ class MappingsAwareViewProvider implements ViewProvider {
 
     @Override
     String getViewName(String pathAndParameters) {
-
         String path = pathAndParameters
         while (true) {
-            if (mapping.viewMappings.containsKey(path)) {
+            if (mapping.viewMappings.containsKey("#!${path}".toString())) {
                 return path
             }
             def i = path.lastIndexOf("/")
@@ -38,7 +37,7 @@ class MappingsAwareViewProvider implements ViewProvider {
 
     @Override
     View getView(String path) {
-        def viewName = mapping.viewMappings.get(path)
+        def viewName = mapping.viewMappings.get("#!${path}".toString())
         def viewClass = Vaadin.vaadinUtils.getVaadinViewClass(viewName, mapping.namespace)
         if (viewClass) {
             return viewClass.newInstance()

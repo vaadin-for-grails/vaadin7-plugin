@@ -7,7 +7,7 @@ import com.vaadin.ui.Label
 
 class IndexView extends CustomComponent implements View {
 
-    static namespace = "ns2"
+    static namespace = "ns1"
 
     IndexView() {
 
