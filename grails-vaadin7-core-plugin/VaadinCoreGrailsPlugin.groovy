@@ -55,6 +55,7 @@ Brief summary/description of the plugin.
         "vaadinUtils"(com.vaadin.grails.VaadinUtils)
         "mappingsProvider"(com.vaadin.grails.server.DefaultMappingsProvider)
         "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
+        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider)
 
         def config = loadConfig(application)
         application.config.merge(config)
@@ -72,8 +73,6 @@ Brief summary/description of the plugin.
         if (mappings.isEmpty()) {
             return
         }
-
-        def uiProvider = config.uiProvider ?: "com.vaadin.grails.server.MappingsAwareUIProvider"
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
@@ -124,7 +123,7 @@ Brief summary/description of the plugin.
                     "init-param" {
                         "description"("Vaadin UI Provider")
                         "param-name"("UIProvider")
-                        "param-value"(uiProvider)
+                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
                     }
                     "load-on-startup"("1")
                 }
