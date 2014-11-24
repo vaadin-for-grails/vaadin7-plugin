@@ -1,5 +1,6 @@
 package com.vaadin.grails
 
+import com.vaadin.grails.navigator.NavigationUtils
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import grails.util.GrailsNameUtils
@@ -70,10 +71,6 @@ class VaadinUtils {
         Holders.grailsApplication.getArtefact("UI", artefactName)
     }
 
-    VaadinUIClass getVaadinUIClass() {
-        getVaadinUIClass(UI.getCurrent().class)
-    }
-
     VaadinUIClass getVaadinUIClass(String name, String namespace = null) {
         def found = getVaadinComponentClasses(name, "UI", namespace)
         if (found?.size() > 1) {
@@ -99,7 +96,8 @@ class VaadinUtils {
         found.empty ? null : (VaadinViewClass) found.first()
     }
 
-    Collection<VaadinMappingsClass> getVaadinMappingsClasses() {
-        Holders.grailsApplication.getArtefacts("VaadinMappings")
+    NavigationUtils getNavigationUtils() {
+
+        applicationContext.getBean(NavigationUtils)
     }
 }

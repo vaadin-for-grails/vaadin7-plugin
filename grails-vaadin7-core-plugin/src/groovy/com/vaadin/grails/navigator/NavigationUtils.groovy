@@ -1,11 +1,12 @@
 package com.vaadin.grails.navigator
 
+import com.vaadin.grails.Vaadin
 import com.vaadin.grails.server.MappingsProvider
-import com.vaadin.navigator.View
 import com.vaadin.server.Page
 import com.vaadin.ui.UI
-import grails.util.Holders
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.grails.web.util.WebUtils
+import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * Utils for ease navigation between views and uis.
@@ -14,7 +15,8 @@ import org.codehaus.groovy.grails.web.util.WebUtils
  */
 class NavigationUtils {
 
-//    MappingsProvider mappingsProvider
+    @Autowired
+    MappingsProvider mappingsProvider
 
     /**
      * Encode a map to a String.
@@ -41,49 +43,46 @@ class NavigationUtils {
         WebUtils.fromQueryString(encoded.replace("/", "&"))
     }
 
-    MappingsProvider getMappingsProvider() {
-        Holders.applicationContext.getBean("mappingsProvider") as MappingsProvider
-    }
+    void enter(Map params) {
+        def ui = params.remove("ui")
+        def view = params.remove("view")
+        def namespace = params.remove("namespace")
 
-    protected void enterView(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params) {
-        def uiMapping = mappingsProvider.getMapping(uiClass)
-        def path = uiMapping.path.substring(1)
-        println "navigate to ${path}"
-        if (viewClass) {
-
-            def viewMapping = mappingsProvider.getMapping(viewClass)
-            path = "${path}${viewMapping.path}"
-            if (params) {
-                path = "${path}/${encodeParams(params)}"
-            }
-        }
-        Page.current.setLocation(path as String)
-    }
-
-    protected void enterView(Class<? extends View> viewClass, Map params) {
-        def viewMapping = mappingsProvider.getMapping(viewClass)
-        def navigationState = viewMapping.path
-        if (params && params.size() > 0) {
-            navigationState += "/${encodeParams(params)}"
-        }
-        UI.current.navigator.navigateTo(navigationState)
-    }
-
-    public void enter(Class<?> targetClass, Map params = null) {
-        if (UI.isAssignableFrom(targetClass)) {
-            println "navigate to ui ${targetClass}"
-            enterView(targetClass, null, params)
+        if (ui) {
+            enter(ui, view, namespace, params.remove("params"))
         } else {
-            println "navigate to view ${targetClass}"
-            enterView(targetClass, params)
+            enter(view, namespace, params.remove("params"))
         }
     }
 
-    public void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
-        if (uiClass == UI.current.getClass()) {
-            enterView(viewClass, params)
+    void enter(String ui, String view, String namespace, Map params) {
+        def uiClass = Vaadin.utils.getVaadinUIClass(ui, namespace)
+        def viewClass = Vaadin.utils.getVaadinViewClass(view, namespace)
+
+        println "enter ui=${uiClass}, view=${viewClass}"
+        def mapping = mappingsProvider.allMappings.find { it.getUIClass() == uiClass }
+        if (mapping) {
+            def path = mapping.path
+            def fragment = mapping.getFragment(viewClass.logicalPropertyName)
+
+            def linkGenerator = Vaadin.applicationContext.getBean(LinkGenerator)
+
+            Page.current.setLocation(linkGenerator.link(uri: path + "#!" + fragment))
         } else {
-            enterView(uiClass, viewClass, params)
+            throw new RuntimeException("No mapping found for ui [${ui}] and view [${view}]")
+        }
+    }
+
+    void enter(String view, String namespace, Map params) {
+        def viewClass = Vaadin.utils.getVaadinViewClass(view, namespace)
+        def mapping = mappingsProvider.allMappings.find { it.getUIClass().clazz == UI.current.getClass() }
+        if (mapping) {
+            def navigator = UI.current.navigator
+            def state = mapping.getFragment(viewClass.logicalPropertyName)
+            println "navigate to ${state}"
+            navigator.navigateTo(state)
+        } else {
+            throw new RuntimeException("No mapping found for view [${view}]")
         }
     }
 }

@@ -1,44 +1,42 @@
 package com.vaadin.grails.navigator
 
-import com.vaadin.grails.Vaadin
-import com.vaadin.grails.server.MappingsProvider
+import com.vaadin.grails.server.Mapping
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
- * defined with {@link com.vaadin.grails.VaadinMappingsClass} artefacts.
+ * defined in the <code>VaadinConfig</code> script.
  *
  * @author Stephan Grundner
  */
 class MappingsAwareViewProvider implements ViewProvider {
 
-    final MappingsProvider.Mapping mapping
+    final Mapping mapping
 
-    MappingsAwareViewProvider(MappingsProvider.Mapping mapping) {
+    MappingsAwareViewProvider(Mapping mapping) {
         this.mapping = mapping
     }
 
     @Override
-    String getViewName(String pathAndParameters) {
-        String path = pathAndParameters
+    String getViewName(String fragmentAndParams) {
+        String fragment = fragmentAndParams
         while (true) {
-            if (mapping.viewMappings.containsKey("#!${path}".toString())) {
-                return path
+            if (mapping.containsFragment(fragment)) {
+                return fragment
             }
-            def i = path.lastIndexOf("/")
+            def i = fragment.lastIndexOf("/")
             if (i == -1) {
                 break
             }
-            path = path.substring(0, i)
+            fragment = fragment.substring(0, i)
         }
         null
     }
 
     @Override
-    View getView(String path) {
-        def viewName = mapping.viewMappings.get("#!${path}".toString())
-        def viewClass = Vaadin.vaadinUtils.getVaadinViewClass(viewName, mapping.namespace)
+    View getView(String fragment) {
+        def viewClass = mapping.getViewClass(fragment)
         if (viewClass) {
             return viewClass.newInstance()
         }

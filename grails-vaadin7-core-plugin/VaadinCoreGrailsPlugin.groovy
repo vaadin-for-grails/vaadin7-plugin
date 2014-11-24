@@ -1,10 +1,9 @@
-import com.vaadin.grails.VaadinUtils
-import com.vaadin.grails.server.DefaultMappingsProvider
 import grails.util.Environment
 import grails.util.Holders
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class VaadinCoreGrailsPlugin {
+
     def version = "2.0"
     def grailsVersion = "2.4 > *"
     def pluginExcludes = [
@@ -12,7 +11,7 @@ class VaadinCoreGrailsPlugin {
     ]
 
     // TODO Fill in these fields
-    def title = "Grails Vaadin7 Core Plugin Plugin" // Headline display name of the plugin
+    def title = "Grails Vaadin7 Core Plugin" // Headline display name of the plugin
     def author = "Your name"
     def authorEmail = ""
     def description = '''\
@@ -21,9 +20,20 @@ Brief summary/description of the plugin.
     def documentation = "http://grails.org/plugin/grails-vaadin7-core-plugin"
 
     def artefacts = [
-            com.vaadin.grails.VaadinMappingsArtefactHandler,
             com.vaadin.grails.VaadinUIArtefactHandler,
             com.vaadin.grails.VaadinViewArtefactHandler]
+
+    ConfigObject loadConfig(GrailsApplication application) {
+        def configScriptClass
+        try {
+            configScriptClass = application.classLoader.loadClass("VaadinConfig")
+        } catch (ClassNotFoundException e) {
+            return null
+        }
+
+        def parser = new ConfigSlurper(Environment.current.name)
+        parser.parse(configScriptClass)
+    }
 
     def doWithSpring = {
         application.getArtefacts("UI").each { uiClass ->
@@ -32,32 +42,21 @@ Brief summary/description of the plugin.
                 bean.autowire = "byName"
             }
         }
-        "vaadinUtil"(VaadinUtils)
-        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
+        "vaadinUtils"(com.vaadin.grails.VaadinUtils)
         "mappingsProvider"(com.vaadin.grails.server.DefaultMappingsProvider)
+        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
         "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider) { bean ->
             bean.scope = "prototype"
             bean.autowire = "byName"
         }
+
+        def config = loadConfig(application)
+        application.config.merge(config)
     }
 
     def doWithWebDescriptor = { xml ->
-//        def config = application.config.vaadin
-
-        def mappingsClass
-        try {
-            mappingsClass = application.classLoader.loadClass("VaadinMappings")
-        } catch (ClassNotFoundException e) {
-            return
-        }
-
-        def mappingsClosure = GrailsClassUtils.getStaticPropertyValue(mappingsClass, "mappings") as Closure
-        if (mappingsClosure == null) {
-            return
-        }
-
-        def mappingsProvider = new DefaultMappingsProvider(mappingsClosure)
-        def mappings = mappingsProvider.allMappings
+        def config = loadConfig(application)?.vaadin
+        def mappings = config.mappings as Map
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
@@ -67,28 +66,28 @@ Brief summary/description of the plugin.
             openSessionInViewFilter = 'org.springframework.orm.hibernate4.support.OpenSessionInViewFilter'
         }
 
-        if (openSessionInViewFilter) {
-            def contextParam = xml.'context-param'
-            mappings.eachWithIndex { mapping, i ->
-                contextParam[contextParam.size() - 1] + {
-                    'filter' {
-                        'filter-name'('openSessionInView')
-                        'filter-class'(openSessionInViewFilter)
-                    }
-                }
-            }
-
-            def filter = xml.'filter'
-            mappings.eachWithIndex { mapping, i ->
-                def urlPattern = mapping.path + "/*"
-                filter[filter.size() - 1] + {
-                    'filter-mapping' {
-                        'filter-name'('openSessionInView')
-                        'url-pattern'(urlPattern)
-                    }
-                }
-            }
-        }
+//        if (openSessionInViewFilter) {
+//            def contextParam = xml.'context-param'
+//            mappings.eachWithIndex { mapping, i ->
+//                contextParam[contextParam.size() - 1] + {
+//                    'filter' {
+//                        'filter-name'('openSessionInView')
+//                        'filter-class'(openSessionInViewFilter)
+//                    }
+//                }
+//            }
+//
+//            def filter = xml.'filter'
+//            mappings.eachWithIndex { mapping, i ->
+//                def urlPattern = "" + mapping.key + "/*"
+//                filter[filter.size() - 1] + {
+//                    'filter-mapping' {
+//                        'filter-name'('openSessionInView')
+//                        'url-pattern'(urlPattern)
+//                    }
+//                }
+//            }
+//        }
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -117,7 +116,7 @@ Brief summary/description of the plugin.
 
         def servletMappings = xml."servlet-mapping"
         mappings.eachWithIndex { mapping, i ->
-            def urlPattern = mapping.path + "/*"
+            def urlPattern = mapping.key + "/*"
             servletMappings[servletMappings.size() - 1] + {
                 "servlet-mapping" {
                     "servlet-name"("vaadin ${i}")

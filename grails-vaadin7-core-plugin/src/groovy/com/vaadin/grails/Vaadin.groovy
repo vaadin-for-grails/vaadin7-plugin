@@ -1,8 +1,5 @@
 package com.vaadin.grails
 
-import com.vaadin.grails.navigator.NavigationUtils
-import com.vaadin.navigator.View
-import com.vaadin.ui.UI
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
@@ -19,7 +16,7 @@ final class Vaadin {
      *
      * @return The Vaadin Util singleton
      */
-    static VaadinUtils getVaadinUtils() {
+    static VaadinUtils getUtils() {
         def application = Holders.grailsApplication
         def mainContext = application.mainContext
         mainContext.getBean(VaadinUtils)
@@ -31,16 +28,7 @@ final class Vaadin {
      * @return The Vaadin application context
      */
     static ApplicationContext getApplicationContext() {
-        vaadinUtils.applicationContext
-    }
-
-    /**
-     * Return the navigation utils singleton.
-     *
-     * @return The navigation utils
-     */
-    static NavigationUtils getNavigationUtils() {
-        applicationContext.getBean(NavigationUtils)
+        utils.applicationContext
     }
 
     /**
@@ -53,29 +41,35 @@ final class Vaadin {
      * @return A localized message for the specified property key
      */
     static String i18n(String key, Object[] args = null, Locale locale = null, MessageSource messageSource = null) {
-        vaadinUtils.i18n(key, args, locale, messageSource)
+        utils.i18n(key, args, locale, messageSource)
     }
 
-    /**
-     * Enter a view or an ui.
-     *
-     * @param targetClass The class of the target
-     * @param params The parameter map (optional)
-     */
-    static void enter(Class<?> targetClass, Map params = null) {
-        navigationUtils.enter(targetClass, params)
+    static void enter(Map params) {
+        utils.navigationUtils.enter(params)
     }
 
-    /**
-     * Enter a view in a different ui.
-     *
-     * @param uiClass The ui class
-     * @param viewClass The view class (optional)
-     * @param params The parameter map (optional)
-     */
-    static void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
-        navigationUtils.enter(uiClass, viewClass, params)
-    }
+//    /**
+//     * Enter a view or an ui.
+//     *
+//     * @param targetClass The class of the target
+//     * @param params The parameter map (optional)
+//     */
+//    static void enter(Class<?> targetClass, Map params = null) {
+//        def navigationUtils = utils.navigationUtils
+//        navigationUtils.enter(targetClass, params)
+//    }
+//
+//    /**
+//     * Enter a view in a different ui.
+//     *
+//     * @param uiClass The ui class
+//     * @param viewClass The view class (optional)
+//     * @param params The parameter map (optional)
+//     */
+//    static void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
+//        def navigationUtils = utils.navigationUtils
+//        navigationUtils.enter(uiClass, viewClass, params)
+//    }
 
     private Vaadin() { }
 }

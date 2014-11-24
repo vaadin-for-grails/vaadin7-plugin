@@ -20,4 +20,5 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
     all    'com.vaadin.grails'
+
 }
