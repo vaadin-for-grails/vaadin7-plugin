@@ -148,7 +148,11 @@ grails.plugin.springsecurity.interceptUrlMap = [
     '/VAADIN/**':                     ['permitAll'],
     '/login/**':                      ['permitAll'],
     '/logout/**':                     ['permitAll'],
-    '/demo1':                         ['ROLE_ADMIN'],
-    '/demo1#!second':                 ['ROLE_USER']
+    '/demo1/**':                         ['permitAll'],
+    '/demo2/**':                         ['permitAll'],
+    '/login2/**':                       ['permitAll']
+
 ]
+
+//grails.plugin.springsecurity.auth.loginFormUrl='/login2'
 
