@@ -55,8 +55,13 @@ Brief summary/description of the plugin.
     }
 
     def doWithWebDescriptor = { xml ->
-        def config = loadConfig(application)?.vaadin
-        def mappings = config.mappings as Map
+        def config = loadConfig(application)
+
+        if (!config) {
+            return
+        }
+
+        def mappings = config.vaadin.mappings as Map
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
