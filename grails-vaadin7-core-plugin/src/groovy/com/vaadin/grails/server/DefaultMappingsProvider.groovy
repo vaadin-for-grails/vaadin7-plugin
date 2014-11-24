@@ -28,36 +28,44 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init() {
         def mappingsConfig = Holders.config.vaadin.mappings
         mappingsConfig.each { String path, ConfigObject pathConfig ->
-            def ui = pathConfig.get("ui")
-            def uiNamespace = pathConfig.get("namespace") ?: null
+            mapPath(path, pathConfig)
             def fragments = pathConfig.fragments
-            uiSettingsByPath.put(path, [:])
-            uiSettingsByPath[path]["theme"] = pathConfig.get("theme")
-            uiSettingsByPath[path]["widgetset"] = pathConfig.get("widgetset")
-            uiSettingsByPath[path]["preservedOnRefresh"] = pathConfig.get("preservedOnRefresh")
-            uiSettingsByPath[path]["pageTitle"] = pathConfig.get("pageTitle")
-            uiSettingsByPath[path]["pushMode"] = pathConfig.get("pushMode")
-            uiSettingsByPath[path]["pushTransport"] = pathConfig.get("pushTransport")
-
-            def uiClass = Vaadin.utils.getVaadinUIClass(ui, uiNamespace)
-            if (uiClass == null) {
-                throw new RuntimeException("No class found for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
-            }
-            log.debug("Register class [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
-            addUIClass(path, uiClass)
-
             fragments.each { String fragment, ConfigObject fragmentConfig ->
-                def view = fragmentConfig.get("view")
-                def viewNamespace = fragmentConfig.get("namespace") ?: null
-
-                def viewClass = Vaadin.utils.getVaadinViewClass(view, viewNamespace)
-                if (viewClass == null) {
-                    throw new RuntimeException("No class found for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
-                }
-                log.debug("Register class [${viewClass.fullName}] for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
-                addViewClass(path, fragment, viewClass)
+                mapFragment(path, fragment, fragmentConfig)
             }
         }
+    }
+
+    protected void mapPath(String path, ConfigObject pathConfig) {
+        def ui = pathConfig.get("ui")
+        def uiNamespace = pathConfig.get("namespace") ?: null
+
+        uiSettingsByPath.put(path, [:])
+        uiSettingsByPath[path]["theme"] = pathConfig.get("theme")
+        uiSettingsByPath[path]["widgetset"] = pathConfig.get("widgetset")
+        uiSettingsByPath[path]["preservedOnRefresh"] = pathConfig.get("preservedOnRefresh")
+        uiSettingsByPath[path]["pageTitle"] = pathConfig.get("pageTitle")
+        uiSettingsByPath[path]["pushMode"] = pathConfig.get("pushMode")
+        uiSettingsByPath[path]["pushTransport"] = pathConfig.get("pushTransport")
+
+        def uiClass = Vaadin.utils.getVaadinUIClass(ui, uiNamespace)
+        if (uiClass == null) {
+            throw new RuntimeException("No class found for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+        }
+        log.debug("Register class [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+        addUIClass(path, uiClass)
+    }
+
+    protected void mapFragment(String path, String fragment, ConfigObject fragmentConfig) {
+        def view = fragmentConfig.get("view")
+        def viewNamespace = fragmentConfig.get("namespace") ?: null
+
+        def viewClass = Vaadin.utils.getVaadinViewClass(view, viewNamespace)
+        if (viewClass == null) {
+            throw new RuntimeException("No class found for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+        }
+        log.debug("Register class [${viewClass.fullName}] for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+        addViewClass(path, fragment, viewClass)
     }
 
     void addUIClass(String path, VaadinUIClass uiClass) {
