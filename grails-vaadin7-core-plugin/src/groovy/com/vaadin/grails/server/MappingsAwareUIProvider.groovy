@@ -4,11 +4,11 @@ import com.vaadin.grails.navigator.MappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
-import com.vaadin.server.UIProviderEvent
 import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.util.UrlPathHelper
 
@@ -20,6 +20,8 @@ import org.springframework.web.util.UrlPathHelper
  */
 class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
+    static final def log = Logger.getLogger(MappingsAwareUIProvider)
+
     final def pathHelper = new UrlPathHelper()
 
     @Autowired
@@ -27,11 +29,6 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     MappingsAwareUIProvider() {
 
-    }
-
-    protected Mapping getMapping(UIProviderEvent event) {
-        def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getMapping(path)
     }
 
     @Override
@@ -48,57 +45,66 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
             ui = super.createInstance(event)
         }
 
-        def mapping = getMapping(event)
-        if (!mapping.allFragments.empty) {
-            applyNavigator(ui, mapping)
+        def path = pathHelper.getPathWithinApplication(event.request)
+
+        if (mappingsProvider.getAllFragments(path).size() > 0) {
+            ui.navigator = createNavigator(event, ui)
+            log.debug("Applied navigator to UI for path [${path}]")
         }
 
         ui
     }
 
-    protected void applyNavigator(UI ui, Mapping mapping) {
+    protected Navigator createNavigator(UICreateEvent event, UI ui) {
+        def path = pathHelper.getPathWithinApplication(event.request)
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(new MappingsAwareViewProvider(mapping))
-        ui.navigator = navigator
+        navigator.addProvider(new MappingsAwareViewProvider(path))
+        navigator
     }
 
     @Override
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-        println mappingsProvider.allMappings.collect {it.path}
-        def mapping = getMapping(event)
-        if (mapping == null) {
-            throw new RuntimeException("No UI mapped for path [${event.request.pathInfo}]")
+        def path = pathHelper.getPathWithinApplication(event.request)
+        def uiClass = mappingsProvider.getUIClass(path)
+        if (uiClass) {
+            log.debug("Got UI class [${uiClass.fullName}] for path [${path}]")
         }
-        mapping.getUIClass().clazz
+        uiClass?.clazz
     }
 
     @Override
     String getTheme(UICreateEvent event) {
-        getMapping(event)?.theme ?: super.getTheme(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.getTheme(path) ?: super.getTheme(event)
     }
 
     @Override
     String getWidgetset(UICreateEvent event) {
-        getMapping(event)?.widgetset ?: super.getWidgetset(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.getWidgetset(path) ?: super.getWidgetset(event)
     }
 
     @Override
     boolean isPreservedOnRefresh(UICreateEvent event) {
-        getMapping(event)?.preservedOnRefresh ?: super.isPreservedOnRefresh(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.isPreservedOnRefresh(path) ?: super.isPreservedOnRefresh(event)
     }
 
     @Override
     String getPageTitle(UICreateEvent event) {
-        getMapping(event)?.pageTitle ?: super.getPageTitle(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.getPageTitle(path) ?: super.getPageTitle(event)
     }
 
     @Override
     PushMode getPushMode(UICreateEvent event) {
-        getMapping(event)?.pushMode ?: super.getPushMode(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.getPushMode(path) ?: super.getPushMode(event)
     }
 
     @Override
     Transport getPushTransport(UICreateEvent event) {
-        getMapping(event)?.pushTransport ?: super.getPushTransport(event)
+        def path = pathHelper.getPathWithinApplication(event.request)
+        mappingsProvider.getPushTransport(path) ?: super.getPushTransport(event)
     }
 }

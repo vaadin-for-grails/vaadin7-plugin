@@ -5,7 +5,7 @@ import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
-import grails.plugin.springsecurity.SpringSecurityUtils
+import com.vaadin.ui.VerticalLayout
 
 class IndexView extends CustomComponent implements View {
 
@@ -17,13 +17,18 @@ class IndexView extends CustomComponent implements View {
 
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
-        compositionRoot = new Button("Goto Second view", new Button.ClickListener() {
+        compositionRoot = new VerticalLayout()
+
+        def button = new Button("Goto Second view", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
+                Vaadin.enter(view: [name: "second"], params: [a: 2])
 
-                Vaadin.enter(ui: "demo", view: "second", namespace: "ns2")
+
             }
         })
 
+        compositionRoot.setMargin(true)
+        compositionRoot.addComponent(button)
     }
 }

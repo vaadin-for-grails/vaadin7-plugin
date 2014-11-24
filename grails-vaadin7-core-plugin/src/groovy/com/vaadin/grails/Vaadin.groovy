@@ -44,32 +44,14 @@ final class Vaadin {
         utils.i18n(key, args, locale, messageSource)
     }
 
+    /**
+     * Switch between Views and UIs.
+     *
+     * @param params
+     */
     static void enter(Map params) {
         utils.navigationUtils.enter(params)
     }
-
-//    /**
-//     * Enter a view or an ui.
-//     *
-//     * @param targetClass The class of the target
-//     * @param params The parameter map (optional)
-//     */
-//    static void enter(Class<?> targetClass, Map params = null) {
-//        def navigationUtils = utils.navigationUtils
-//        navigationUtils.enter(targetClass, params)
-//    }
-//
-//    /**
-//     * Enter a view in a different ui.
-//     *
-//     * @param uiClass The ui class
-//     * @param viewClass The view class (optional)
-//     * @param params The parameter map (optional)
-//     */
-//    static void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
-//        def navigationUtils = utils.navigationUtils
-//        navigationUtils.enter(uiClass, viewClass, params)
-//    }
 
     private Vaadin() { }
 }

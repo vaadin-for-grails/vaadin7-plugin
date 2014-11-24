@@ -66,9 +66,13 @@ class VaadinUtils {
         found
     }
 
+    VaadinUIClass getCurrentVaadinUIClass() {
+        getVaadinUIClass(UI.current.class)
+    }
+
     VaadinUIClass getVaadinUIClass(Class<? extends UI> uiClass) {
-        def artefactName = GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI")
-        Holders.grailsApplication.getArtefact("UI", artefactName)
+        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI")
+        Holders.grailsApplication.getArtefactByLogicalPropertyName("UI", logicalPropertyName)
     }
 
     VaadinUIClass getVaadinUIClass(String name, String namespace = null) {

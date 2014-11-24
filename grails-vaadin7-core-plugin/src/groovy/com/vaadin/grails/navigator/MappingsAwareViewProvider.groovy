@@ -1,8 +1,10 @@
 package com.vaadin.grails.navigator
 
-import com.vaadin.grails.server.Mapping
+import com.vaadin.grails.Vaadin
+import com.vaadin.grails.server.MappingsProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
+import org.apache.log4j.Logger
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
@@ -12,17 +14,26 @@ import com.vaadin.navigator.ViewProvider
  */
 class MappingsAwareViewProvider implements ViewProvider {
 
-    final Mapping mapping
+    static final def log = Logger.getLogger(MappingsAwareViewProvider)
 
-    MappingsAwareViewProvider(Mapping mapping) {
-        this.mapping = mapping
+    final String path
+
+    final MappingsProvider mappingsProvider
+
+    MappingsAwareViewProvider(String path) {
+        this.path = path
+        mappingsProvider = Vaadin.applicationContext.getBean(MappingsProvider)
     }
 
     @Override
     String getViewName(String fragmentAndParams) {
         String fragment = fragmentAndParams
+        log.debug("Find view for fragment [${fragment}]")
         while (true) {
-            if (mapping.containsFragment(fragment)) {
+            def viewClass = mappingsProvider.getViewClass(path, fragment)
+
+            if (viewClass) {
+                log.debug("Found: ${fragment}")
                 return fragment
             }
             def i = fragment.lastIndexOf("/")
@@ -31,12 +42,14 @@ class MappingsAwareViewProvider implements ViewProvider {
             }
             fragment = fragment.substring(0, i)
         }
+
+        log.debug("Not found")
         null
     }
 
     @Override
     View getView(String fragment) {
-        def viewClass = mapping.getViewClass(fragment)
+        def viewClass = mappingsProvider.getViewClass(path, fragment)
         if (viewClass) {
             return viewClass.newInstance()
         }

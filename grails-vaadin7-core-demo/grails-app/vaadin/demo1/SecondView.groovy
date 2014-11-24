@@ -1,18 +1,21 @@
-package demo2
+package demo1
 
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
+import com.vaadin.ui.VerticalLayout
 
-/**
- * @author Stephan Grundner
- */
 class SecondView extends CustomComponent implements View {
 
-    static namespace = "ns2"
+    SecondView() {
+
+    }
+
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
-        compositionRoot = new Label("Second!")
+        compositionRoot = new VerticalLayout()
+        compositionRoot.setMargin(true)
+        compositionRoot.addComponent(new Label("Second."))
     }
 }

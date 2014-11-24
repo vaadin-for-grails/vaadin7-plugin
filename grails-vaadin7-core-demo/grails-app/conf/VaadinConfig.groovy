@@ -1,45 +1,28 @@
-
 vaadin {
 
-    mappings {
+//    defaultFragment = "index"
 
-        "/login2" {
-            ui = "login"
-        }
+    mappings {
 
         "/demo1" {
             ui = "demo"
             namespace = "ns1"
             theme = "valo"
+            pageTitle = "Demo Nr 1"
 
 
-            views {
-
+            fragments {
 //                set the default action (view) to index
                 "index" {
                     view = "index"
-                    access = ["ROLE_ADMIN"]
-
+                    namespace = "ns1"
+                }
+                "two" {
+                    view = "second"
                 }
             }
 
         }
-
-        "/demo2" {
-            ui = "demo"
-            namespace = "ns2"
-            theme = "valo"
-            access = ["ROLE_ADMIN"]
-
-            views {
-
-//                "#two" {
-//                    view = "second"
-//                }
-            }
-
-        }
-
     }
 
 }
