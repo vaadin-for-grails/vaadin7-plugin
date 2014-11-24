@@ -119,11 +119,9 @@ log4j.main = {
 }
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'demo.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'demo.UserRole'
-grails.plugin.springsecurity.authority.className = 'demo.Role'
-//grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-//	'/':                              ['permitAll'],
+//grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+//grails.plugin.springsecurity.interceptUrlMap = [
+//    '/':                              ['permitAll'],
 //	'/index':                         ['permitAll'],
 //	'/index.gsp':                     ['permitAll'],
 //	'/assets/**':                     ['permitAll'],
@@ -131,28 +129,13 @@ grails.plugin.springsecurity.authority.className = 'demo.Role'
 //	'/**/css/**':                     ['permitAll'],
 //	'/**/images/**':                  ['permitAll'],
 //	'/**/favicon.ico':                ['permitAll'],
-//	'/VAADIN/**':                      ['permitAll'],
-//	'/demo1':                         ['ROLE_ADMIN']
+//    '/VAADIN/**':                     ['permitAll'],
+//    '/login/**':                      ['permitAll'],
+//    '/logout/**':                     ['permitAll'],
+//    '/demo1/**':                         ['permitAll'],
+//    '/demo2/**':                         ['permitAll'],
+//    '/login2/**':                       ['permitAll']
+//
 //]
-
-grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
-grails.plugin.springsecurity.interceptUrlMap = [
-    '/':                              ['permitAll'],
-	'/index':                         ['permitAll'],
-	'/index.gsp':                     ['permitAll'],
-	'/assets/**':                     ['permitAll'],
-	'/**/js/**':                      ['permitAll'],
-	'/**/css/**':                     ['permitAll'],
-	'/**/images/**':                  ['permitAll'],
-	'/**/favicon.ico':                ['permitAll'],
-    '/VAADIN/**':                     ['permitAll'],
-    '/login/**':                      ['permitAll'],
-    '/logout/**':                     ['permitAll'],
-    '/demo1/**':                         ['permitAll'],
-    '/demo2/**':                         ['permitAll'],
-    '/login2/**':                       ['permitAll']
-
-]
-
 //grails.plugin.springsecurity.auth.loginFormUrl='/login2'
 
