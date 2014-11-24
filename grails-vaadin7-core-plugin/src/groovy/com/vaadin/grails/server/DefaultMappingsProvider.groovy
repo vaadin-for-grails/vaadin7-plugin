@@ -28,7 +28,7 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init() {
         def mappingsConfig = Holders.config.vaadin.mappings
         mappingsConfig.each { String path, ConfigObject pathConfig ->
-            mapPath(path, pathConfig)
+            pathToUIClass(path, pathConfig)
             def fragments = pathConfig.fragments
             fragments.each { String fragment, ConfigObject fragmentConfig ->
                 mapFragment(path, fragment, fragmentConfig)
@@ -36,7 +36,7 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
     }
 
-    protected void mapPath(String path, ConfigObject pathConfig) {
+    protected VaadinUIClass pathToUIClass(String path, ConfigObject pathConfig) {
         def ui = pathConfig.get("ui")
         def uiNamespace = pathConfig.get("namespace") ?: null
 
@@ -54,9 +54,10 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
         log.debug("Register class [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         addUIClass(path, uiClass)
+        uiClass
     }
 
-    protected void mapFragment(String path, String fragment, ConfigObject fragmentConfig) {
+    protected VaadinViewClass mapFragment(String path, String fragment, ConfigObject fragmentConfig) {
         def view = fragmentConfig.get("view")
         def viewNamespace = fragmentConfig.get("namespace") ?: null
 
@@ -66,6 +67,7 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
         log.debug("Register class [${viewClass.fullName}] for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         addViewClass(path, fragment, viewClass)
+        viewClass
     }
 
     void addUIClass(String path, VaadinUIClass uiClass) {
