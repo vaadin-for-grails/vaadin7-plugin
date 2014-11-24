@@ -4,20 +4,17 @@ import com.vaadin.grails.Vaadin
 import com.vaadin.grails.server.MappingsProvider
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
-import org.apache.log4j.Logger
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
  * defined in the <code>VaadinConfig</code> script.
  *
+ * @since 2.0
  * @author Stephan Grundner
  */
 class MappingsAwareViewProvider implements ViewProvider {
 
-    static final def log = Logger.getLogger(MappingsAwareViewProvider)
-
     final String path
-
     final MappingsProvider mappingsProvider
 
     MappingsAwareViewProvider(String path) {
@@ -28,12 +25,10 @@ class MappingsAwareViewProvider implements ViewProvider {
     @Override
     String getViewName(String fragmentAndParams) {
         String fragment = fragmentAndParams
-        log.debug("Find view for fragment [${fragment}]")
         while (true) {
             def viewClass = mappingsProvider.getViewClass(path, fragment)
 
             if (viewClass) {
-                log.debug("Found: ${fragment}")
                 return fragment
             }
             def i = fragment.lastIndexOf("/")
@@ -42,8 +37,6 @@ class MappingsAwareViewProvider implements ViewProvider {
             }
             fragment = fragment.substring(0, i)
         }
-
-        log.debug("Not found")
         null
     }
 

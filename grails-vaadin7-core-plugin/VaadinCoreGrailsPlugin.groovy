@@ -1,3 +1,4 @@
+import com.vaadin.grails.VaadinUIClass
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -36,32 +37,43 @@ Brief summary/description of the plugin.
     }
 
     def doWithSpring = {
-        application.getArtefacts("UI").each { uiClass ->
-            "${uiClass.propertyName}"(uiClass.clazz) { bean ->
-                bean.scope = "prototype"
-                bean.autowire = "byName"
+        application.getArtefacts("UI").each { VaadinUIClass uiClass ->
+            def namespace = uiClass.namespace
+            if (namespace) {
+                "${namespace}.${uiClass.propertyName}"(uiClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
+            } else {
+                "${uiClass.propertyName}"(uiClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
             }
         }
+
         "vaadinUtils"(com.vaadin.grails.VaadinUtils)
         "mappingsProvider"(com.vaadin.grails.server.DefaultMappingsProvider)
         "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
-        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider) { bean ->
-            bean.scope = "prototype"
-            bean.autowire = "byName"
-        }
 
         def config = loadConfig(application)
         application.config.merge(config)
     }
 
     def doWithWebDescriptor = { xml ->
-        def config = loadConfig(application)
+        def config = loadConfig(application)?.vaadin
 
         if (!config) {
             return
         }
 
-        def mappings = config.vaadin.mappings as Map
+        def mappings = config.mappings as Map
+
+        if (mappings.isEmpty()) {
+            return
+        }
+
+        def uiProvider = config.uiProvider ?: "com.vaadin.grails.server.MappingsAwareUIProvider"
 
         def pluginManager = Holders.currentPluginManager()
         def openSessionInViewFilter = null
@@ -71,28 +83,28 @@ Brief summary/description of the plugin.
             openSessionInViewFilter = 'org.springframework.orm.hibernate4.support.OpenSessionInViewFilter'
         }
 
-//        if (openSessionInViewFilter) {
-//            def contextParam = xml.'context-param'
-//            mappings.eachWithIndex { mapping, i ->
-//                contextParam[contextParam.size() - 1] + {
-//                    'filter' {
-//                        'filter-name'('openSessionInView')
-//                        'filter-class'(openSessionInViewFilter)
-//                    }
-//                }
-//            }
-//
-//            def filter = xml.'filter'
-//            mappings.eachWithIndex { mapping, i ->
-//                def urlPattern = "" + mapping.key + "/*"
-//                filter[filter.size() - 1] + {
-//                    'filter-mapping' {
-//                        'filter-name'('openSessionInView')
-//                        'url-pattern'(urlPattern)
-//                    }
-//                }
-//            }
-//        }
+        if (openSessionInViewFilter) {
+            def contextParam = xml.'context-param'
+            mappings.eachWithIndex { mapping, i ->
+                contextParam[contextParam.size() - 1] + {
+                    'filter' {
+                        'filter-name'('openSessionInView')
+                        'filter-class'(openSessionInViewFilter)
+                    }
+                }
+            }
+
+            def filter = xml.'filter'
+            mappings.eachWithIndex { mapping, i ->
+                def urlPattern = mapping.key + "/*"
+                filter[filter.size() - 1] + {
+                    'filter-mapping' {
+                        'filter-name'('openSessionInView')
+                        'url-pattern'(urlPattern)
+                    }
+                }
+            }
+        }
 
         def contextParams = xml."context-param"
         contextParams[contextParams.size() - 1] + {
@@ -112,7 +124,7 @@ Brief summary/description of the plugin.
                     "init-param" {
                         "description"("Vaadin UI Provider")
                         "param-name"("UIProvider")
-                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
+                        "param-value"(uiProvider)
                     }
                     "load-on-startup"("1")
                 }

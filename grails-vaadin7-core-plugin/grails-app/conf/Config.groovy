@@ -19,5 +19,5 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-    all    'com.vaadin.grails'
+//    all    'com.vaadin.grails'
 }

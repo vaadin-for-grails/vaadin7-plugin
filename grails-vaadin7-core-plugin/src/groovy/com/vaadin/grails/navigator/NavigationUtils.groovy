@@ -18,6 +18,7 @@ import org.springframework.web.context.request.RequestContextHolder
 /**
  * Utils for ease navigation between Views and UIs.
  *
+ * @since 2.0
  * @author Stephan Grundner
  */
 class NavigationUtils {
@@ -97,8 +98,11 @@ class NavigationUtils {
     }
 
     /**
+     * Switch between Views and UIs.
      *
-     * @param params
+     * @see #enter(com.vaadin.grails.VaadinUIClass, com.vaadin.grails.VaadinViewClass, java.util.Map)
+     * @see #enter(com.vaadin.grails.VaadinViewClass, java.util.Map)
+     * @param params Navigation params
      */
     void enter(Map params) {
         def ui = params.get("ui")
@@ -121,10 +125,11 @@ class NavigationUtils {
     }
 
     /**
+     * Enter the specified UI or a View within the specified UI.
      *
-     * @param uiClass
-     * @param viewClass
-     * @param params
+     * @param uiClass The Vaadin UI class
+     * @param viewClass The Vaadin View class
+     * @param params Additional parameters
      */
     void enter(VaadinUIClass uiClass, VaadinViewClass viewClass, Map params) {
         def utils = Vaadin.utils
@@ -156,9 +161,10 @@ class NavigationUtils {
     }
 
     /**
+     * Enter a View within the current UI.
      *
-     * @param viewClass
-     * @param params
+     * @param viewClass The Vaadin View class
+     * @param params Additional parameters
      */
     void enter(VaadinViewClass viewClass, Map params) {
         def utils = Vaadin.utils

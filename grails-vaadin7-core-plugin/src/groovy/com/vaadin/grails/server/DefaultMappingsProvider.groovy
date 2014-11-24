@@ -10,6 +10,9 @@ import javax.annotation.PostConstruct
 import java.util.concurrent.ConcurrentHashMap
 
 /**
+ * Default implementation for {@link MappingsProvider}.
+ *
+ * @since 2.0
  * @author Stephan Grundner
  */
 class DefaultMappingsProvider implements MappingsProvider {
@@ -120,7 +123,7 @@ class DefaultMappingsProvider implements MappingsProvider {
     String getFragment(String path, VaadinViewClass viewClass) {
         viewClassByURI.find {
             it.key.path == path && it.value == viewClass
-        }?.key.fragment
+        }?.key?.fragment
     }
 
     @Override

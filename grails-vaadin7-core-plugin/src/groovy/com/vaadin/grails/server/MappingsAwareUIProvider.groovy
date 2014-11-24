@@ -1,5 +1,6 @@
 package com.vaadin.grails.server
 
+import com.vaadin.grails.Vaadin
 import com.vaadin.grails.navigator.MappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
@@ -8,27 +9,22 @@ import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
-import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.util.UrlPathHelper
 
 /**
  * An {@link com.vaadin.server.UIProvider} implementation that uses mappings
- * defined in the <code>VaadinConfig</code> script.
+ * provided by a {@link MappingsProvider}.
  *
  * @author Stephan Grundner
  */
 class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
-    static final def log = Logger.getLogger(MappingsAwareUIProvider)
-
     final def pathHelper = new UrlPathHelper()
 
-    @Autowired
-    MappingsProvider mappingsProvider
+    final MappingsProvider mappingsProvider
 
     MappingsAwareUIProvider() {
-
+        mappingsProvider = Vaadin.applicationContext.getBean(MappingsProvider)
     }
 
     @Override
@@ -46,10 +42,8 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
         }
 
         def path = pathHelper.getPathWithinApplication(event.request)
-
         if (mappingsProvider.getAllFragments(path).size() > 0) {
             ui.navigator = createNavigator(event, ui)
-            log.debug("Applied navigator to UI for path [${path}]")
         }
 
         ui
@@ -67,7 +61,6 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
         def path = pathHelper.getPathWithinApplication(event.request)
         def uiClass = mappingsProvider.getUIClass(path)
         if (uiClass) {
-            log.debug("Got UI class [${uiClass.fullName}] for path [${path}]")
         }
         uiClass?.clazz
     }

@@ -4,6 +4,9 @@ import com.vaadin.grails.VaadinUIClass
 import com.vaadin.grails.VaadinViewClass
 
 /**
+ * Provides mappings between URIs such as /vaadin/book#!show/id=1 and Vaadin UIs or Views.
+ *
+ * @since 2.0
  * @author Stephan Grundner
  */
 interface MappingsProvider {

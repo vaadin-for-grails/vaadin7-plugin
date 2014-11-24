@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource
 /**
  * Your best friend when developing Vaadin applications.
  *
+ * @since 2.0
  * @author Stephan Grundner
  */
 final class Vaadin {
@@ -47,7 +48,8 @@ final class Vaadin {
     /**
      * Switch between Views and UIs.
      *
-     * @param params
+     * @see com.vaadin.grails.navigator.NavigationUtils#enter(java.util.Map)
+     * @param params Navigation params
      */
     static void enter(Map params) {
         utils.navigationUtils.enter(params)
