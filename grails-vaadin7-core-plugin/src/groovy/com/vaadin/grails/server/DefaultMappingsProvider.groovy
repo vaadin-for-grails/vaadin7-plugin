@@ -31,7 +31,7 @@ class DefaultMappingsProvider implements MappingsProvider {
             pathToUIClass(path, pathConfig)
             def fragments = pathConfig.fragments
             fragments.each { String fragment, ConfigObject fragmentConfig ->
-                mapFragment(path, fragment, fragmentConfig)
+                fragmentToViewClass(path, fragment, fragmentConfig)
             }
         }
     }
@@ -57,7 +57,7 @@ class DefaultMappingsProvider implements MappingsProvider {
         uiClass
     }
 
-    protected VaadinViewClass mapFragment(String path, String fragment, ConfigObject fragmentConfig) {
+    protected VaadinViewClass fragmentToViewClass(String path, String fragment, ConfigObject fragmentConfig) {
         def view = fragmentConfig.get("view")
         def viewNamespace = fragmentConfig.get("namespace") ?: null
 
