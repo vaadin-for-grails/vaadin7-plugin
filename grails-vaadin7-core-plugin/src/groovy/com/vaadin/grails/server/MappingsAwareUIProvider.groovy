@@ -9,6 +9,7 @@ import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import grails.util.Holders
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.util.UrlPathHelper
 
 /**
@@ -21,10 +22,11 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     final def pathHelper = new UrlPathHelper()
 
-    final MappingsProvider mappingsProvider
+    @Autowired
+    MappingsProvider mappingsProvider
 
     MappingsAwareUIProvider() {
-        mappingsProvider = Vaadin.applicationContext.getBean(MappingsProvider)
+
     }
 
     @Override
