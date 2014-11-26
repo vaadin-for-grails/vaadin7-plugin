@@ -23,6 +23,26 @@ vaadin {
             }
 
         }
+
+
+        "/demo2" {
+            ui = "demo"
+            namespace = "ns1"
+            theme = "valo"
+            pageTitle = "Demo Nr 1"
+
+
+            fragments {
+                "index" {
+                    view = "index"
+                    namespace = "ns1"
+                }
+                "two" {
+                    view = "second"
+                }
+            }
+
+        }
     }
 
 }

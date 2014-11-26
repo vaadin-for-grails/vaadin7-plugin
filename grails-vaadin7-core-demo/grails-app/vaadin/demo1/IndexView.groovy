@@ -6,6 +6,11 @@ import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.VerticalLayout
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletWebRequest
+import org.springframework.web.util.UrlPathHelper
 
 class IndexView extends CustomComponent implements View {
 
@@ -27,6 +32,8 @@ class IndexView extends CustomComponent implements View {
 
             }
         })
+
+
 
         compositionRoot.setMargin(true)
         compositionRoot.addComponent(button)
