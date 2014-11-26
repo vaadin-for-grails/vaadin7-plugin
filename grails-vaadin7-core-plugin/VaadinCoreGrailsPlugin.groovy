@@ -84,12 +84,10 @@ Brief summary/description of the plugin.
 
         if (openSessionInViewFilter) {
             def contextParam = xml.'context-param'
-            mappings.eachWithIndex { mapping, i ->
                 contextParam[contextParam.size() - 1] + {
-                    'filter' {
-                        'filter-name'('openSessionInView')
-                        'filter-class'(openSessionInViewFilter)
-                    }
+                'filter' {
+                    'filter-name'('openSessionInView')
+                    'filter-class'(openSessionInViewFilter)
                 }
             }
 

@@ -1,6 +1,5 @@
 package com.vaadin.grails.server
 
-import com.vaadin.grails.Vaadin
 import com.vaadin.grails.navigator.MappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent

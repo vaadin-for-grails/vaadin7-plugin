@@ -1,5 +1,6 @@
 package com.vaadin.grails
 
+import com.gargoylesoftware.htmlunit.WebRequest
 import com.vaadin.grails.navigator.NavigationUtils
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI

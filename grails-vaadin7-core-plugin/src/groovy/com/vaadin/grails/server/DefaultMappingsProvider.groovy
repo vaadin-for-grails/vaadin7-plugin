@@ -28,6 +28,7 @@ class DefaultMappingsProvider implements MappingsProvider {
     protected void init() {
         def mappingsConfig = Holders.config.vaadin.mappings
         mappingsConfig.each { String path, ConfigObject pathConfig ->
+//            TODO check for duplicate ui classes!
             pathToUIClass(path, pathConfig)
             def fragments = pathConfig.fragments
             fragments.each { String fragment, ConfigObject fragmentConfig ->
