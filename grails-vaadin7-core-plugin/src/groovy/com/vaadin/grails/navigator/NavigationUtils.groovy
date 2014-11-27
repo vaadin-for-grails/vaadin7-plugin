@@ -71,12 +71,6 @@ class NavigationUtils {
         GrailsWebRequest.lookup()
     }
 
-    String getCurrentPath() {
-//        def pathHelper = new UrlPathHelper()
-//        def path = pathHelper.getPathWithinApplication(currentWebRequest.getNativeRequest())
-        mappingsProvider.getPath(Vaadin.utils.currentVaadinUIClass)
-    }
-
     protected VaadinUIClass resolveUIClass(Object ui, String namespace) {
         def utils = Vaadin.utils
         String name
@@ -189,7 +183,7 @@ class NavigationUtils {
      */
     void enter(VaadinViewClass viewClass, Map params) {
         log.debug("Enter View with class [${viewClass?.fullName}] with params [${params}]")
-        println currentPath
+        def currentPath = mappingsProvider.getPath(Vaadin.utils.currentVaadinUIClass)
         def fragment = mappingsProvider.getFragment(currentPath, viewClass)
         if (params) {
             UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")

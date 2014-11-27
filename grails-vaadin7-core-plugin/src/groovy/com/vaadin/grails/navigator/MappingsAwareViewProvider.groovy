@@ -22,9 +22,28 @@ class MappingsAwareViewProvider implements ViewProvider {
         mappingsProvider = Vaadin.applicationContext.getBean(MappingsProvider)
     }
 
+    String getDefaultFragment() {
+        mappingsProvider.getPathProperty(path, MappingsProvider.DEFAULT_FRAGMENT)
+    }
+
     @Override
     String getViewName(String fragmentAndParams) {
         String fragment = fragmentAndParams
+
+        def assignmentIndex = fragmentAndParams.indexOf("=")
+        if (assignmentIndex != -1) {
+            def delimiterIndex = fragmentAndParams.lastIndexOf("/", assignmentIndex)
+            if (delimiterIndex == -1) {
+                throw new RuntimeException("Malformed URI fragment [${fragmentAndParams}]")
+//                delimiterIndex = 0
+            }
+            fragment = fragmentAndParams.substring(0, delimiterIndex)
+        }
+
+        if (fragment == "" && mappingsProvider.getViewClass(path, defaultFragment)) {
+            return ""
+        }
+
         while (true) {
             def viewClass = mappingsProvider.getViewClass(path, fragment)
 
@@ -37,15 +56,21 @@ class MappingsAwareViewProvider implements ViewProvider {
             }
             fragment = fragment.substring(0, i)
         }
+
         null
     }
 
     @Override
     View getView(String fragment) {
+        if (fragment == "") {
+            fragment = defaultFragment
+        }
+
         def viewClass = mappingsProvider.getViewClass(path, fragment)
         if (viewClass) {
-            return viewClass.newInstance()
+            return Vaadin.utils.instantiateVaadinComponentClass(viewClass)
         }
+
         null
     }
 }

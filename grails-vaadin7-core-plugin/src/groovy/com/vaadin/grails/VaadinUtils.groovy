@@ -1,16 +1,14 @@
 package com.vaadin.grails
 
-import com.gargoylesoftware.htmlunit.WebRequest
 import com.vaadin.grails.navigator.NavigationUtils
-import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import grails.util.GrailsNameUtils
 import grails.util.Holders
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.context.support.GenericApplicationContext
 
 /**
  * Utils for ease access to Grails within Vaadin applications.
@@ -25,15 +23,16 @@ class VaadinUtils {
      * @return The Vaadin application context for the current session
      */
     ApplicationContext getApplicationContext() {
-        def session = VaadinSession.getCurrent()
-        def context = session.getAttribute(ApplicationContext)
-        if (context == null) {
-            def parent = Holders.applicationContext
-            context = new GenericApplicationContext(parent)
-            session.setAttribute(ApplicationContext, context)
-            context.refresh()
-        }
-        context
+//        def session = VaadinSession.getCurrent()
+//        def context = session.getAttribute(ApplicationContext)
+//        if (context == null) {
+//            def parent = Holders.applicationContext
+//            context = new GenericApplicationContext(parent)
+//            session.setAttribute(ApplicationContext, context)
+//            context.refresh()
+//        }
+//        context
+        Holders.applicationContext
     }
 
     /**
@@ -67,13 +66,34 @@ class VaadinUtils {
         found
     }
 
+    Object instantiateVaadinComponentClass(VaadinComponentClass componentClass) {
+        def beanName
+        if (componentClass.namespace) {
+            beanName = "${componentClass.namespace}.${componentClass.propertyName}"
+        } else {
+            beanName = componentClass.propertyName
+        }
+        applicationContext.getBean(beanName)
+    }
+
     VaadinUIClass getCurrentVaadinUIClass() {
         getVaadinUIClass(UI.current.class)
     }
 
+    /**
+     * Return the Vaadin UI Artefact class for the specified UI class.
+     *
+     * @param uiClass The native UI class
+     * @return The Vaadin UI Artefact class for the specified UI class
+     */
     VaadinUIClass getVaadinUIClass(Class<? extends UI> uiClass) {
         def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI")
-        Holders.grailsApplication.getArtefactByLogicalPropertyName("UI", logicalPropertyName)
+        def namespace = GrailsClassUtils.getStaticPropertyValue(uiClass, "namespace")
+        def artefacts = Holders.grailsApplication.getArtefacts("UI")
+        artefacts.find { VaadinUIClass artefact ->
+            artefact.logicalPropertyName == logicalPropertyName &&
+                    artefact.namespace == namespace
+        }
     }
 
     VaadinUIClass getVaadinUIClass(String name, String namespace = null) {

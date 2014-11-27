@@ -11,18 +11,23 @@ import com.vaadin.grails.VaadinViewClass
  */
 interface MappingsProvider {
 
+    static final DEFAULT_FRAGMENT = "defaultFragment"
+    static final THEME_PATH_PROPERTY = "theme"
+    static final WIDGETSET_PATH_PROPERTY = "widgetset"
+    static final PRESERVED_ON_REFRESH_PATH_PROPERTY = "preservedOnRefresh"
+    static final PAGE_TITLE_PATH_PROPERTY = "pageTitle"
+    static final PUSH_MODE_PATH_PROPERTY = "pushMode"
+    static final PUSH_TRANSPORT_PATH_PROPERTY = "pushTransport"
+
     VaadinUIClass getUIClass(String path)
     String getPath(VaadinUIClass uiClass)
+    Object getPathProperty(String path, String name)
 
-    String getTheme(String path)
-    String getWidgetset(String path)
-    boolean isPreservedOnRefresh(String path)
-    String getPageTitle(String path)
-    String getPushMode(String path)
-    String getPushTransport(String path)
+    Collection<String> getAllPaths()
 
     VaadinViewClass getViewClass(String path, String fragment)
     String getFragment(String path, VaadinViewClass viewClass)
+    Object getFragmentProperty(String path, String fragment, String name)
 
     Collection<String> getAllFragments(String path)
 }

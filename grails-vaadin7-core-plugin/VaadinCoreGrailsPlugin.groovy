@@ -1,4 +1,5 @@
 import com.vaadin.grails.VaadinUIClass
+import com.vaadin.grails.VaadinViewClass
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -37,6 +38,7 @@ Brief summary/description of the plugin.
     }
 
     def doWithSpring = {
+
         application.getArtefacts("UI").each { VaadinUIClass uiClass ->
             def namespace = uiClass.namespace
             if (namespace) {
@@ -46,6 +48,21 @@ Brief summary/description of the plugin.
                 }
             } else {
                 "${uiClass.propertyName}"(uiClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
+            }
+        }
+
+        application.getArtefacts("View").each { VaadinViewClass viewClass ->
+            def namespace = viewClass.namespace
+            if (namespace) {
+                "${namespace}.${viewClass.propertyName}"(viewClass.clazz) { bean ->
+                    bean.scope = "prototype"
+                    bean.autowire = "byName"
+                }
+            } else {
+                "${viewClass.propertyName}"(viewClass.clazz) { bean ->
                     bean.scope = "prototype"
                     bean.autowire = "byName"
                 }

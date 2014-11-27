@@ -22,32 +22,33 @@ class DefaultMappingsProvider implements MappingsProvider {
     Map<String, VaadinUIClass> uiClassByPath = new ConcurrentHashMap<>()
     Map<URI, VaadinViewClass> viewClassByURI = new ConcurrentHashMap<>()
 
-    Map<String, Object> uiSettingsByPath = new ConcurrentHashMap<>()
+    Map<String, Object> propertiesByPath = new ConcurrentHashMap<>()
+    Map<String, Object> propertiesByPathAndFragment = new ConcurrentHashMap<>()
 
     @PostConstruct
     protected void init() {
         def mappingsConfig = Holders.config.vaadin.mappings
         mappingsConfig.each { String path, ConfigObject pathConfig ->
 //            TODO check for duplicate ui classes!
-            pathToUIClass(path, pathConfig)
+            handlePathConfig(path, pathConfig)
             def fragments = pathConfig.fragments
             fragments.each { String fragment, ConfigObject fragmentConfig ->
-                fragmentToViewClass(path, fragment, fragmentConfig)
+                handleFragmentConfig(path, fragment, fragmentConfig)
             }
         }
     }
 
-    protected VaadinUIClass pathToUIClass(String path, ConfigObject pathConfig) {
+    protected void handlePathConfig(String path, ConfigObject pathConfig) {
         def ui = pathConfig.get("ui")
         def uiNamespace = pathConfig.get("namespace") ?: null
 
-        uiSettingsByPath.put(path, [:])
-        uiSettingsByPath[path]["theme"] = pathConfig.get("theme")
-        uiSettingsByPath[path]["widgetset"] = pathConfig.get("widgetset")
-        uiSettingsByPath[path]["preservedOnRefresh"] = pathConfig.get("preservedOnRefresh")
-        uiSettingsByPath[path]["pageTitle"] = pathConfig.get("pageTitle")
-        uiSettingsByPath[path]["pushMode"] = pathConfig.get("pushMode")
-        uiSettingsByPath[path]["pushTransport"] = pathConfig.get("pushTransport")
+        setPathProperty(path, DEFAULT_FRAGMENT, pathConfig.get(DEFAULT_FRAGMENT) ?: "index")
+        setPathProperty(path, THEME_PATH_PROPERTY, pathConfig.get(THEME_PATH_PROPERTY))
+        setPathProperty(path, WIDGETSET_PATH_PROPERTY, pathConfig.get(WIDGETSET_PATH_PROPERTY))
+        setPathProperty(path, PRESERVED_ON_REFRESH_PATH_PROPERTY, pathConfig.get(PRESERVED_ON_REFRESH_PATH_PROPERTY))
+        setPathProperty(path, PAGE_TITLE_PATH_PROPERTY, pathConfig.get(PAGE_TITLE_PATH_PROPERTY))
+        setPathProperty(path, PUSH_MODE_PATH_PROPERTY, pathConfig.get(PUSH_MODE_PATH_PROPERTY))
+        setPathProperty(path, PUSH_TRANSPORT_PATH_PROPERTY, pathConfig.get(PUSH_TRANSPORT_PATH_PROPERTY))
 
         def uiClass = Vaadin.utils.getVaadinUIClass(ui, uiNamespace)
         if (uiClass == null) {
@@ -55,10 +56,9 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
         log.debug("Register class [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         addUIClass(path, uiClass)
-        uiClass
     }
 
-    protected VaadinViewClass fragmentToViewClass(String path, String fragment, ConfigObject fragmentConfig) {
+    protected void handleFragmentConfig(String path, String fragment, ConfigObject fragmentConfig) {
         def view = fragmentConfig.get("view")
         def viewNamespace = fragmentConfig.get("namespace") ?: null
 
@@ -68,7 +68,6 @@ class DefaultMappingsProvider implements MappingsProvider {
         }
         log.debug("Register class [${viewClass.fullName}] for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         addViewClass(path, fragment, viewClass)
-        viewClass
     }
 
     void addUIClass(String path, VaadinUIClass uiClass) {
@@ -86,33 +85,23 @@ class DefaultMappingsProvider implements MappingsProvider {
     }
 
     @Override
-    String getTheme(String path) {
-        uiSettingsByPath[path]["theme"]
+    Object getPathProperty(String path, String name) {
+        def properties = propertiesByPath[path] as Map<String, Object>
+        properties?.get(name)
+    }
+
+    Object setPathProperty(String path, String name, Object value) {
+        Map<String, Object> properties = propertiesByPath.get(path)
+        if (properties == null) {
+            properties = [:]
+            propertiesByPath.put(path, properties)
+        }
+        properties.put(name, value)
     }
 
     @Override
-    String getWidgetset(String path) {
-        uiSettingsByPath[path]["widgetset"]
-    }
-
-    @Override
-    boolean isPreservedOnRefresh(String path) {
-        uiSettingsByPath[path]["preservedOnRefresh"]
-    }
-
-    @Override
-    String getPageTitle(String path) {
-        uiSettingsByPath[path]["pageTitle"]
-    }
-
-    @Override
-    String getPushMode(String path) {
-        uiSettingsByPath[path]["pushMode"]
-    }
-
-    @Override
-    String getPushTransport(String path) {
-        uiSettingsByPath[path]["pushTransport"]
+    Collection<String> getAllPaths() {
+        uiClassByPath.keySet()
     }
 
     protected URI createURI(String path, String fragment) {
@@ -135,6 +124,23 @@ class DefaultMappingsProvider implements MappingsProvider {
         viewClassByURI.find {
             it.key.path == path && it.value == viewClass
         }?.key?.fragment
+    }
+
+    @Override
+    Object getFragmentProperty(String path, String fragment, String name) {
+        def key = "${path}#${fragment}"
+        def properties = propertiesByPathAndFragment[key] as Map<String, Object>
+        properties?.get(name)
+    }
+
+    Object setFragmentProperty(String path, String fragment, String name, Object value) {
+        def key = "${path}#${fragment}"
+        Map<String, Object> properties = propertiesByPathAndFragment.get(key)
+        if (properties == null) {
+            properties = [:]
+            propertiesByPath.put(key, properties)
+        }
+        properties.put(name, value)
     }
 
     @Override
