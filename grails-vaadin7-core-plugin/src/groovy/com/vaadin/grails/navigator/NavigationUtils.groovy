@@ -18,6 +18,9 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.util.UrlPathHelper
 
+import javax.servlet.ServletRequest
+import javax.servlet.http.HttpServletRequest
+
 /**
  * Utils for ease navigation between Views and UIs.
  *
@@ -65,15 +68,13 @@ class NavigationUtils {
      * @return The current {@link WebRequest}
      */
     GrailsWebRequest getCurrentWebRequest() {
-        def attributes = RequestContextHolder.currentRequestAttributes()
-        attributes.getAttribute("org.codehaus.groovy.grails.WEB_REQUEST",
-                RequestAttributes.SCOPE_REQUEST)
+        GrailsWebRequest.lookup()
     }
 
     String getCurrentPath() {
-        def request = currentWebRequest
-        def pathHelper = new UrlPathHelper()
-        pathHelper.getPathWithinApplication(request.getCurrentRequest())
+//        def pathHelper = new UrlPathHelper()
+//        def path = pathHelper.getPathWithinApplication(currentWebRequest.getNativeRequest())
+        mappingsProvider.getPath(Vaadin.utils.currentVaadinUIClass)
     }
 
     protected VaadinUIClass resolveUIClass(Object ui, String namespace) {
@@ -188,6 +189,7 @@ class NavigationUtils {
      */
     void enter(VaadinViewClass viewClass, Map params) {
         log.debug("Enter View with class [${viewClass?.fullName}] with params [${params}]")
+        println currentPath
         def fragment = mappingsProvider.getFragment(currentPath, viewClass)
         if (params) {
             UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")

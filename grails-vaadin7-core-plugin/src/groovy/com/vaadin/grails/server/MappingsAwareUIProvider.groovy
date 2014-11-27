@@ -1,5 +1,6 @@
 package com.vaadin.grails.server
 
+import com.vaadin.grails.Vaadin
 import com.vaadin.grails.navigator.MappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
@@ -59,6 +60,7 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     @Override
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
+        println Vaadin.utils.navigationUtils.currentPath
         def path = pathHelper.getPathWithinApplication(event.request)
         def uiClass = mappingsProvider.getUIClass(path)
         if (uiClass) {
