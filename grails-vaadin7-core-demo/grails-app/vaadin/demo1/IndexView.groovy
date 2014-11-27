@@ -34,6 +34,7 @@ class IndexView extends CustomComponent implements View {
         })
 
 
+        println Vaadin.utils.getVaadinUIClass(demo1.DemoUI)?.namespace
 
         compositionRoot.setMargin(true)
         compositionRoot.addComponent(button)

@@ -117,24 +117,3 @@ log4j.main = {
     all    'com.vaadin.grails'
 }
 
-// Added by the Spring Security Core plugin:
-//grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
-//grails.plugin.springsecurity.interceptUrlMap = [
-//    '/':                              ['permitAll'],
-//	'/index':                         ['permitAll'],
-//	'/index.gsp':                     ['permitAll'],
-//	'/assets/**':                     ['permitAll'],
-//	'/**/js/**':                      ['permitAll'],
-//	'/**/css/**':                     ['permitAll'],
-//	'/**/images/**':                  ['permitAll'],
-//	'/**/favicon.ico':                ['permitAll'],
-//    '/VAADIN/**':                     ['permitAll'],
-//    '/login/**':                      ['permitAll'],
-//    '/logout/**':                     ['permitAll'],
-//    '/demo1/**':                         ['permitAll'],
-//    '/demo2/**':                         ['permitAll'],
-//    '/login2/**':                       ['permitAll']
-//
-//]
-//grails.plugin.springsecurity.auth.loginFormUrl='/login2'
-
