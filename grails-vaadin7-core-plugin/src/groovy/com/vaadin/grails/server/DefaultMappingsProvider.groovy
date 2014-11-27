@@ -129,7 +129,7 @@ class DefaultMappingsProvider implements MappingsProvider {
     @Override
     Object getFragmentProperty(String path, String fragment, String name) {
         def key = "${path}#${fragment}"
-        def properties = propertiesByPathAndFragment[key] as Map<String, Object>
+        def properties = propertiesByPathAndFragment.get(key) as Map<String, Object>
         properties?.get(name)
     }
 

@@ -1,6 +1,7 @@
 package com.vaadin.grails
 
 import com.vaadin.grails.navigator.NavigationUtils
+import com.vaadin.navigator.View
 import com.vaadin.ui.UI
 import grails.util.GrailsNameUtils
 import grails.util.Holders
@@ -91,6 +92,22 @@ class VaadinUtils {
         def namespace = GrailsClassUtils.getStaticPropertyValue(uiClass, "namespace")
         def artefacts = Holders.grailsApplication.getArtefacts("UI")
         artefacts.find { VaadinUIClass artefact ->
+            artefact.logicalPropertyName == logicalPropertyName &&
+                    artefact.namespace == namespace
+        }
+    }
+
+    /**
+     * Return the Vaadin View Artefact class for the specified native View class.
+     *
+     * @param viewClass The native View class
+     * @return The Vaadin View Artefact class for the specified native View class
+     */
+    VaadinViewClass getVaadinViewClass(Class<? extends View> viewClass) {
+        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(viewClass.name, "View")
+        def namespace = GrailsClassUtils.getStaticPropertyValue(viewClass, "namespace")
+        def artefacts = Holders.grailsApplication.getArtefacts("View")
+        artefacts.find { VaadinViewClass artefact ->
             artefact.logicalPropertyName == logicalPropertyName &&
                     artefact.namespace == namespace
         }
