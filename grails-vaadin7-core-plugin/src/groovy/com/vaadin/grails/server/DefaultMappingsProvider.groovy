@@ -138,7 +138,7 @@ class DefaultMappingsProvider implements MappingsProvider {
         Map<String, Object> properties = propertiesByPathAndFragment.get(key)
         if (properties == null) {
             properties = [:]
-            propertiesByPath.put(key, properties)
+            propertiesByPathAndFragment.put(key, properties)
         }
         properties.put(name, value)
     }
