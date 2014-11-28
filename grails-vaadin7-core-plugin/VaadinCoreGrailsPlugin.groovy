@@ -8,9 +8,6 @@ class VaadinCoreGrailsPlugin {
 
     def version = "2.0"
     def grailsVersion = "2.4 > *"
-    def pluginExcludes = [
-            "grails-app/views/error.gsp"
-    ]
 
     // TODO Fill in these fields
     def title = "Grails Vaadin7 Core Plugin" // Headline display name of the plugin

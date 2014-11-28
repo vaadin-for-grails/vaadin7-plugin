@@ -84,12 +84,12 @@ class VaadinUtils {
     /**
      * Return the Vaadin UI Artefact class for the specified UI class.
      *
-     * @param uiClass The native UI class
+     * @param nativeUIClass The native UI class
      * @return The Vaadin UI Artefact class for the specified UI class
      */
-    VaadinUIClass getVaadinUIClass(Class<? extends UI> uiClass) {
-        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(uiClass.name, "UI")
-        def namespace = GrailsClassUtils.getStaticPropertyValue(uiClass, "namespace")
+    VaadinUIClass getVaadinUIClass(Class<? extends UI> nativeUIClass) {
+        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(nativeUIClass.name, "UI")
+        def namespace = GrailsClassUtils.getStaticPropertyValue(nativeUIClass, "namespace")
         def artefacts = Holders.grailsApplication.getArtefacts("UI")
         artefacts.find { VaadinUIClass artefact ->
             artefact.logicalPropertyName == logicalPropertyName &&
@@ -100,12 +100,12 @@ class VaadinUtils {
     /**
      * Return the Vaadin View Artefact class for the specified native View class.
      *
-     * @param viewClass The native View class
+     * @param nativeViewClass The native View class
      * @return The Vaadin View Artefact class for the specified native View class
      */
-    VaadinViewClass getVaadinViewClass(Class<? extends View> viewClass) {
-        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(viewClass.name, "View")
-        def namespace = GrailsClassUtils.getStaticPropertyValue(viewClass, "namespace")
+    VaadinViewClass getVaadinViewClass(Class<? extends View> nativeViewClass) {
+        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(nativeViewClass.name, "View")
+        def namespace = GrailsClassUtils.getStaticPropertyValue(nativeViewClass, "namespace")
         def artefacts = Holders.grailsApplication.getArtefacts("View")
         artefacts.find { VaadinViewClass artefact ->
             artefact.logicalPropertyName == logicalPropertyName &&

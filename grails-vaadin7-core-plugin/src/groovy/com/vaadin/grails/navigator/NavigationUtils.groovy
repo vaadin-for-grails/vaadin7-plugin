@@ -162,10 +162,20 @@ class NavigationUtils {
                 log.debug(message)
             }
 
+            def helper = new UrlPathHelper()
+            def contextPath = helper.getContextPath(currentWebRequest.nativeRequest)
             def path = mappingsProvider.getPath(uiClass)
-            def fragment = mappingsProvider.getFragment(path, viewClass)
 
-            def uri = "${path}/${fragment}"
+            if (contextPath.endsWith("/")) {
+                contextPath.substring(0, contextPath.length() - 1)
+            }
+
+            def uri = contextPath + path
+
+            if (viewClass) {
+                def fragment = mappingsProvider.getFragment(path, viewClass)
+                uri += "#!${fragment}"
+            }
 
             if (params) {
                 uri += "/${encodeParams(params)}"
