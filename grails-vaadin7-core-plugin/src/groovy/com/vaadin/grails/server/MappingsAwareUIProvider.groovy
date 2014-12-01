@@ -13,7 +13,7 @@ import org.springframework.web.util.UrlPathHelper
 
 /**
  * An {@link com.vaadin.server.UIProvider} implementation that uses mappings
- * provided by a {@link MappingsProvider}.
+ * provided by a {@link UriMappingsHolder}.
  *
  * @author Stephan Grundner
  */
@@ -22,7 +22,7 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     final def pathHelper = new UrlPathHelper()
 
     @Autowired
-    MappingsProvider mappingsProvider
+    UriMappingsHolder mappingsProvider
 
     MappingsAwareUIProvider() {
 
@@ -60,21 +60,21 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     @Override
     String getTheme(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getPathProperty(path, MappingsProvider.THEME_PATH_PROPERTY) ?:
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.THEME_PATH_PROPERTY) ?:
                 super.getTheme(event)
     }
 
     @Override
     String getWidgetset(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getPathProperty(path, MappingsProvider.WIDGETSET_PATH_PROPERTY) ?:
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.WIDGETSET_PATH_PROPERTY) ?:
                 super.getWidgetset(event)
     }
 
     @Override
     boolean isPreservedOnRefresh(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        def result = mappingsProvider.getPathProperty(path, MappingsProvider.PRESERVED_ON_REFRESH_PATH_PROPERTY)
+        def result = mappingsProvider.getPathProperty(path, UriMappingsHolder.PRESERVED_ON_REFRESH_PATH_PROPERTY)
         if (result != null) {
             return result
         }
@@ -84,21 +84,21 @@ class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     @Override
     String getPageTitle(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getPathProperty(path, MappingsProvider.PAGE_TITLE_PATH_PROPERTY) ?:
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.PAGE_TITLE_PATH_PROPERTY) ?:
                 super.getPageTitle(event)
     }
 
     @Override
     PushMode getPushMode(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getPathProperty(path, MappingsProvider.PUSH_MODE_PATH_PROPERTY) as PushMode ?:
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.PUSH_MODE_PATH_PROPERTY) as PushMode ?:
                 super.getPushMode(event)
     }
 
     @Override
     Transport getPushTransport(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
-        mappingsProvider.getPathProperty(path, MappingsProvider.PUSH_TRANSPORT_PATH_PROPERTY) as Transport ?:
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.PUSH_TRANSPORT_PATH_PROPERTY) as Transport ?:
                 super.getPushTransport(event)
     }
 }

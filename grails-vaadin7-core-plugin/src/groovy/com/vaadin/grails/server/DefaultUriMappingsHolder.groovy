@@ -10,14 +10,14 @@ import javax.annotation.PostConstruct
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Default implementation for {@link MappingsProvider}.
+ * Default implementation for {@link UriMappingsHolder}.
  *
  * @since 2.0
  * @author Stephan Grundner
  */
-class DefaultMappingsProvider implements MappingsProvider {
+class DefaultUriMappingsHolder implements UriMappings {
 
-    static final def log = Logger.getLogger(DefaultMappingsProvider)
+    static final def log = Logger.getLogger(DefaultUriMappingsHolder)
 
     Map<String, VaadinUIClass> uiClassByPath = new ConcurrentHashMap<>()
     Map<URI, VaadinViewClass> viewClassByURI = new ConcurrentHashMap<>()

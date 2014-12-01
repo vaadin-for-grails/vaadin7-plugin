@@ -1,7 +1,7 @@
 package com.vaadin.grails.navigator
 
 import com.vaadin.grails.Vaadin
-import com.vaadin.grails.server.MappingsProvider
+import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
 
@@ -15,15 +15,15 @@ import com.vaadin.navigator.ViewProvider
 class MappingsAwareViewProvider implements ViewProvider {
 
     final String path
-    final MappingsProvider mappingsProvider
+    final UriMappingsHolder mappingsProvider
 
     MappingsAwareViewProvider(String path) {
         this.path = path
-        mappingsProvider = Vaadin.applicationContext.getBean(MappingsProvider)
+        mappingsProvider = Vaadin.applicationContext.getBean(UriMappingsHolder)
     }
 
     String getDefaultFragment() {
-        mappingsProvider.getPathProperty(path, MappingsProvider.DEFAULT_FRAGMENT)
+        mappingsProvider.getPathProperty(path, UriMappingsHolder.DEFAULT_FRAGMENT)
     }
 
     @Override

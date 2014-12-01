@@ -24,6 +24,11 @@ vaadin {
 
         }
 
+//        "/demo3" {
+//            ui = "demo"
+//            namespace = "ns3"
+//        }
+
 
         "/demo2" {
             ui = "demo"

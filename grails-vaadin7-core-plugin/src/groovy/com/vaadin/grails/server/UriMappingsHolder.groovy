@@ -2,6 +2,7 @@ package com.vaadin.grails.server
 
 import com.vaadin.grails.VaadinUIClass
 import com.vaadin.grails.VaadinViewClass
+import org.codehaus.groovy.grails.web.mapping.DefaultUrlMappingsHolder
 
 /**
  * Provides mappings between URIs such as /vaadin/book#!show/id=1 and Vaadin UIs or Views.
@@ -9,7 +10,7 @@ import com.vaadin.grails.VaadinViewClass
  * @since 2.0
  * @author Stephan Grundner
  */
-interface MappingsProvider {
+interface UriMappingsHolder {
 
     static final DEFAULT_FRAGMENT = "defaultFragment"
     static final THEME_PATH_PROPERTY = "theme"

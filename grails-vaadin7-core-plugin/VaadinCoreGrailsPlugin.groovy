@@ -1,8 +1,10 @@
 import com.vaadin.grails.VaadinUIClass
 import com.vaadin.grails.VaadinViewClass
+import com.vaadin.grails.server.DefaultUriMappingsHolder
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.web.mapping.DefaultUrlMappingsHolder
 
 class VaadinCoreGrailsPlugin {
 
@@ -35,7 +37,6 @@ Brief summary/description of the plugin.
     }
 
     def doWithSpring = {
-
         application.getArtefacts("UI").each { VaadinUIClass uiClass ->
             def namespace = uiClass.namespace
             if (namespace) {
@@ -50,7 +51,6 @@ Brief summary/description of the plugin.
                 }
             }
         }
-
         application.getArtefacts("View").each { VaadinViewClass viewClass ->
             def namespace = viewClass.namespace
             if (namespace) {
@@ -66,13 +66,13 @@ Brief summary/description of the plugin.
             }
         }
 
-        "vaadinUtils"(com.vaadin.grails.VaadinUtils)
-        "mappingsProvider"(com.vaadin.grails.server.DefaultMappingsProvider)
-        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
-        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider)
-
         def config = loadConfig(application)
         application.config.merge(config)
+
+        "vaadinUtils"(com.vaadin.grails.VaadinUtils)
+        "mappingsProvider"(DefaultUriMappingsHolder)
+        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
+        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider)
     }
 
     def doWithWebDescriptor = { xml ->

@@ -3,23 +3,16 @@ package com.vaadin.grails.navigator
 import com.vaadin.grails.Vaadin
 import com.vaadin.grails.VaadinUIClass
 import com.vaadin.grails.VaadinViewClass
-import com.vaadin.grails.server.MappingsProvider
+import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.server.Page
 import com.vaadin.ui.UI
-import grails.util.GrailsWebUtil
-import grails.util.Holders
 import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.util.UrlPathHelper
-
-import javax.servlet.ServletRequest
-import javax.servlet.http.HttpServletRequest
 
 /**
  * Utils for ease navigation between Views and UIs.
@@ -32,7 +25,7 @@ class NavigationUtils {
     static final def log = Logger.getLogger(NavigationUtils)
 
     @Autowired
-    MappingsProvider mappingsProvider
+    UriMappingsHolder mappingsProvider
 
     @Autowired
     LinkGenerator linkGenerator

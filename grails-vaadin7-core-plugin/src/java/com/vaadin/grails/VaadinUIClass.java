@@ -1,5 +1,7 @@
 package com.vaadin.grails;
 
+import java.util.Collection;
+
 /**
  * A Vaadin UI artefact class.
  *
@@ -7,4 +9,7 @@ package com.vaadin.grails;
  */
 public interface VaadinUIClass extends VaadinComponentClass {
 
+    public String getPath();
+    public Collection<String> getAllFragments();
+    public VaadinViewClass getViewClass(String fragment);
 }
