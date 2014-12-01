@@ -52,9 +52,9 @@ class DefaultUriMappingsHolder implements UriMappings {
 
         def uiClass = Vaadin.utils.getVaadinUIClass(ui, uiNamespace)
         if (uiClass == null) {
-            throw new RuntimeException("No class found for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+            throw new RuntimeException("No class found for [${path}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         }
-        log.debug("Register class [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+        log.debug("Register UI [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         addUIClass(path, uiClass)
     }
 
@@ -66,7 +66,7 @@ class DefaultUriMappingsHolder implements UriMappings {
         if (viewClass == null) {
             throw new RuntimeException("No class found for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         }
-        log.debug("Register class [${viewClass.fullName}] for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+        log.debug("Register View [${viewClass.fullName}] for [${path}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         addViewClass(path, fragment, viewClass)
     }
 
@@ -145,6 +145,6 @@ class DefaultUriMappingsHolder implements UriMappings {
 
     @Override
     Collection<String> getAllFragments(String path) {
-        viewClassByURI.keySet().collect { it.fragment }
+        viewClassByURI.keySet().findAll { it.path == path }.collect { it.fragment }
     }
 }

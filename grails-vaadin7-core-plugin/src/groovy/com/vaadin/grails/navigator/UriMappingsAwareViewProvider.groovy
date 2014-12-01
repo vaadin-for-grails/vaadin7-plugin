@@ -4,6 +4,7 @@ import com.vaadin.grails.Vaadin
 import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
+import org.apache.log4j.Logger
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
@@ -14,16 +15,18 @@ import com.vaadin.navigator.ViewProvider
  */
 class UriMappingsAwareViewProvider implements ViewProvider {
 
+    private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
+
     final String path
-    final UriMappingsHolder mappingsProvider
+    final UriMappingsHolder uriMappings
 
     UriMappingsAwareViewProvider(String path) {
         this.path = path
-        mappingsProvider = Vaadin.applicationContext.getBean(UriMappingsHolder)
+        uriMappings = Vaadin.applicationContext.getBean(UriMappingsHolder)
     }
 
     String getDefaultFragment() {
-        mappingsProvider.getPathProperty(path, UriMappingsHolder.DEFAULT_FRAGMENT)
+        uriMappings.getPathProperty(path, UriMappingsHolder.DEFAULT_FRAGMENT)
     }
 
     @Override
@@ -40,12 +43,12 @@ class UriMappingsAwareViewProvider implements ViewProvider {
             fragment = fragmentAndParams.substring(0, delimiterIndex)
         }
 
-        if (fragment == "" && mappingsProvider.getViewClass(path, defaultFragment)) {
+        if (fragment == "" && uriMappings.getViewClass(path, defaultFragment)) {
             return ""
         }
 
         while (true) {
-            def viewClass = mappingsProvider.getViewClass(path, fragment)
+            def viewClass = uriMappings.getViewClass(path, fragment)
 
             if (viewClass) {
                 return fragment
@@ -66,11 +69,13 @@ class UriMappingsAwareViewProvider implements ViewProvider {
             fragment = defaultFragment
         }
 
-        def viewClass = mappingsProvider.getViewClass(path, fragment)
+        def viewClass = uriMappings.getViewClass(path, fragment)
         if (viewClass) {
+            log.debug("View class [${viewClass?.fullName}] found for path [${path}] and fragment [${fragment}]")
             return Vaadin.utils.instantiateVaadinComponentClass(viewClass)
         }
 
+        log.debug("No View class found for path [${path}] and fragment [${fragment}]")
         null
     }
 }

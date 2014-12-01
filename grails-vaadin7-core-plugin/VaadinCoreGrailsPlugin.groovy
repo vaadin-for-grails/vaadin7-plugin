@@ -7,17 +7,22 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class VaadinCoreGrailsPlugin {
 
-    def version = "2.0"
+    def version = "2.1"
     def grailsVersion = "2.4 > *"
 
-    // TODO Fill in these fields
-    def title = "Grails Vaadin7 Core Plugin" // Headline display name of the plugin
-    def author = "Your name"
-    def authorEmail = ""
+    def title = "Vaadin Core Plugin"
+    def author = "Stephan Grundner"
+    def authorEmail = "stephan.grundner@gmail.com"
     def description = '''\
-Brief summary/description of the plugin.
+Plugin for integrating Vaadin into Grails.
 '''
-    def documentation = "http://grails.org/plugin/grails-vaadin7-core-plugin"
+    def documentation = "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin"
+
+    def license = "APACHE"
+    def organization = [ name: "Vaadin for Grails", url: "https://github.com/vaadin-for-grails" ]
+    def developers = [ [ name: "Stephan Grundner", email: "stephan.grundner@gmail.com" ]]
+
+    def scm = [ url: "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin" ]
 
     def artefacts = [
             com.vaadin.grails.VaadinUIArtefactHandler,
@@ -58,7 +63,7 @@ Brief summary/description of the plugin.
         application.config.merge(config)
 
         "vaadinUtils"(com.vaadin.grails.VaadinUtils)
-        "mappingsProvider"(DefaultUriMappingsHolder)
+        "uriMappingsHolder"(DefaultUriMappingsHolder)
         "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
         "uiProvider"(UriMappingsAwareUIProvider)
     }

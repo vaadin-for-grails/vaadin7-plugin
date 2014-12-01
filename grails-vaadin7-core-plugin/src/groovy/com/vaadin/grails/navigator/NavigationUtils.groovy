@@ -25,7 +25,7 @@ class NavigationUtils {
     static final def log = Logger.getLogger(NavigationUtils)
 
     @Autowired
-    UriMappingsHolder mappingsProvider
+    UriMappingsHolder uriMappings
 
     @Autowired
     LinkGenerator linkGenerator
@@ -118,6 +118,7 @@ class NavigationUtils {
         def namespace = params.get("namespace")
 
         if (ui) {
+            log.debug("Enter UI ${params}")
             if (view) {
                 def uiClass = resolveUIClass(ui, namespace)
                 def viewClass = resolveViewClass(view, namespace)
@@ -127,6 +128,7 @@ class NavigationUtils {
                 enter(uiClass, null, params.get("params"))
             }
         } else if (view) {
+            log.debug("Enter View ${params}")
             def viewClass = resolveViewClass(view, namespace)
             enter(viewClass, params.get("params"))
         }
@@ -142,7 +144,15 @@ class NavigationUtils {
     void enter(VaadinUIClass uiClass, VaadinViewClass viewClass, Map params) {
         def utils = Vaadin.utils
         if (uiClass == utils.currentVaadinUIClass) {
-            enter(viewClass, params)
+            if (viewClass) {
+                enter(viewClass, params)
+            } else {
+
+                if (params) {
+//                    TODO View is null but params set, ...what to do now?
+                }
+
+            }
         } else {
             if (log.debugEnabled) {
                 def message = "Enter UI with class [${uiClass?.fullName}]"
@@ -157,7 +167,7 @@ class NavigationUtils {
 
             def helper = new UrlPathHelper()
             def contextPath = helper.getContextPath(currentWebRequest.nativeRequest)
-            def path = mappingsProvider.getPath(uiClass)
+            def path = uriMappings.getPath(uiClass)
 
             if (contextPath.endsWith("/")) {
                 contextPath.substring(0, contextPath.length() - 1)
@@ -166,7 +176,7 @@ class NavigationUtils {
             def uri = contextPath + path
 
             if (viewClass) {
-                def fragment = mappingsProvider.getFragment(path, viewClass)
+                def fragment = uriMappings.getFragment(path, viewClass)
                 uri += "#!${fragment}"
             }
 
@@ -186,8 +196,8 @@ class NavigationUtils {
      */
     void enter(VaadinViewClass viewClass, Map params) {
         log.debug("Enter View with class [${viewClass?.fullName}] with params [${params}]")
-        def currentPath = mappingsProvider.getPath(Vaadin.utils.currentVaadinUIClass)
-        def fragment = mappingsProvider.getFragment(currentPath, viewClass)
+        def currentPath = uriMappings.getPath(Vaadin.utils.currentVaadinUIClass)
+        def fragment = uriMappings.getFragment(currentPath, viewClass)
         if (params) {
             UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")
         } else {

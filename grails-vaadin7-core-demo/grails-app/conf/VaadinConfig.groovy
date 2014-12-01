@@ -10,9 +10,7 @@ vaadin {
             theme = "valo"
             pageTitle = "Demo Nr 1"
 
-
             fragments {
-//                set the default action (view) to index
                 "index" {
                     view = "index"
                     namespace = "ns1"
@@ -24,27 +22,11 @@ vaadin {
 
         }
 
-//        "/demo3" {
-//            ui = "demo"
-//            namespace = "ns3"
-//        }
-
-
         "/demo2" {
             ui = "demo"
+            namespace = "ns2"
             theme = "valo"
-            pageTitle = "Demo Nr 1"
-
-
-            fragments {
-                "index" {
-                    view = "index"
-                    namespace = "ns1"
-                }
-                "two" {
-                    view = "second"
-                }
-            }
+            pageTitle = "Demo Nr 2"
 
         }
     }
