@@ -25,7 +25,7 @@ vaadin {
         "/demo2" {
             ui = "demo"
             namespace = "ns2"
-            theme = "valo"
+            theme = "demo"
             pageTitle = "Demo Nr 2"
 
         }

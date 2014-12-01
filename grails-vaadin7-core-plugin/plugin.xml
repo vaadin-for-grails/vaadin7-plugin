@@ -1,9 +1,10 @@
-<plugin name='vaadin-core' version='2.0' grailsVersion='2.4 &gt; *'>
-  <author>Your name</author>
-  <title>Grails Vaadin7 Core Plugin</title>
-  <description>Brief summary/description of the plugin.
+<plugin name='vaadin-core' version='2.1' grailsVersion='2.4 &gt; *'>
+  <author>Stephan Grundner</author>
+  <authorEmail>stephan.grundner@gmail.com</authorEmail>
+  <title>Vaadin Core Plugin</title>
+  <description>Plugin for integrating Vaadin into Grails.
 </description>
-  <documentation>http://grails.org/plugin/grails-vaadin7-core-plugin</documentation>
+  <documentation>https://github.com/vaadin-for-grails/grails-vaadin-core-plugin</documentation>
   <type>VaadinCoreGrailsPlugin</type>
   <resources>
     <resource>com.vaadin.grails.ui.DefaultUI</resource>
