@@ -1,10 +1,9 @@
-import com.vaadin.grails.VaadinUIClass
-import com.vaadin.grails.VaadinViewClass
+import com.vaadin.grails.NamespaceAwareVaadinClass
 import com.vaadin.grails.server.DefaultUriMappingsHolder
+import com.vaadin.grails.server.UriMappingsAwareUIProvider
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.web.mapping.DefaultUrlMappingsHolder
 
 class VaadinCoreGrailsPlugin {
 
@@ -37,31 +36,20 @@ Brief summary/description of the plugin.
     }
 
     def doWithSpring = {
-        application.getArtefacts("UI").each { VaadinUIClass uiClass ->
-            def namespace = uiClass.namespace
-            if (namespace) {
-                "${namespace}.${uiClass.propertyName}"(uiClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
-                }
-            } else {
-                "${uiClass.propertyName}"(uiClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
-                }
-            }
-        }
-        application.getArtefacts("View").each { VaadinViewClass viewClass ->
-            def namespace = viewClass.namespace
-            if (namespace) {
-                "${namespace}.${viewClass.propertyName}"(viewClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
-                }
-            } else {
-                "${viewClass.propertyName}"(viewClass.clazz) { bean ->
-                    bean.scope = "prototype"
-                    bean.autowire = "byName"
+
+        ["UI", "View"].each {
+            application.getArtefacts(it).each { NamespaceAwareVaadinClass vaadinClass ->
+                def namespace = vaadinClass.namespace
+                if (namespace) {
+                    "${namespace}.${vaadinClass.propertyName}"(vaadinClass.clazz) { bean ->
+                        bean.scope = "prototype"
+                        bean.autowire = "byName"
+                    }
+                } else {
+                    "${vaadinClass.propertyName}"(vaadinClass.clazz) { bean ->
+                        bean.scope = "prototype"
+                        bean.autowire = "byName"
+                    }
                 }
             }
         }
@@ -72,7 +60,7 @@ Brief summary/description of the plugin.
         "vaadinUtils"(com.vaadin.grails.VaadinUtils)
         "mappingsProvider"(DefaultUriMappingsHolder)
         "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
-        "uiProvider"(com.vaadin.grails.server.MappingsAwareUIProvider)
+        "uiProvider"(UriMappingsAwareUIProvider)
     }
 
     def doWithWebDescriptor = { xml ->

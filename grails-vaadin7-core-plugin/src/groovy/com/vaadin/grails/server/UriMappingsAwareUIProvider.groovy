@@ -1,7 +1,7 @@
 package com.vaadin.grails.server
 
 import com.vaadin.grails.Vaadin
-import com.vaadin.grails.navigator.MappingsAwareViewProvider
+import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
@@ -17,21 +17,21 @@ import org.springframework.web.util.UrlPathHelper
  *
  * @author Stephan Grundner
  */
-class MappingsAwareUIProvider extends com.vaadin.server.UIProvider {
+class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     final def pathHelper = new UrlPathHelper()
 
     @Autowired
     UriMappingsHolder mappingsProvider
 
-    MappingsAwareUIProvider() {
+    UriMappingsAwareUIProvider() {
 
     }
 
     protected Navigator createNavigator(UICreateEvent event, UI ui) {
         def path = pathHelper.getPathWithinApplication(event.request)
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(new MappingsAwareViewProvider(path))
+        navigator.addProvider(new UriMappingsAwareViewProvider(path))
         navigator
     }
 

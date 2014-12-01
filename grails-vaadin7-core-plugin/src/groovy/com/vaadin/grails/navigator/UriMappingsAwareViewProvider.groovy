@@ -12,12 +12,12 @@ import com.vaadin.navigator.ViewProvider
  * @since 2.0
  * @author Stephan Grundner
  */
-class MappingsAwareViewProvider implements ViewProvider {
+class UriMappingsAwareViewProvider implements ViewProvider {
 
     final String path
     final UriMappingsHolder mappingsProvider
 
-    MappingsAwareViewProvider(String path) {
+    UriMappingsAwareViewProvider(String path) {
         this.path = path
         mappingsProvider = Vaadin.applicationContext.getBean(UriMappingsHolder)
     }

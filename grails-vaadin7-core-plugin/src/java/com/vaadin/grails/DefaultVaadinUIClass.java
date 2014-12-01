@@ -35,6 +35,12 @@ public class DefaultVaadinUIClass extends AbstractGrailsClass implements VaadinU
     }
 
     @Override
+    public Object getPathProperty(String name) {
+        UriMappingsHolder mappings = getMappings();
+        return mappings.getPathProperty(getPath(), name);
+    }
+
+    @Override
     public Collection<String> getAllFragments() {
         UriMappingsHolder mappings = getMappings();
         return mappings.getAllFragments(getPath());
