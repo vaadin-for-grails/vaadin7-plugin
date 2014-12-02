@@ -62,4 +62,4 @@ Your View is accessible via ```http://localhost:8080/<grails app>/app#!about```.
 
 Simply call ```Vaadin.enter(view: "simple")``` to switch the view in the current UI. If you'd like to jump into a different UI, call ```Vaadin.enter(ui: "users", view: "list")```.
 
-What about Parameters? Just append a mp: ```Vaadin.enter(view: "simple", params: [foo: "bar"])```
+What about Parameters? Append a map: ```Vaadin.enter(view: "simple", params: [foo: "bar"])```.
