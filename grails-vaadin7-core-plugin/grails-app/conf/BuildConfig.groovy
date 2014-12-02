@@ -43,6 +43,8 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.27'
 
+        classpath 'de.huxhorn.gradle:de.huxhorn.gradle.pgp-plugin:0.0.3'
+
         compile "com.vaadin:vaadin-server:${vaadinVersion}"
         compile "com.vaadin:vaadin-client-compiled:${vaadinVersion}"
         compile "com.vaadin:vaadin-client:${vaadinVersion}"
@@ -58,3 +60,7 @@ grails.project.dependency.resolution = {
         }
     }
 }
+
+grails.project.repos.default = "myRepo"
+grails.project.repos.myRepo.url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+grails.project.repos.myRepo.type = "maven"

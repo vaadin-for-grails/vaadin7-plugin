@@ -10,6 +10,7 @@ class VaadinCoreGrailsPlugin {
     def version = "2.1"
     def grailsVersion = "2.4 > *"
 
+    def group = "com.github.vaadin-for-grails"
     def title = "Vaadin Core Plugin"
     def author = "Stephan Grundner"
     def authorEmail = "stephan.grundner@gmail.com"
@@ -22,7 +23,7 @@ Plugin for integrating Vaadin into Grails.
     def organization = [ name: "Vaadin for Grails", url: "https://github.com/vaadin-for-grails" ]
     def developers = [ [ name: "Stephan Grundner", email: "stephan.grundner@gmail.com" ]]
 
-    def scm = [ url: "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin" ]
+    def scm = [ url: "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin.git" ]
 
     def artefacts = [
             com.vaadin.grails.VaadinUIArtefactHandler,

@@ -15,6 +15,14 @@ ConfigObject loadConfig(GrailsApplication application) {
     parser.parse(configScriptClass)
 }
 
+eventPublishPluginStart = { pluginInfo ->
+    println "##################################################"
+    println "##################################################"
+    println "######################  OK  ######################"
+    println "##################################################"
+    println "##################################################"
+}
+
 eventCreateWarStart = { name, stagingDir ->
     GantState.verbosity = GantState.VERBOSE
     ant.logger.setMessageOutputLevel(GantState.verbosity)
