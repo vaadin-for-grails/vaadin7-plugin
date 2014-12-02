@@ -1,0 +1,9 @@
+DefaultPackage
+grails-app.conf
+grails-app.vaadin.com.vaadin.grails.ui
+scripts
+src.groovy.com.vaadin.grails
+src.groovy.com.vaadin.grails.navigator
+src.groovy.com.vaadin.grails.server
+src.java.com.vaadin.grails
+src.templates
