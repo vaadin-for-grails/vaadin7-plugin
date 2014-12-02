@@ -7,8 +7,8 @@ Add the follwing line to your BuildConfig.groovy.
 ```
 compile ":vaadin-core:2.1"
 ```
-
-## Working with UIs
+## Usage
+### Working with UIs
 Create your UI class somewhere below ```grails-app/vaadin```.
 ```
 class MyUI extents UI {
@@ -39,14 +39,14 @@ mapping {
         
         fragments {
             "someview" {
-                view = "xyz"
+                view = "xyz" // Class: XyzView.groovy
             }
         }
     }
 }
 ```
 
-
+Your View is accessible via ```http://localhost:8080/<grails app>/app#!xyz```.
 
 
 
