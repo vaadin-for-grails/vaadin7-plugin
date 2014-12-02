@@ -17,3 +17,13 @@ class MyUI extents UI {
     protected void init(VaadinRequest vaadinRequest) { }
 }
 ```
+
+Map an URI to your UI
+```
+mapping {
+    
+    "/app" {
+        ui = "my"
+    }
+}
+```
