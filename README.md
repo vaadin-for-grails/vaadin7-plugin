@@ -18,7 +18,7 @@ class MyUI extents UI {
 }
 ```
 
-Map an URI to your UI
+Map your UI to an URI by adding the following lines to your ```VaadinConfig.groovy```
 ```
 mapping {
     
