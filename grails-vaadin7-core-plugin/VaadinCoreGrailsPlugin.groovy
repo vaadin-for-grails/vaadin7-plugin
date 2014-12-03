@@ -1,13 +1,14 @@
 import com.vaadin.grails.NamespaceAwareVaadinClass
 import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappingsAwareUIProvider
+import grails.plugins.publish.maven.MavenDeployer
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 class VaadinCoreGrailsPlugin {
 
-    def version = "2.1"
+    def version = "2.1-SNAPSHOT"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"
@@ -153,6 +154,10 @@ Plugin for integrating Vaadin into Grails.
                 "url-pattern"("/VAADIN/*")
             }
         }
+    }
+
+    def doWithDynamicMethods = { ctx ->
+
     }
 
 }

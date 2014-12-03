@@ -15,12 +15,22 @@ ConfigObject loadConfig(GrailsApplication application) {
     parser.parse(configScriptClass)
 }
 
+eventDeployPluginStart = { pluginInfo, pluginZip, pomFileLocation ->
+
+}
+
 eventPublishPluginStart = { pluginInfo ->
-    println "##################################################"
-    println "##################################################"
-    println "######################  OK  ######################"
-    println "##################################################"
-    println "##################################################"
+//    def loadClassMethod = classLoader.metaClass.getMetaMethod("loadClass", [String] as Class[])
+//    classLoader.metaClass.loadClass = { String name ->
+//        if (name == "grails.plugins.publish.maven.MavenDeployer") {
+//            name = "com.vaadin.grails.publish.SonotypeDeployer"
+//        }
+//        loadClassMethod.invoke(classLoader, name)
+//    }
+}
+
+eventCreatePluginArchiveStart = { stagingDir ->
+
 }
 
 eventCreateWarStart = { name, stagingDir ->

@@ -51,6 +51,8 @@ grails.project.dependency.resolution = {
         compile "com.vaadin:vaadin-client-compiler:${vaadinVersion}"
         compile "com.vaadin:vaadin-themes:${vaadinVersion}"
         compile "com.vaadin:vaadin-push:${vaadinVersion}"
+
+//        compile "org.reflections:reflections:0.9.9-RC1"
     }
 
     plugins {
@@ -61,6 +63,12 @@ grails.project.dependency.resolution = {
     }
 }
 
-grails.project.repos.default = "myRepo"
-grails.project.repos.myRepo.url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-grails.project.repos.myRepo.type = "maven"
+grails.project.repos.default = "sonatype"
+//grails.project.repos.sonatype.url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+grails.project.repos.sonatype.url = "https://oss.sonatype.org/content/repositories/snapshots"
+grails.project.repos.sonatype.type = "maven"
+
+// Add the following properties to ~/.grails/settings.groovy:
+
+//grails.project.repos.sonatype.username
+//grails.project.repos.sonatype.password

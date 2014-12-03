@@ -37,3 +37,4 @@ wrapper/*
 *.iml
 *.zip
 *.zip.sha1
+*.asc
