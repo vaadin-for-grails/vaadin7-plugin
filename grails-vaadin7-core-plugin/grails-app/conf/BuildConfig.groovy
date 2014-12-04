@@ -70,5 +70,5 @@ grails.project.repos.sonatype.type = "maven"
 
 // Add the following properties to ~/.grails/settings.groovy:
 
-//grails.project.repos.sonatype.username
-//grails.project.repos.sonatype.password
+//grails.project.repos.sonatype.username=stephangrundner
+//grails.project.repos.sonatype.password=rukyg8seph
