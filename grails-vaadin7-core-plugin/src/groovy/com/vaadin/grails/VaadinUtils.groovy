@@ -2,6 +2,7 @@ package com.vaadin.grails
 
 import com.vaadin.grails.navigator.NavigationUtils
 import com.vaadin.navigator.View
+import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import grails.util.GrailsNameUtils
 import grails.util.Holders
@@ -51,7 +52,7 @@ class VaadinUtils {
         }
         String result
         try {
-            result = messageSource.getMessage(key, args, locale ?: LocaleContextHolder.locale)
+            result = messageSource.getMessage(key, args, locale ?: VaadinSession.current?.locale ?: LocaleContextHolder.locale)
         } catch (NoSuchMessageException e) {
             result = "[${key}]"
         }
