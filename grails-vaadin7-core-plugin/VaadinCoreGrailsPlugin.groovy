@@ -1,7 +1,6 @@
 import com.vaadin.grails.NamespaceAwareVaadinClass
 import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappingsAwareUIProvider
-import grails.plugins.publish.maven.MavenDeployer
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
