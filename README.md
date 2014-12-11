@@ -6,29 +6,29 @@ The Plugin uses plain Vaadin classes, but made simpler by following the coding b
 
 ## Setup
 Add the follwing line to your BuildConfig.groovy.
-```
-compile ":vaadin-core:2.1"
-```
+
+    compile ":vaadin-core:2.1"
+    
 ## Usage
 ### Working with UIs
-Create your UI class somewhere below ```grails-app/vaadin```.
-```
-class MyUI extents UI {
+Create your UI class somewhere below `grails-app/vaadin`.
 
-    @Override
-    protected void init(VaadinRequest vaadinRequest) { }
-}
-```
-
-Map your UI to an URI by adding the following lines to your ```VaadinConfig.groovy```.
-```
-mapping {
+    class MyUI extents UI {
     
-    "/app" {
-        ui = "my"
+        @Override
+        protected void init(VaadinRequest vaadinRequest) { }
     }
-}
-```
+
+
+Map your UI to an URI by adding the following lines to your `VaadinConfig.groovy`.
+
+    mapping {
+        
+        "/app" {
+            ui = "my"
+        }
+    }
+
 Your Vaadin application is accessible via ```http://localhost:8080/<grails app>/app```.
 
 ### Working with Views
