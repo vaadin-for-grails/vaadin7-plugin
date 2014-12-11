@@ -73,6 +73,8 @@ eventCreateWarStart = { name, stagingDir ->
                         arg(value: target.absolutePath)
                     }
 
+                    ant.copy(file: target.absolutePath, toDir: "${stagingDir}/VAADIN/themes/$theme")
+
                     ant.delete(dir: workDir)
                 } else {
                     ant.echo("Missing SASS source [$source]")
