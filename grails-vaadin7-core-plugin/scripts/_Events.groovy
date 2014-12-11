@@ -15,20 +15,6 @@ ConfigObject loadConfig(GrailsApplication application) {
     parser.parse(configScriptClass)
 }
 
-eventDeployPluginStart = { pluginInfo, pluginZip, pomFileLocation ->
-
-}
-
-eventPublishPluginStart = { pluginInfo ->
-//    def loadClassMethod = classLoader.metaClass.getMetaMethod("loadClass", [String] as Class[])
-//    classLoader.metaClass.loadClass = { String name ->
-//        if (name == "grails.plugins.publish.maven.MavenDeployer") {
-//            name = "com.vaadin.grails.publish.SonotypeDeployer"
-//        }
-//        loadClassMethod.invoke(classLoader, name)
-//    }
-}
-
 eventCreatePluginArchiveStart = { stagingDir ->
 
 }
@@ -56,25 +42,28 @@ eventCreateWarStart = { name, stagingDir ->
                 def target = new File("${themeDir}styles.css")
                 ant.echo("Compiling Vaadin theme [${theme}]")
                 if (source.exists()) {
-                    def workDir = new File("${basedir}/sass-work")
+                    def workDir = new File("${basedir}/target/sass-work")
+                    if (workDir.exists()) {
+                        ant.delete(dir: workDir)
+                    }
                     ant.mkdir(dir: workDir)
 
-                    String releaseZipSource = "http://vaadin.com/download/release/7.3/$themeRelease/vaadin-all-${themeRelease}.zip"
-                    String releaseZipTarget = "${workDir.absolutePath}/vaadin-all-${themeRelease}.zip"
-                    ant.get(src: releaseZipSource, dest: releaseZipTarget)
+                    String releaseFileName = "vaadin-all-${themeRelease}.zip"
+                    def releaseFile = new File("${basedir}/target/${releaseFileName}")
 
-                    ant.mkdir(dir: workDir)
+                    if (!releaseFile.exists()) {
+                        String releaseSource = "http://vaadin.com/download/release/7.3/$themeRelease/${releaseFileName}"
+                        ant.get(src: releaseSource, dest: releaseFile.absolutePath)
+                    }
+
                     String pathToWorkDir = workDir.absolutePath
-                    ant.unzip(src: releaseZipTarget, dest: pathToWorkDir)
-                    ant.delete(file: releaseZipTarget)
-
+                    ant.unzip(src: releaseFile.absolutePath, dest: pathToWorkDir)
                     ant.java(classpath: "$pathToWorkDir/*;$pathToWorkDir/lib/*", classname: "com.vaadin.sass.SassCompiler", fork: true) {
                         arg(value: source.absolutePath)
                         arg(value: target.absolutePath)
                     }
 
-                    ant.copy(file: target.absolutePath, toDir: "${stagingDir}/VAADIN/themes/$theme")
-
+//                    ant.copy(file: target.absolutePath, toDir: "${stagingDir}/VAADIN/themes/$theme")
                     ant.delete(dir: workDir)
                 } else {
                     ant.echo("Missing SASS source [$source]")

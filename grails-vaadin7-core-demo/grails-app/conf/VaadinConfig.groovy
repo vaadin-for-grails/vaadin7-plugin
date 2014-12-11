@@ -2,6 +2,8 @@ vaadin {
 
 //    defaultFragment = "index"
 
+//    productionMode = false
+
     mappings {
 
         "/demo1" {

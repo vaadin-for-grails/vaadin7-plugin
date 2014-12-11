@@ -76,6 +76,12 @@ Plugin for integrating Vaadin into Grails.
             return
         }
 
+        boolean productionMode = Environment.current == grails.util.Environment.PRODUCTION
+        if (config.containsKey("productionMode")) {
+            productionMode = config.productionMode
+        }
+
+        println "PRODUCTION MODE: ${productionMode}"
         def mappings = config.mappings as Map
 
         if (mappings.isEmpty()) {
@@ -116,7 +122,7 @@ Plugin for integrating Vaadin into Grails.
             "context-param" {
                 "description"("Vaadin production mode")
                 "param-name"("productionMode")
-                "param-value"(Environment.current == grails.util.Environment.PRODUCTION)
+                "param-value"(productionMode)
             }
         }
 

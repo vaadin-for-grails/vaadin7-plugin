@@ -117,3 +117,9 @@ log4j.main = {
     all    'com.vaadin.grails'
 }
 
+grails.war.copyToWebApp = { args ->
+    fileset(dir:"web-app") {
+        include(name: "VAADIN/**")
+    }
+}
+
