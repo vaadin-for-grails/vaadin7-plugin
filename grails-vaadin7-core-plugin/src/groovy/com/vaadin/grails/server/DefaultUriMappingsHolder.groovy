@@ -54,7 +54,7 @@ class DefaultUriMappingsHolder implements UriMappings {
         if (uiClass == null) {
             throw new RuntimeException("No class found for [${path}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         }
-        log.debug("Register UI [${uiClass.fullName}] for ui [${ui}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+        log.debug("Register UI [${uiClass.fullName}] for path [${path}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
         addUIClass(path, uiClass)
     }
 
@@ -66,7 +66,7 @@ class DefaultUriMappingsHolder implements UriMappings {
         if (viewClass == null) {
             throw new RuntimeException("No class found for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         }
-        log.debug("Register View [${viewClass.fullName}] for [${path}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+        log.debug("Register View [${viewClass.fullName}] for path [${path}#!${fragment}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
         addViewClass(path, fragment, viewClass)
     }
 

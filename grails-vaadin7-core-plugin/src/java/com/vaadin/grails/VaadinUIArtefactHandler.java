@@ -9,10 +9,10 @@ import org.codehaus.groovy.grails.commons.ArtefactHandlerAdapter;
  */
 public class VaadinUIArtefactHandler extends ArtefactHandlerAdapter {
 
-    public static final String TYPE = "UI";
+    public static final String TYPE = VaadinUIClass.UI;
 
     public VaadinUIArtefactHandler() {
-        super(TYPE, VaadinUIClass.class, DefaultVaadinUIClass.class, DefaultVaadinUIClass.UI);
+        super(TYPE, VaadinUIClass.class, DefaultVaadinUIClass.class, VaadinUIClass.UI);
     }
 
     @Override

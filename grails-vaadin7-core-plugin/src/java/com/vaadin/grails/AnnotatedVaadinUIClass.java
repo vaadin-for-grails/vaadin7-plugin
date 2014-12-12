@@ -1,19 +1,15 @@
 package com.vaadin.grails;
 
 import com.vaadin.grails.server.UriMappingsHolder;
+import com.vaadin.grails.ui.VaadinUI;
 import grails.util.Holders;
 import org.codehaus.groovy.grails.commons.AbstractGrailsClass;
 
 import java.util.Collection;
 
-/**
- * Default implementation for {@link com.vaadin.grails.VaadinUIClass}.
- *
- * @author Stephan Grundner
- */
-public class DefaultVaadinUIClass extends AbstractGrailsClass implements VaadinUIClass {
+class AnnotatedVaadinUIClass extends AbstractGrailsClass implements VaadinUIClass {
 
-    public DefaultVaadinUIClass(Class<?> clazz) {
+    public AnnotatedVaadinUIClass(Class<?> clazz) {
         super(clazz, UI);
     }
 
@@ -21,9 +17,17 @@ public class DefaultVaadinUIClass extends AbstractGrailsClass implements VaadinU
         return Holders.getApplicationContext().getBean(UriMappingsHolder.class);
     }
 
+    private VaadinUI getAnnotation() {
+        return getClazz().getAnnotation(VaadinUI.class);
+    }
+
     @Override
     public String getNamespace() {
-        return getStaticPropertyValue("namespace", String.class);
+        String namespace = getAnnotation().namespace();
+        if (namespace != null && namespace.length() == 0) {
+            return null;
+        }
+        return namespace;
     }
 
     @Override

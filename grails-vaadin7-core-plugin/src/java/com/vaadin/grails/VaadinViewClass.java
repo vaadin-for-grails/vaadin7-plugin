@@ -7,4 +7,5 @@ package com.vaadin.grails;
  */
 public interface VaadinViewClass extends VaadinComponentClass {
 
+    public static final String VIEW = "View";
 }

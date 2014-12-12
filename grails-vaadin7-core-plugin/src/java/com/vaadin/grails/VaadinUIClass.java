@@ -9,6 +9,8 @@ import java.util.Collection;
  */
 public interface VaadinUIClass extends VaadinComponentClass {
 
+    public static final String UI = "UI";
+
     public String getPath();
     public Object getPathProperty(String name);
     public Collection<String> getAllFragments();

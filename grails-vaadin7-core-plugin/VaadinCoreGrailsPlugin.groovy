@@ -1,9 +1,15 @@
+import com.vaadin.grails.AnnotatedVaadinUIClass
+import com.vaadin.grails.AnnotatedVaadinViewClass
 import com.vaadin.grails.NamespaceAwareVaadinClass
+import com.vaadin.grails.VaadinViewClass
+import com.vaadin.grails.navigator.VaadinView
 import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappingsAwareUIProvider
+import com.vaadin.grails.ui.VaadinUI
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.reflections.Reflections
 
 class VaadinCoreGrailsPlugin {
 
@@ -43,6 +49,18 @@ Plugin for integrating Vaadin into Grails.
 
     def doWithSpring = {
 
+        def reflections = new Reflections("")
+
+        def artefactTypes = reflections.getTypesAnnotatedWith(VaadinUI)
+        artefactTypes.each { artefactType ->
+            application.addArtefact("UI", new AnnotatedVaadinUIClass(artefactType))
+        }
+
+        artefactTypes = reflections.getTypesAnnotatedWith(VaadinView)
+        artefactTypes.each { artefactType ->
+            application.addArtefact(VaadinViewClass.VIEW, new AnnotatedVaadinViewClass(artefactType))
+        }
+
         ["UI", "View"].each {
             application.getArtefacts(it).each { NamespaceAwareVaadinClass vaadinClass ->
                 def namespace = vaadinClass.namespace
@@ -81,9 +99,7 @@ Plugin for integrating Vaadin into Grails.
             productionMode = config.productionMode
         }
 
-        println "PRODUCTION MODE: ${productionMode}"
         def mappings = config.mappings as Map
-
         if (mappings.isEmpty()) {
             return
         }

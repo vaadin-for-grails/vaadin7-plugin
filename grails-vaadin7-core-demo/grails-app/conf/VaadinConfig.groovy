@@ -1,7 +1,6 @@
 vaadin {
 
 //    defaultFragment = "index"
-
 //    productionMode = false
 
     mappings {
@@ -30,6 +29,18 @@ vaadin {
             theme = "demo"
             pageTitle = "Demo Nr 2"
 
+        }
+
+        "/demo3" {
+            ui = "demo3"
+            theme = "demo"
+            pageTitle = "Demo Nr 3"
+
+            fragments {
+                "index" {
+                    view = "root"
+                }
+            }
         }
     }
 

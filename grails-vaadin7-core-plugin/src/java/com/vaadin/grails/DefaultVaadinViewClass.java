@@ -9,8 +9,6 @@ import org.codehaus.groovy.grails.commons.AbstractGrailsClass;
  */
 public class DefaultVaadinViewClass extends AbstractGrailsClass implements VaadinViewClass {
 
-    public static final String VIEW = "View";
-
     public DefaultVaadinViewClass(Class<?> clazz) {
         super(clazz, VIEW);
     }

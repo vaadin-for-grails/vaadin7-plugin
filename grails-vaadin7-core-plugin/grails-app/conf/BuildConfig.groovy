@@ -52,7 +52,7 @@ grails.project.dependency.resolution = {
         compile "com.vaadin:vaadin-themes:${vaadinVersion}"
         compile "com.vaadin:vaadin-push:${vaadinVersion}"
 
-//        compile "org.reflections:reflections:0.9.9-RC1"
+        compile "org.reflections:reflections:0.9.9-RC1"
     }
 
     plugins {
