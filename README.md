@@ -4,6 +4,7 @@ Plugin for integrating Vaadin into Grails.
 
 The Plugin uses plain [Vaadin](https://vaadin.com) classes, but made simpler by following the coding by convention paradigm. UIs and Views for example are accessible via the [Grails Artefact API](https://grails.org/Developer+-+Artefact+API). 
 
+![Plugins](https://github.com/vaadin-for-grails/organization/wiki/uis_and_views.png)
 
 ## Setup
 Add the follwing line to your BuildConfig.groovy.
