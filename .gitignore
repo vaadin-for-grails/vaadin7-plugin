@@ -38,3 +38,5 @@ wrapper/*
 *.zip
 *.zip.sha1
 *.asc
+
+*.graffle
