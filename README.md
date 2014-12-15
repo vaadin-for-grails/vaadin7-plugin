@@ -1,18 +1,16 @@
-grails-vaadin-core-plugin
+Vaadin Core Plugin for Grails
 =========================
 Plugin for integrating Vaadin into Grails.
 
 The Plugin uses plain [Vaadin](https://vaadin.com) classes, but made simpler by following the coding by convention paradigm. UIs and Views for example are accessible via the [Grails Artefact API](https://grails.org/Developer+-+Artefact+API). 
 
-## Features
-
-![Vaadin Core](uis_and_views.png)
 
 ## Setup
 Add the follwing line to your BuildConfig.groovy.
 
     repositories {
-        mavenRepo "https://oss.sonatype.org/content/groups/public"    }
+        mavenRepo "https://oss.sonatype.org/content/groups/public"
+    }
 
     plugins {
         compile "com.github.vaadin-for-grails:vaadin-core:2.1-SNAPSHOT"
