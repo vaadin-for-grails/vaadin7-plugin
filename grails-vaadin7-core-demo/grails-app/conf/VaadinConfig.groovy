@@ -42,6 +42,11 @@ vaadin {
                 }
             }
         }
+
+        "/demo4" {
+            ui = "demo4"
+            theme = "demo"
+        }
     }
 
 }

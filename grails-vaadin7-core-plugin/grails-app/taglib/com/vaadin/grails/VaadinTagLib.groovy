@@ -51,6 +51,9 @@ class VaadinTagLib {
         def vaadinVersion = com.vaadin.shared.Version.fullVersion
 
         def uiClass = Vaadin.utils.getVaadinUIClass(ui, namespace)
+        if (uiClass == null) {
+            throwTagError "No ui found for name [${ui}]" + (namespace != null ? " and namespace [${namespace}]" : "")
+        }
         def uiPath = uriMappingsHolder.getPath(uiClass)
 
         if (uiPath.startsWith("/")) {
