@@ -25,15 +25,6 @@ class VaadinUtils {
      * @return The Vaadin application context for the current session
      */
     ApplicationContext getApplicationContext() {
-//        def session = VaadinSession.getCurrent()
-//        def context = session.getAttribute(ApplicationContext)
-//        if (context == null) {
-//            def parent = Holders.applicationContext
-//            context = new GenericApplicationContext(parent)
-//            session.setAttribute(ApplicationContext, context)
-//            context.refresh()
-//        }
-//        context
         Holders.applicationContext
     }
 
@@ -59,21 +50,21 @@ class VaadinUtils {
         result
     }
 
-    Collection<VaadinComponentClass> getVaadinComponentClasses(String name, String type, String namespace = null) {
+    private Collection<VaadinClass> getVaadinClasses(String name, String type, String namespace = null) {
         def found = Holders.grailsApplication.getArtefacts(type).findAll {
-            it instanceof VaadinComponentClass &&
+            it instanceof VaadinClass &&
                 it.logicalPropertyName == name &&
                     it["namespace"] == namespace
         }
         found
     }
 
-    Object instantiateVaadinComponentClass(VaadinComponentClass componentClass) {
+    Object newInstance(VaadinClass vaadinClass) {
         def beanName
-        if (componentClass.namespace) {
-            beanName = "${componentClass.namespace}.${componentClass.propertyName}"
+        if (vaadinClass.namespace) {
+            beanName = "${vaadinClass.namespace}.${vaadinClass.propertyName}"
         } else {
-            beanName = componentClass.propertyName
+            beanName = vaadinClass.propertyName
         }
         applicationContext.getBean(beanName)
     }
@@ -115,7 +106,7 @@ class VaadinUtils {
     }
 
     VaadinUIClass getVaadinUIClass(String name, String namespace = null) {
-        def found = getVaadinComponentClasses(name, "UI", namespace)
+        def found = getVaadinClasses(name, "UI", namespace)
         if (found?.size() > 1) {
             def message = "Multiple Vaadin UIs found for name [${name}]"
             if (namespace) {
@@ -127,7 +118,7 @@ class VaadinUtils {
     }
 
     VaadinViewClass getVaadinViewClass(String name, String namespace = null) {
-        def found = getVaadinComponentClasses(name, "View", namespace)
+        def found = getVaadinClasses(name, "View", namespace)
 
         if (found?.size() > 1) {
             def message = "Multiple Vaadin Views found for name [${name}]"

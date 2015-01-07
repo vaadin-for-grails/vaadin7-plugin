@@ -1,5 +1,6 @@
 package com.vaadin.grails;
 
+import com.vaadin.grails.navigator.VaadinView;
 import org.codehaus.groovy.grails.commons.ArtefactHandlerAdapter;
 
 /**
@@ -17,6 +18,7 @@ public class VaadinViewArtefactHandler extends ArtefactHandlerAdapter {
 
     @Override
     public boolean isArtefactClass(Class clazz) {
-        return super.isArtefactClass(clazz);
+        return !clazz.isAnnotationPresent(VaadinView.class)
+                && super.isArtefactClass(clazz);
     }
 }

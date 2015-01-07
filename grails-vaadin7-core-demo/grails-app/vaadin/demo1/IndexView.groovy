@@ -7,6 +7,7 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
+import org.springframework.beans.factory.annotation.Autowired
 
 class IndexView extends CustomComponent implements View {
 
@@ -15,6 +16,9 @@ class IndexView extends CustomComponent implements View {
     IndexView() {
 
     }
+
+    @Autowired
+    MyButtonComponent myButtonComponent
 
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -31,5 +35,6 @@ class IndexView extends CustomComponent implements View {
             }
         })
         compositionRoot.addComponent(button)
+        compositionRoot.addComponent(myButtonComponent)
     }
 }

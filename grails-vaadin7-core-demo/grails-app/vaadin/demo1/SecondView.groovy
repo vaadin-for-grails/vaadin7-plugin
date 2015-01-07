@@ -7,12 +7,17 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
+import demo.AnotherButtonWidget
+import org.springframework.beans.factory.annotation.Autowired
 
 class SecondView extends CustomComponent implements View {
 
     SecondView() {
 
     }
+
+    @Autowired
+    AnotherButtonWidget anotherButtonWidget
 
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -34,5 +39,6 @@ class SecondView extends CustomComponent implements View {
                 Vaadin.enter(ui: "demo", namespace: "ns2")
             }
         }))
+        compositionRoot.addComponent(anotherButtonWidget)
     }
 }

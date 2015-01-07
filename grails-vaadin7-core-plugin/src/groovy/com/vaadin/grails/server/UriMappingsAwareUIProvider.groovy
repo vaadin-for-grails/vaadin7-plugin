@@ -42,7 +42,7 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     UI createInstance(UICreateEvent event) {
         def utils = Vaadin.utils
         def uiClass = utils.getVaadinUIClass(event.getUIClass())
-        UI ui = utils.instantiateVaadinComponentClass(uiClass)
+        UI ui = utils.newInstance(uiClass)
         def path = pathHelper.getPathWithinApplication(event.request)
         def fragments = uriMappings.getAllFragments(path).size()
         if (fragments > 0) {

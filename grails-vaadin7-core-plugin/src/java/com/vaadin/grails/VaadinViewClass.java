@@ -5,7 +5,7 @@ package com.vaadin.grails;
  *
  * @author Stephan Grundner
  */
-public interface VaadinViewClass extends VaadinComponentClass {
+public interface VaadinViewClass extends VaadinClass {
 
     public static final String VIEW = "View";
 }

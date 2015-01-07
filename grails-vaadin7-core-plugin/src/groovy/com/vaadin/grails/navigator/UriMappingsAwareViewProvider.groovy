@@ -72,7 +72,7 @@ class UriMappingsAwareViewProvider implements ViewProvider {
         def viewClass = uriMappings.getViewClass(path, fragment)
         if (viewClass) {
             log.debug("View class [${viewClass?.fullName}] found for path [${path}] and fragment [${fragment}]")
-            return Vaadin.utils.instantiateVaadinComponentClass(viewClass)
+            return Vaadin.utils.newInstance(viewClass)
         }
 
         log.debug("No View class found for path [${path}] and fragment [${fragment}]")

@@ -1,10 +1,14 @@
+import com.vaadin.grails.AnnotatedVaadinComponentClass
 import com.vaadin.grails.AnnotatedVaadinUIClass
 import com.vaadin.grails.AnnotatedVaadinViewClass
-import com.vaadin.grails.NamespaceAwareVaadinClass
+import com.vaadin.grails.VaadinClass
+import com.vaadin.grails.VaadinComponentClass
+import com.vaadin.grails.VaadinUIClass
 import com.vaadin.grails.VaadinViewClass
 import com.vaadin.grails.navigator.VaadinView
 import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappingsAwareUIProvider
+import com.vaadin.grails.ui.VaadinComponent
 import com.vaadin.grails.ui.VaadinUI
 import grails.util.Environment
 import grails.util.Holders
@@ -32,6 +36,7 @@ Plugin for integrating Vaadin into Grails.
     def scm = [ url: "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin.git" ]
 
     def artefacts = [
+            com.vaadin.grails.VaadinComponentArtefactHandler,
             com.vaadin.grails.VaadinUIArtefactHandler,
             com.vaadin.grails.VaadinViewArtefactHandler]
 
@@ -51,9 +56,14 @@ Plugin for integrating Vaadin into Grails.
 
         def reflections = new Reflections("")
 
+        def componentTypes = reflections.getTypesAnnotatedWith(VaadinComponent)
+        componentTypes.each { componentType ->
+            application.addArtefact(VaadinComponentClass.COMPONENT, new AnnotatedVaadinComponentClass(componentType))
+        }
+
         def artefactTypes = reflections.getTypesAnnotatedWith(VaadinUI)
         artefactTypes.each { artefactType ->
-            application.addArtefact("UI", new AnnotatedVaadinUIClass(artefactType))
+            application.addArtefact(VaadinUIClass.UI, new AnnotatedVaadinUIClass(artefactType))
         }
 
         artefactTypes = reflections.getTypesAnnotatedWith(VaadinView)
@@ -61,8 +71,8 @@ Plugin for integrating Vaadin into Grails.
             application.addArtefact(VaadinViewClass.VIEW, new AnnotatedVaadinViewClass(artefactType))
         }
 
-        ["UI", "View"].each {
-            application.getArtefacts(it).each { NamespaceAwareVaadinClass vaadinClass ->
+        ["UI", "View", "Component"].each {
+            application.getArtefacts(it).each { VaadinClass vaadinClass ->
                 def namespace = vaadinClass.namespace
                 if (namespace) {
                     "${namespace}.${vaadinClass.propertyName}"(vaadinClass.clazz) { bean ->

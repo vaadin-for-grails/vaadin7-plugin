@@ -7,7 +7,7 @@ import java.util.Collection;
  *
  * @author Stephan Grundner
  */
-public interface VaadinUIClass extends VaadinComponentClass {
+public interface VaadinUIClass extends VaadinClass {
 
     public static final String UI = "UI";
 
