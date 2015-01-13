@@ -17,7 +17,7 @@ import org.reflections.Reflections
 
 class VaadinCoreGrailsPlugin {
 
-    def version = "2.1-SNAPSHOT"
+    def version = "2.5-SNAPSHOT"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"
