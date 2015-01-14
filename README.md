@@ -14,7 +14,7 @@ Add the follwing line to your BuildConfig.groovy.
     }
 
     plugins {
-        compile "com.github.vaadin-for-grails:vaadin-core:2.1-SNAPSHOT"
+        compile "com.github.vaadin-for-grails:vaadin-core:2.5-SNAPSHOT"
     }
     
 ## Usage
