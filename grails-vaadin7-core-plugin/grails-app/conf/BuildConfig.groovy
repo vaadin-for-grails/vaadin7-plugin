@@ -43,16 +43,12 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.27'
 
-        classpath 'de.huxhorn.gradle:de.huxhorn.gradle.pgp-plugin:0.0.3'
-
         compile "com.vaadin:vaadin-server:${vaadinVersion}"
         compile "com.vaadin:vaadin-client-compiled:${vaadinVersion}"
         compile "com.vaadin:vaadin-client:${vaadinVersion}"
         compile "com.vaadin:vaadin-client-compiler:${vaadinVersion}"
         compile "com.vaadin:vaadin-themes:${vaadinVersion}"
         compile "com.vaadin:vaadin-push:${vaadinVersion}"
-
-        compile "org.reflections:reflections:0.9.9-RC1"
     }
 
     plugins {

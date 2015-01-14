@@ -1,9 +1,7 @@
 package com.vaadin.grails.navigator
 
-import com.vaadin.grails.Vaadin
-import com.vaadin.grails.VaadinUIClass
-import com.vaadin.grails.VaadinViewClass
 import com.vaadin.grails.server.UriMappingsHolder
+import com.vaadin.navigator.View
 import com.vaadin.server.Page
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
@@ -11,6 +9,8 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.DependsOn
+import org.springframework.stereotype.Component
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.util.UrlPathHelper
 
@@ -20,6 +20,8 @@ import org.springframework.web.util.UrlPathHelper
  * @since 2.0
  * @author Stephan Grundner
  */
+@Component
+@DependsOn("uriMappingsHolder")
 class NavigationUtils {
 
     static final def log = Logger.getLogger(NavigationUtils)
@@ -64,111 +66,23 @@ class NavigationUtils {
         GrailsWebRequest.lookup()
     }
 
-    protected VaadinUIClass resolveUIClass(Object ui, String namespace) {
-        def utils = Vaadin.utils
-        String name
-        if (ui instanceof Map) {
-            if (namespace) {
-                throw new IllegalArgumentException("namespace")
-            }
-            name = ui["name"]
-            namespace = ui["namespace"]
-            return utils.getVaadinUIClass(name, namespace)
-        } else {
-            name = ui as String
-        }
-        def uiClass = utils.getVaadinUIClass(name, namespace)
+    void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
         if (uiClass == null) {
-            throw new RuntimeException("Unable to resolve UI for name [${name}]" +
-                    (namespace ? " and namespace [${namespace}]" : ""))
+            uiClass = UI.current.class
         }
-        uiClass
-    }
 
-    protected VaadinViewClass resolveViewClass(Object view, String namespace) {
-        def utils = Vaadin.utils
-        String name
-        if (view instanceof Map) {
-            if (namespace) {
-                throw new IllegalArgumentException("namespace")
-            }
-            name = view["name"]
-            namespace = view["namespace"]
-        } else {
-            name = view as String
-        }
-        def viewClass = utils.getVaadinViewClass(name, namespace)
-        if (viewClass == null) {
-            throw new RuntimeException("Unable to resolve View for name [${name}]" +
-                    (namespace ? " and namespace [${namespace}]" : ""))
-        }
-        viewClass
-    }
+        def path = uriMappings.getPath(uiClass)
 
-    /**
-     * Switch between Views and UIs.
-     *
-     * @see #enter(com.vaadin.grails.VaadinUIClass, com.vaadin.grails.VaadinViewClass, java.util.Map)
-     * @see #enter(com.vaadin.grails.VaadinViewClass, java.util.Map)
-     * @param params Navigation params
-     */
-    void enter(Map params) {
-        def ui = params.get("ui")
-        def view = params.get("view")
-        def namespace = params.get("namespace")
-
-        if (ui) {
-            log.debug("Enter UI ${params}")
-            if (view) {
-                def uiClass = resolveUIClass(ui, namespace)
-                def viewClass = resolveViewClass(view, namespace)
-                enter(uiClass, viewClass, params.get("params"))
+        if (UI.current.class == uiClass) {
+            def fragment = uriMappings.getFragment(path, viewClass) ?: ""
+            if (params) {
+                UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")
             } else {
-                def uiClass = resolveUIClass(ui, namespace)
-                enter(uiClass, null, params.get("params"))
-            }
-        } else if (view) {
-            log.debug("Enter View ${params}")
-            def viewClass = resolveViewClass(view, namespace)
-            enter(viewClass, params.get("params"))
-        }
-    }
-
-    /**
-     * Enter the specified UI or a View within the specified UI.
-     *
-     * @param uiClass The Vaadin UI class
-     * @param viewClass The Vaadin View class
-     * @param params Additional parameters
-     */
-    void enter(VaadinUIClass uiClass, VaadinViewClass viewClass, Map params) {
-        def utils = Vaadin.utils
-        if (uiClass == utils.currentVaadinUIClass) {
-            if (viewClass) {
-                enter(viewClass, params)
-            } else {
-
-                if (params) {
-//                    TODO View is null but params set, ...what to do now?
-                }
-
+                UI.current.navigator.navigateTo(fragment)
             }
         } else {
-            if (log.debugEnabled) {
-                def message = "Enter UI with class [${uiClass?.fullName}]"
-                if (viewClass) {
-                    message += " and View with class [${viewClass?.fullName}]"
-                }
-                if (params) {
-                    message += " and params [${params}]"
-                }
-                log.debug(message)
-            }
-
             def helper = new UrlPathHelper()
             def contextPath = helper.getContextPath(currentWebRequest.nativeRequest)
-            def path = uriMappings.getPath(uiClass)
-
             if (contextPath.endsWith("/")) {
                 contextPath.substring(0, contextPath.length() - 1)
             }
@@ -186,22 +100,6 @@ class NavigationUtils {
 
             Page.current.setLocation(uri)
         }
-    }
 
-    /**
-     * Enter a View within the current UI.
-     *
-     * @param viewClass The Vaadin View class
-     * @param params Additional parameters
-     */
-    void enter(VaadinViewClass viewClass, Map params) {
-        log.debug("Enter View with class [${viewClass?.fullName}] with params [${params}]")
-        def currentPath = uriMappings.getPath(Vaadin.utils.currentVaadinUIClass)
-        def fragment = uriMappings.getFragment(currentPath, viewClass)
-        if (params) {
-            UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")
-        } else {
-            UI.current.navigator.navigateTo(fragment)
-        }
     }
 }

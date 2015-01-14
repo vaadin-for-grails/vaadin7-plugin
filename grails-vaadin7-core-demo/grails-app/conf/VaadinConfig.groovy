@@ -6,47 +6,21 @@ vaadin {
     mappings {
 
         "/demo1" {
-            ui = "demo"
-            namespace = "ns1"
+            ui = demo1.DemoUI
             theme = "valo"
             pageTitle = "Demo Nr 1"
 
             fragments {
                 "index" {
-                    view = "index"
-                    namespace = "ns1"
+                    view = demo1.IndexView
                 }
                 "two" {
-                    view = "second"
+                    view = demo1.SecondView
                 }
             }
 
         }
 
-        "/demo2" {
-            ui = "demo"
-            namespace = "ns2"
-            theme = "demo"
-            pageTitle = "Demo Nr 2"
-
-        }
-
-        "/demo3" {
-            ui = "demo3"
-            theme = "demo"
-            pageTitle = "Demo Nr 3"
-
-            fragments {
-                "index" {
-                    view = "root"
-                }
-            }
-        }
-
-        "/demo4" {
-            ui = "demo4"
-            theme = "demo"
-        }
     }
 
 }

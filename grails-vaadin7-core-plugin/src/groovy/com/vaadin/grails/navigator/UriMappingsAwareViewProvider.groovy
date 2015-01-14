@@ -4,7 +4,11 @@ import com.vaadin.grails.Vaadin
 import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
+import com.vaadin.server.VaadinSession
+import com.vaadin.ui.UI
 import org.apache.log4j.Logger
+import org.springframework.context.annotation.Scope
+import org.springframework.stereotype.Component
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
@@ -13,25 +17,29 @@ import org.apache.log4j.Logger
  * @since 2.0
  * @author Stephan Grundner
  */
+@Component("viewProvider")
+@Scope("prototype")
 class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
-    final String path
     final UriMappingsHolder uriMappings
 
-    UriMappingsAwareViewProvider(String path) {
-        this.path = path
-        uriMappings = Vaadin.applicationContext.getBean(UriMappingsHolder)
+    UriMappingsAwareViewProvider() {
+        uriMappings = Vaadin.getInstance(UriMappingsHolder)
     }
 
-    String getDefaultFragment() {
+    String getDefaultFragment(String path) {
         uriMappings.getPathProperty(path, UriMappingsHolder.DEFAULT_FRAGMENT)
     }
 
     @Override
     String getViewName(String fragmentAndParams) {
         String fragment = fragmentAndParams
+
+        if (fragment == null) {
+            return null
+        }
 
         def assignmentIndex = fragmentAndParams.indexOf("=")
         if (assignmentIndex != -1) {
@@ -43,7 +51,8 @@ class UriMappingsAwareViewProvider implements ViewProvider {
             fragment = fragmentAndParams.substring(0, delimiterIndex)
         }
 
-        if (fragment == "" && uriMappings.getViewClass(path, defaultFragment)) {
+        def path = uriMappings.getPath(UI.current.class)
+        if (fragment == "" && uriMappings.getViewClass(path, getDefaultFragment(path))) {
             return ""
         }
 
@@ -65,14 +74,17 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     @Override
     View getView(String fragment) {
+        def path = uriMappings.getPath(UI.current.class)
         if (fragment == "") {
-            fragment = defaultFragment
+            fragment = getDefaultFragment(path)
         }
 
         def viewClass = uriMappings.getViewClass(path, fragment)
         if (viewClass) {
-            log.debug("View class [${viewClass?.fullName}] found for path [${path}] and fragment [${fragment}]")
-            return Vaadin.utils.newInstance(viewClass)
+            log.debug("View class [${viewClass?.name}] found for path [${path}] and fragment [${fragment}]")
+            def view = Vaadin.newInstance(viewClass)
+            VaadinSession.current.setAttribute(View, view)
+            return view
         }
 
         log.debug("No View class found for path [${path}] and fragment [${fragment}]")

@@ -1,15 +1,15 @@
 package demo2
 
 import com.vaadin.grails.Vaadin
+import com.vaadin.grails.ui.VaadinUI
 import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.Button
 import com.vaadin.ui.Label
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 
+@VaadinUI()
 class DemoUI extends UI {
-
-    static namespace = "ns2"
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -22,7 +22,7 @@ class DemoUI extends UI {
         content.addComponent(new Button("Go to Demo 1", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
-                Vaadin.enter(ui: "demo", namespace: "ns1")
+                Vaadin.enter(demo1.DemoUI)
             }
         }))
     }

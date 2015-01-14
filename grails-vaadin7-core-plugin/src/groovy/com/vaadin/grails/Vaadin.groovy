@@ -1,5 +1,7 @@
 package com.vaadin.grails
 
+import com.vaadin.navigator.View
+import com.vaadin.ui.UI
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
@@ -45,14 +47,24 @@ final class Vaadin {
         utils.i18n(key, args, locale, messageSource)
     }
 
-    /**
-     * Switch between Views and UIs.
-     *
-     * @see com.vaadin.grails.navigator.NavigationUtils#enter(java.util.Map)
-     * @param params Navigation params
-     */
-    static void enter(Map params) {
-        utils.navigationUtils.enter(params)
+    static <T> T newInstance(Class<? extends T> type, Object ...args) {
+        utils.newInstance(type, args)
+    }
+
+    static <T> T getInstance(Class<? extends T> type) {
+        utils.getInstance(type)
+    }
+
+    static void enter(Class<?> uiOrViewClass, Map params = null) {
+        if (UI.isAssignableFrom(uiOrViewClass)) {
+            enter(uiOrViewClass, null, params)
+        } else {
+            enter(null, uiOrViewClass, params)
+        }
+    }
+
+    static void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
+        utils.navigationUtils.enter(uiClass, viewClass, params)
     }
 
     private Vaadin() { }

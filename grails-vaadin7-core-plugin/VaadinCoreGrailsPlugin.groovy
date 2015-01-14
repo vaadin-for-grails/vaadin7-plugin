@@ -1,23 +1,12 @@
-import com.vaadin.grails.AnnotatedVaadinComponentClass
-import com.vaadin.grails.AnnotatedVaadinUIClass
-import com.vaadin.grails.AnnotatedVaadinViewClass
-import com.vaadin.grails.VaadinClass
-import com.vaadin.grails.VaadinComponentClass
-import com.vaadin.grails.VaadinUIClass
-import com.vaadin.grails.VaadinViewClass
-import com.vaadin.grails.navigator.VaadinView
-import com.vaadin.grails.server.DefaultUriMappingsHolder
-import com.vaadin.grails.server.UriMappingsAwareUIProvider
-import com.vaadin.grails.ui.VaadinComponent
-import com.vaadin.grails.ui.VaadinUI
+import com.vaadin.grails.server.UriMappings
+import com.vaadin.grails.spring.VaadinComponentBeanNameGenerator
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.reflections.Reflections
 
 class VaadinCoreGrailsPlugin {
 
-    def version = "2.5-SNAPSHOT"
+    def version = "1.0-SNAPSHOT"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"
@@ -35,10 +24,7 @@ Plugin for integrating Vaadin into Grails.
 
     def scm = [ url: "https://github.com/vaadin-for-grails/grails-vaadin-core-plugin.git" ]
 
-    def artefacts = [
-            com.vaadin.grails.VaadinComponentArtefactHandler,
-            com.vaadin.grails.VaadinUIArtefactHandler,
-            com.vaadin.grails.VaadinViewArtefactHandler]
+    def artefacts = []
 
     ConfigObject loadConfig(GrailsApplication application) {
         def configScriptClass
@@ -53,48 +39,20 @@ Plugin for integrating Vaadin into Grails.
     }
 
     def doWithSpring = {
-
-        def reflections = new Reflections("")
-
-        def componentTypes = reflections.getTypesAnnotatedWith(VaadinComponent)
-        componentTypes.each { componentType ->
-            application.addArtefact(VaadinComponentClass.COMPONENT, new AnnotatedVaadinComponentClass(componentType))
-        }
-
-        def artefactTypes = reflections.getTypesAnnotatedWith(VaadinUI)
-        artefactTypes.each { artefactType ->
-            application.addArtefact(VaadinUIClass.UI, new AnnotatedVaadinUIClass(artefactType))
-        }
-
-        artefactTypes = reflections.getTypesAnnotatedWith(VaadinView)
-        artefactTypes.each { artefactType ->
-            application.addArtefact(VaadinViewClass.VIEW, new AnnotatedVaadinViewClass(artefactType))
-        }
-
-        ["UI", "View", "Component"].each {
-            application.getArtefacts(it).each { VaadinClass vaadinClass ->
-                def namespace = vaadinClass.namespace
-                if (namespace) {
-                    "${namespace}.${vaadinClass.propertyName}"(vaadinClass.clazz) { bean ->
-                        bean.scope = "prototype"
-                        bean.autowire = "byName"
-                    }
-                } else {
-                    "${vaadinClass.propertyName}"(vaadinClass.clazz) { bean ->
-                        bean.scope = "prototype"
-                        bean.autowire = "byName"
-                    }
-                }
-            }
-        }
-
         def config = loadConfig(application)
         application.config.merge(config)
 
-        "vaadinUtils"(com.vaadin.grails.VaadinUtils)
-        "uriMappingsHolder"(DefaultUriMappingsHolder)
-        "navigationUtils"(com.vaadin.grails.navigator.NavigationUtils)
-        "uiProvider"(UriMappingsAwareUIProvider)
+        xmlns grailsContext: "http://grails.org/schema/context"
+        def packages = config.packages ?: ['*']
+        grailsContext.'component-scan'(
+                'base-package': "com.vaadin.grails, ${packages.join(',')}",
+                'name-generator': VaadinComponentBeanNameGenerator.name
+        )
+    }
+
+    def doWithApplicationContext = { ctx ->
+
+        ctx.getBean(UriMappings).reload()
     }
 
     def doWithWebDescriptor = { xml ->
@@ -185,10 +143,6 @@ Plugin for integrating Vaadin into Grails.
                 "url-pattern"("/VAADIN/*")
             }
         }
-    }
-
-    def doWithDynamicMethods = { ctx ->
-
     }
 
 }

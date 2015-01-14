@@ -1,8 +1,8 @@
 package com.vaadin.grails.server
 
 import com.vaadin.grails.Vaadin
-import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
 import com.vaadin.navigator.Navigator
+import com.vaadin.navigator.ViewProvider
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
 import com.vaadin.shared.communication.PushMode
@@ -10,6 +10,8 @@ import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Scope
+import org.springframework.stereotype.Component
 import org.springframework.web.util.UrlPathHelper
 
 /**
@@ -18,6 +20,8 @@ import org.springframework.web.util.UrlPathHelper
  *
  * @author Stephan Grundner
  */
+@Component("uiProvider")
+@Scope("prototype")
 class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     private static final def log = Logger.getLogger(UriMappingsAwareUIProvider)
@@ -27,26 +31,21 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     @Autowired
     UriMappingsHolder uriMappings
 
-    UriMappingsAwareUIProvider() {
-
-    }
-
-    protected Navigator createNavigator(UICreateEvent event, UI ui) {
-        def path = pathHelper.getPathWithinApplication(event.request)
+    protected Navigator createNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(new UriMappingsAwareViewProvider(path))
+        def viewProvider = Vaadin.newInstance(ViewProvider)
+        navigator.addProvider(viewProvider)
         navigator
     }
 
     @Override
     UI createInstance(UICreateEvent event) {
-        def utils = Vaadin.utils
-        def uiClass = utils.getVaadinUIClass(event.getUIClass())
-        UI ui = utils.newInstance(uiClass)
         def path = pathHelper.getPathWithinApplication(event.request)
-        def fragments = uriMappings.getAllFragments(path).size()
-        if (fragments > 0) {
-            ui.navigator = createNavigator(event, ui)
+        def uiClass = uriMappings.getUIClass(path)
+        def ui = Vaadin.newInstance(uiClass)
+        def fragments = uriMappings.getAllFragments(path)
+        if (fragments?.size() > 0) {
+            ui.navigator = createNavigator(ui)
         }
         ui
     }
@@ -55,12 +54,11 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         def uiClass = uriMappings.getUIClass(path)
-        log.debug("UI class [${uiClass?.fullName}] found for path [${path}]")
-        log
+        log.debug("UI class [${uiClass?.name}] found for path [${path}]")
         if (uiClass == null) {
 //            TODO warn: No UI class found
         }
-        uiClass?.clazz
+        uiClass
     }
 
     @Override

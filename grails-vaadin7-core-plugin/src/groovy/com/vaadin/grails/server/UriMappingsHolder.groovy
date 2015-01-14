@@ -1,9 +1,5 @@
 package com.vaadin.grails.server
 
-import com.vaadin.grails.VaadinUIClass
-import com.vaadin.grails.VaadinViewClass
-import org.codehaus.groovy.grails.web.mapping.DefaultUrlMappingsHolder
-
 /**
  * Provides mappings between URIs such as /vaadin/book#!show/id=1 and Vaadin UIs or Views.
  *
@@ -20,14 +16,14 @@ interface UriMappingsHolder {
     static final PUSH_MODE_PATH_PROPERTY = "pushMode"
     static final PUSH_TRANSPORT_PATH_PROPERTY = "pushTransport"
 
-    VaadinUIClass getUIClass(String path)
-    String getPath(VaadinUIClass uiClass)
+    Class<? extends com.vaadin.ui.UI> getUIClass(String path)
+    String getPath(Class<? extends com.vaadin.ui.UI> uiClass)
     Object getPathProperty(String path, String name)
 
     Collection<String> getAllPaths()
 
-    VaadinViewClass getViewClass(String path, String fragment)
-    String getFragment(String path, VaadinViewClass viewClass)
+    Class<? extends com.vaadin.navigator.View> getViewClass(String path, String fragment)
+    String getFragment(String path, Class<? extends com.vaadin.navigator.View> viewClass)
     Object getFragmentProperty(String path, String fragment, String name)
 
     Collection<String> getAllFragments(String path)

@@ -1,12 +1,11 @@
 package com.vaadin.grails.server
 
-import com.vaadin.grails.Vaadin
-import com.vaadin.grails.VaadinUIClass
-import com.vaadin.grails.VaadinViewClass
+import com.vaadin.navigator.View
+import com.vaadin.ui.UI
 import grails.util.Holders
 import org.apache.log4j.Logger
+import org.springframework.stereotype.Component
 
-import javax.annotation.PostConstruct
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -15,18 +14,24 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2.0
  * @author Stephan Grundner
  */
+@Component("uriMappingsHolder")
 class DefaultUriMappingsHolder implements UriMappings {
 
     static final def log = Logger.getLogger(DefaultUriMappingsHolder)
 
-    Map<String, VaadinUIClass> uiClassByPath = new ConcurrentHashMap<>()
-    Map<URI, VaadinViewClass> viewClassByURI = new ConcurrentHashMap<>()
+    protected final Map<String, Class<? extends UI>> uiClassByPath = new ConcurrentHashMap<>()
+    protected final Map<URI, Class<? extends View>> viewClassByURI = new ConcurrentHashMap<>()
 
-    Map<String, Object> propertiesByPath = new ConcurrentHashMap<>()
-    Map<String, Object> propertiesByPathAndFragment = new ConcurrentHashMap<>()
+    protected final Map<String, Object> propertiesByPath = new ConcurrentHashMap<>()
+    protected final Map<String, Object> propertiesByPathAndFragment = new ConcurrentHashMap<>()
 
-    @PostConstruct
-    protected void init() {
+    @Override
+    void reload() {
+        uiClassByPath.clear()
+        viewClassByURI.clear()
+        propertiesByPath.clear()
+        propertiesByPathAndFragment.clear()
+
         def mappingsConfig = Holders.config.vaadin.mappings
         mappingsConfig.each { String path, ConfigObject pathConfig ->
 //            TODO check for duplicate ui classes!
@@ -40,7 +45,6 @@ class DefaultUriMappingsHolder implements UriMappings {
 
     protected void handlePathConfig(String path, ConfigObject pathConfig) {
         def ui = pathConfig.get("ui")
-        def uiNamespace = pathConfig.get("namespace") ?: null
 
         setPathProperty(path, DEFAULT_FRAGMENT, pathConfig.get(DEFAULT_FRAGMENT) ?: "index")
         setPathProperty(path, THEME_PATH_PROPERTY, pathConfig.get(THEME_PATH_PROPERTY))
@@ -50,37 +54,36 @@ class DefaultUriMappingsHolder implements UriMappings {
         setPathProperty(path, PUSH_MODE_PATH_PROPERTY, pathConfig.get(PUSH_MODE_PATH_PROPERTY))
         setPathProperty(path, PUSH_TRANSPORT_PATH_PROPERTY, pathConfig.get(PUSH_TRANSPORT_PATH_PROPERTY))
 
-        def uiClass = Vaadin.utils.getVaadinUIClass(ui, uiNamespace)
+        def uiClass = ui
         if (uiClass == null) {
-            throw new RuntimeException("No class found for [${path}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+            throw new RuntimeException("No class found for [${path}]")
         }
-        log.debug("Register UI [${uiClass.fullName}] for path [${path}]" + (uiNamespace ? " with namespace [${uiNamespace}]" : ""))
+        log.debug("Register UI [${uiClass.name}] for path [${path}]")
         addUIClass(path, uiClass)
     }
 
     protected void handleFragmentConfig(String path, String fragment, ConfigObject fragmentConfig) {
         def view = fragmentConfig.get("view")
-        def viewNamespace = fragmentConfig.get("namespace") ?: null
 
-        def viewClass = Vaadin.utils.getVaadinViewClass(view, viewNamespace)
+        def viewClass = view
         if (viewClass == null) {
-            throw new RuntimeException("No class found for view [${view}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+            throw new RuntimeException("No class found for view [${view}]")
         }
-        log.debug("Register View [${viewClass.fullName}] for path [${path}#!${fragment}]" + (viewNamespace ? " with namespace [${viewNamespace}]" : ""))
+        log.debug("Register View [${viewClass.name}] for path [${path}#!${fragment}]")
         addViewClass(path, fragment, viewClass)
     }
 
-    void addUIClass(String path, VaadinUIClass uiClass) {
+    void addUIClass(String path, Class<? extends UI> uiClass) {
         uiClassByPath.put(path, uiClass)
     }
 
     @Override
-    VaadinUIClass getUIClass(String path) {
+    Class<? extends UI> getUIClass(String path) {
         uiClassByPath.get(path)
     }
 
     @Override
-    String getPath(VaadinUIClass uiClass) {
+    String getPath(Class<? extends UI> uiClass) {
         uiClassByPath.find { it.value == uiClass }?.key
     }
 
@@ -108,19 +111,19 @@ class DefaultUriMappingsHolder implements UriMappings {
         URI.create("${path}#${fragment}")
     }
 
-    void addViewClass(String path, String fragment, VaadinViewClass viewClass) {
+    void addViewClass(String path, String fragment, Class<? extends View> viewClass) {
         URI uri = createURI(path, fragment)
         viewClassByURI.put(uri, viewClass)
     }
 
     @Override
-    VaadinViewClass getViewClass(String path, String fragment) {
+    Class<? extends View> getViewClass(String path, String fragment) {
         URI uri = createURI(path, fragment)
         viewClassByURI.get(uri)
     }
 
     @Override
-    String getFragment(String path, VaadinViewClass viewClass) {
+    String getFragment(String path, Class<? extends View> viewClass) {
         viewClassByURI.find {
             it.key.path == path && it.value == viewClass
         }?.key?.fragment

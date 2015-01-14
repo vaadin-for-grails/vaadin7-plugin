@@ -1,40 +1,36 @@
 package demo1
 
 import com.vaadin.grails.Vaadin
+import com.vaadin.grails.navigator.VaadinView
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
-import org.springframework.beans.factory.annotation.Autowired
 
-class IndexView extends CustomComponent implements View {
-
-    static namespace = "ns1"
-
-    IndexView() {
-
-    }
-
-    @Autowired
-    MyButtonComponent myButtonComponent
+@VaadinView
+class SecondView extends CustomComponent implements View {
 
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
         compositionRoot = new VerticalLayout()
         compositionRoot.setMargin(true)
         compositionRoot.setSpacing(true)
-        def title = new Label("First View (Index)")
+        def title = new Label("Second View")
         title.setStyleName("h1")
         compositionRoot.addComponent(title)
-        def button = new Button("Go to second view", (Button.ClickListener)new Button.ClickListener() {
+        compositionRoot.addComponent(new Button("Go back", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
-                Vaadin.enter(view: [name: "second"], params: [foo: "bar"])
+                Vaadin.enter(DemoUI, [a: 3])
             }
-        })
-        compositionRoot.addComponent(button)
-        compositionRoot.addComponent(myButtonComponent)
+        }))
+//        compositionRoot.addComponent(new Button("Go to Demo 2", (Button.ClickListener)new Button.ClickListener() {
+//            @Override
+//            void buttonClick(Button.ClickEvent e) {
+//                Vaadin.enter(ui: "demo", namespace: "ns2")
+//            }
+//        }))
     }
 }

@@ -1,22 +1,22 @@
 package com.vaadin.grails
 
 import com.vaadin.grails.navigator.NavigationUtils
-import com.vaadin.navigator.View
 import com.vaadin.server.VaadinSession
-import com.vaadin.ui.UI
-import grails.util.GrailsNameUtils
 import grails.util.Holders
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.springframework.beans.BeanInstantiationException
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.stereotype.Component
 
 /**
  * Utils for ease access to Grails within Vaadin applications.
  *
  * @author Stephan Grundner
  */
+@Component
 class VaadinUtils {
 
     /**
@@ -26,6 +26,10 @@ class VaadinUtils {
      */
     ApplicationContext getApplicationContext() {
         Holders.applicationContext
+    }
+
+    NavigationUtils getNavigationUtils() {
+        Vaadin.getInstance(NavigationUtils)
     }
 
     /**
@@ -50,88 +54,25 @@ class VaadinUtils {
         result
     }
 
-    private Collection<VaadinClass> getVaadinClasses(String name, String type, String namespace = null) {
-        def found = Holders.grailsApplication.getArtefacts(type).findAll {
-            it instanceof VaadinClass &&
-                it.logicalPropertyName == name &&
-                    it["namespace"] == namespace
+    String getUniqueBeanNameForType(Class<?> type) throws NoUniqueBeanDefinitionException {
+        def beanNames = applicationContext.getBeanNamesForType(type)
+        if (beanNames.size() > 1) {
+            throw new NoUniqueBeanDefinitionException(type, beanNames)
         }
-        found
+        beanNames.length == 1 ? beanNames.first() : null
     }
 
-    Object newInstance(VaadinClass vaadinClass) {
-        def beanName
-        if (vaadinClass.namespace) {
-            beanName = "${vaadinClass.namespace}.${vaadinClass.propertyName}"
-        } else {
-            beanName = vaadinClass.propertyName
+    def <T> T newInstance(Class<? extends T> type, Object ...args) {
+        def beanName = getUniqueBeanNameForType(type)
+        if (!applicationContext.isPrototype(beanName)) {
+            throw new BeanInstantiationException(type, "[${beanName}] is not a prototype")
         }
+        applicationContext.getBean(beanName, args)
+    }
+
+    def <T> T getInstance(Class<? extends T> type) {
+        def beanName = getUniqueBeanNameForType(type)
+//        TODO get singleton!
         applicationContext.getBean(beanName)
-    }
-
-    VaadinUIClass getCurrentVaadinUIClass() {
-        getVaadinUIClass(UI.current.class)
-    }
-
-    /**
-     * Return the Vaadin UI Artefact class for the specified UI class.
-     *
-     * @param nativeUIClass The native UI class
-     * @return The Vaadin UI Artefact class for the specified UI class
-     */
-    VaadinUIClass getVaadinUIClass(Class<? extends UI> nativeUIClass) {
-        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(nativeUIClass.name, "UI")
-        def namespace = GrailsClassUtils.getStaticPropertyValue(nativeUIClass, "namespace")
-        def artefacts = Holders.grailsApplication.getArtefacts("UI")
-        artefacts.find { VaadinUIClass artefact ->
-            artefact.logicalPropertyName == logicalPropertyName &&
-                    artefact.namespace == namespace
-        }
-    }
-
-    /**
-     * Return the Vaadin View Artefact class for the specified native View class.
-     *
-     * @param nativeViewClass The native View class
-     * @return The Vaadin View Artefact class for the specified native View class
-     */
-    VaadinViewClass getVaadinViewClass(Class<? extends View> nativeViewClass) {
-        def logicalPropertyName = GrailsNameUtils.getLogicalPropertyName(nativeViewClass.name, "View")
-        def namespace = GrailsClassUtils.getStaticPropertyValue(nativeViewClass, "namespace")
-        def artefacts = Holders.grailsApplication.getArtefacts("View")
-        artefacts.find { VaadinViewClass artefact ->
-            artefact.logicalPropertyName == logicalPropertyName &&
-                    artefact.namespace == namespace
-        }
-    }
-
-    VaadinUIClass getVaadinUIClass(String name, String namespace = null) {
-        def found = getVaadinClasses(name, "UI", namespace)
-        if (found?.size() > 1) {
-            def message = "Multiple Vaadin UIs found for name [${name}]"
-            if (namespace) {
-                message += " and namespace [${namespace}]"
-            }
-            throw new RuntimeException(message)
-        }
-        found.empty ? null : (VaadinUIClass) found.first()
-    }
-
-    VaadinViewClass getVaadinViewClass(String name, String namespace = null) {
-        def found = getVaadinClasses(name, "View", namespace)
-
-        if (found?.size() > 1) {
-            def message = "Multiple Vaadin Views found for name [${name}]"
-            if (namespace) {
-                message += " and namespace [${namespace}]"
-            }
-            throw new RuntimeException(message)
-        }
-        found.empty ? null : (VaadinViewClass) found.first()
-    }
-
-    NavigationUtils getNavigationUtils() {
-
-        applicationContext.getBean(NavigationUtils)
     }
 }
