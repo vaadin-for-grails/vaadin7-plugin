@@ -48,7 +48,7 @@ Plugin for integrating Vaadin into Grails.
 
         'springHelper'(SpringHelper)
         'navigationHelper'(NavigationHelper)
-        'uriMappings'(DefaultUriMappingsHolder)
+        'uriMappingsHolder'(DefaultUriMappingsHolder)
         'uiProvider'(UriMappingsAwareUIProvider) { bean ->
             bean.scope = 'prototype'
             bean.autowire = 'byName'
