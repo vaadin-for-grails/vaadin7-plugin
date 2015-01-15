@@ -64,10 +64,13 @@ class VaadinUtils {
 
     def <T> T newInstance(Class<? extends T> type, Object ...args) {
         def beanName = getUniqueBeanNameForType(type)
-        if (!applicationContext.isPrototype(beanName)) {
-            throw new BeanInstantiationException(type, "[${beanName}] is not a prototype")
+        if (beanName) {
+            if (!applicationContext.isPrototype(beanName)) {
+                throw new BeanInstantiationException(type, "[${beanName}] is not a prototype")
+            }
+            return applicationContext.getBean(beanName, args as Object[])
         }
-        applicationContext.getBean(beanName, args)
+        type.newInstance(args)
     }
 
     def <T> T getInstance(Class<? extends T> type) {

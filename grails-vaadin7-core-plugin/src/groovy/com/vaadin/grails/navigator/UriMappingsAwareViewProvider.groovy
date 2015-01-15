@@ -23,9 +23,11 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
+    final Class<? extends UI> uiClass
     final UriMappingsHolder uriMappings
 
-    UriMappingsAwareViewProvider() {
+    UriMappingsAwareViewProvider(Class<? extends UI> uiClass) {
+        this.uiClass = uiClass
         uriMappings = Vaadin.getInstance(UriMappingsHolder)
     }
 
@@ -51,7 +53,7 @@ class UriMappingsAwareViewProvider implements ViewProvider {
             fragment = fragmentAndParams.substring(0, delimiterIndex)
         }
 
-        def path = uriMappings.getPath(UI.current.class)
+        def path = uriMappings.getPath(uiClass)
         if (fragment == "" && uriMappings.getViewClass(path, getDefaultFragment(path))) {
             return ""
         }
@@ -74,7 +76,7 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     @Override
     View getView(String fragment) {
-        def path = uriMappings.getPath(UI.current.class)
+        def path = uriMappings.getPath(uiClass)
         if (fragment == "") {
             fragment = getDefaultFragment(path)
         }
