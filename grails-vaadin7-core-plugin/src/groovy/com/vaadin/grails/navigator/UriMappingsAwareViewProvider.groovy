@@ -1,14 +1,13 @@
 package com.vaadin.grails.navigator
 
 import com.vaadin.grails.Vaadin
+import com.vaadin.grails.server.UriMappings
 import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Component
 
 /**
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
@@ -17,16 +16,12 @@ import org.springframework.stereotype.Component
  * @since 2.0
  * @author Stephan Grundner
  */
-@Component("viewProvider")
-@Scope("prototype")
 class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
-    final UriMappingsHolder uriMappings
-
-    UriMappingsAwareViewProvider() {
-        uriMappings = Vaadin.getInstance(UriMappingsHolder)
+    UriMappings getUriMappings() {
+        Vaadin.getInstance(UriMappingsHolder)
     }
 
     String getDefaultFragment(String path) {

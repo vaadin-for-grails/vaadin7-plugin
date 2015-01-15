@@ -1,5 +1,9 @@
+import com.vaadin.grails.SpringHelper
+import com.vaadin.grails.navigator.NavigationHelper
+import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
+import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappings
-import com.vaadin.grails.spring.VaadinComponentBeanNameGenerator
+import com.vaadin.grails.server.UriMappingsAwareUIProvider
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -42,16 +46,20 @@ Plugin for integrating Vaadin into Grails.
         def config = loadConfig(application)
         application.config.merge(config)
 
-        xmlns grailsContext: "http://grails.org/schema/context"
-        def packages = config.packages ?: ['*']
-        grailsContext.'component-scan'(
-                'base-package': "com.vaadin.grails, ${packages.join(',')}",
-                'name-generator': VaadinComponentBeanNameGenerator.name
-        )
+        'springHelper'(SpringHelper)
+        'navigationHelper'(NavigationHelper)
+        'uriMappings'(DefaultUriMappingsHolder)
+        'uiProvider'(UriMappingsAwareUIProvider) { bean ->
+            bean.scope = 'prototype'
+            bean.autowire = 'byName'
+        }
+        'viewProvider'(UriMappingsAwareViewProvider) { bean ->
+            bean.scope = 'prototype'
+            bean.autowire = 'byName'
+        }
     }
 
     def doWithApplicationContext = { ctx ->
-
         ctx.getBean(UriMappings).reload()
     }
 

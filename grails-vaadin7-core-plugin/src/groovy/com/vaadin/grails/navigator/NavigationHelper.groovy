@@ -1,36 +1,25 @@
 package com.vaadin.grails.navigator
 
+import com.vaadin.grails.Vaadin
 import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.server.Page
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.DependsOn
-import org.springframework.stereotype.Component
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.util.UrlPathHelper
 
 /**
- * Utils for ease navigation between Views and UIs.
+ * Helper for ease navigation between Views and UIs.
  *
  * @since 2.0
  * @author Stephan Grundner
  */
-@Component
-@DependsOn("uriMappingsHolder")
-class NavigationUtils {
+class NavigationHelper {
 
-    static final def log = Logger.getLogger(NavigationUtils)
-
-    @Autowired
-    UriMappingsHolder uriMappings
-
-    @Autowired
-    LinkGenerator linkGenerator
+    static final def log = Logger.getLogger(NavigationHelper)
 
     /**
      * Encode a map to a String.
@@ -70,7 +59,7 @@ class NavigationUtils {
         if (uiClass == null) {
             uiClass = UI.current.class
         }
-
+        def uriMappings = Vaadin.getInstance(UriMappingsHolder)
         def path = uriMappings.getPath(uiClass)
 
         if (UI.current.class == uiClass) {

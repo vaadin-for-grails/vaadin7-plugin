@@ -1,35 +1,17 @@
 package com.vaadin.grails
 
-import com.vaadin.grails.navigator.NavigationUtils
 import com.vaadin.server.VaadinSession
-import grails.util.Holders
 import org.springframework.beans.BeanInstantiationException
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.stereotype.Component
 
-/**
- * Utils for ease access to Grails within Vaadin applications.
- *
- * @author Stephan Grundner
- */
-@Component
-class VaadinUtils {
+class SpringHelper {
 
-    /**
-     * Return the Vaadin application context for the current session.
-     *
-     * @return The Vaadin application context for the current session
-     */
-    ApplicationContext getApplicationContext() {
-        Holders.applicationContext
-    }
-
-    NavigationUtils getNavigationUtils() {
-        Vaadin.getInstance(NavigationUtils)
+    protected ApplicationContext getApplicationContext() {
+        Vaadin.applicationContext
     }
 
     /**

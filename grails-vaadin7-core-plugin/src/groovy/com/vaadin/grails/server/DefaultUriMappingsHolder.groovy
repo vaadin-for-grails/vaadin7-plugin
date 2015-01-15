@@ -4,7 +4,6 @@ import com.vaadin.navigator.View
 import com.vaadin.ui.UI
 import grails.util.Holders
 import org.apache.log4j.Logger
-import org.springframework.stereotype.Component
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -14,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2.0
  * @author Stephan Grundner
  */
-@Component("uriMappingsHolder")
 class DefaultUriMappingsHolder implements UriMappings {
 
     static final def log = Logger.getLogger(DefaultUriMappingsHolder)

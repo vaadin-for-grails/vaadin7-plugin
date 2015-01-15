@@ -1,7 +1,6 @@
 package demo1
 
 import com.vaadin.grails.Vaadin
-import com.vaadin.grails.navigator.VaadinView
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
@@ -9,7 +8,6 @@ import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
 
-@VaadinView()
 class IndexView extends CustomComponent implements View {
 
     @Override

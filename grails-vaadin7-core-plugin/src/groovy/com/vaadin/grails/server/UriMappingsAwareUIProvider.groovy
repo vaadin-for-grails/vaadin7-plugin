@@ -9,9 +9,6 @@ import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Component
 import org.springframework.web.util.UrlPathHelper
 
 /**
@@ -20,16 +17,15 @@ import org.springframework.web.util.UrlPathHelper
  *
  * @author Stephan Grundner
  */
-@Component("uiProvider")
-@Scope("prototype")
 class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     private static final def log = Logger.getLogger(UriMappingsAwareUIProvider)
 
     final def pathHelper = new UrlPathHelper()
 
-    @Autowired
-    UriMappingsHolder uriMappings
+    UriMappings getUriMappings() {
+        Vaadin.getInstance(UriMappingsHolder)
+    }
 
     protected Navigator createNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)

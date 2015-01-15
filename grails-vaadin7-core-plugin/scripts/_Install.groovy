@@ -6,9 +6,3 @@ if (!config.exists() && !basedir.endsWith("plugin")) {
     def pathToConfigScriptClass = "${basedir}/grails-app/conf/VaadinConfig.groovy"
     ant.copy(file: pathToTemplate, tofile: pathToConfigScriptClass)
 }
-
-// Create the vaadin directory if it doesn't exist
-def vaadinDir = new File("${basedir}/grails-app/vaadin")
-if (!vaadinDir.exists()) {
-    ant.mkdir(dir: vaadinDir)
-}
