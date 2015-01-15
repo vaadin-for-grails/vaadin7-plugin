@@ -1,8 +1,5 @@
 package com.vaadin.grails.navigator
 
-import com.vaadin.grails.Vaadin
-import com.vaadin.grails.server.UriMappingsHolder
-import com.vaadin.navigator.View
 import com.vaadin.server.Page
 import com.vaadin.ui.UI
 import org.apache.log4j.Logger
@@ -55,40 +52,44 @@ class NavigationHelper {
         GrailsWebRequest.lookup()
     }
 
-    void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
-        if (uiClass == null) {
-            uiClass = UI.current.class
-        }
-        def uriMappings = Vaadin.getInstance(UriMappingsHolder)
-        def path = uriMappings.getPath(uiClass)
+    String getCurrentPath() {
+        def url = Page.current.location as String
+        url.substring(currentWebRequest.baseUrl.length())
+    }
 
-        if (UI.current.class == uiClass) {
-            def fragment = uriMappings.getFragment(path, viewClass) ?: ""
-            if (params) {
-                UI.current.navigator.navigateTo("${fragment}/${encodeParams(params)}")
-            } else {
-                UI.current.navigator.navigateTo(fragment)
-            }
-        } else {
+    void enter(Map args) {
+        def ui = args.remove('ui')
+        def view = args.remove('view')
+        def params = args.remove('params')
+
+        if (ui && !ui.equals(currentPath)) {
             def helper = new UrlPathHelper()
             def contextPath = helper.getContextPath(currentWebRequest.nativeRequest)
             if (contextPath.endsWith("/")) {
                 contextPath.substring(0, contextPath.length() - 1)
             }
 
-            def uri = contextPath + path
+            def uri = contextPath + ui
 
-            if (viewClass) {
-                def fragment = uriMappings.getFragment(path, viewClass)
-                uri += "#!${fragment}"
+            if (view) {
+                uri += "#!${view}"
             }
 
             if (params) {
+                if (view == null) {
+                    uri += "#!"
+                }
                 uri += "/${encodeParams(params)}"
             }
 
             Page.current.setLocation(uri)
+        } else {
+            if (params) {
+                UI.current.navigator.navigateTo("$view/${encodeParams(params)}")
+            } else {
+                UI.current.navigator.navigateTo(view)
+            }
         }
-
     }
+
 }

@@ -21,6 +21,13 @@ vaadin {
 
         }
 
+        "/demo2" {
+            ui = demo1.DemoUI
+            theme = "valo"
+            pageTitle = "Demo Nr 2"
+
+        }
+
     }
 
 }

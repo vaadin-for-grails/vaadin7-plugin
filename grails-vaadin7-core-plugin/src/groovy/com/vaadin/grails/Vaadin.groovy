@@ -1,8 +1,6 @@
 package com.vaadin.grails
 
 import com.vaadin.grails.navigator.NavigationHelper
-import com.vaadin.navigator.View
-import com.vaadin.ui.UI
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
@@ -44,16 +42,8 @@ final class Vaadin {
         springHelper.i18n(key, args, locale, messageSource)
     }
 
-    static void enter(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
-        navigationHelper.enter(uiClass, viewClass, params)
-    }
-
-    static void enter(Class<?> uiOrViewClass, Map params = null) {
-        if (UI.isAssignableFrom(uiOrViewClass)) {
-            enter(uiOrViewClass, null, params)
-        } else {
-            enter(null, uiOrViewClass, params)
-        }
+    static void enter(Map params) {
+        navigationHelper.enter(params)
     }
 
     private Vaadin() { }

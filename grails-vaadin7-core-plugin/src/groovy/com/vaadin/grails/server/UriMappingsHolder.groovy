@@ -17,13 +17,11 @@ interface UriMappingsHolder {
     static final PUSH_TRANSPORT_PATH_PROPERTY = "pushTransport"
 
     Class<? extends com.vaadin.ui.UI> getUIClass(String path)
-    String getPath(Class<? extends com.vaadin.ui.UI> uiClass)
     Object getPathProperty(String path, String name)
 
     Collection<String> getAllPaths()
 
     Class<? extends com.vaadin.navigator.View> getViewClass(String path, String fragment)
-    String getFragment(String path, Class<? extends com.vaadin.navigator.View> viewClass)
     Object getFragmentProperty(String path, String fragment, String name)
 
     Collection<String> getAllFragments(String path)
