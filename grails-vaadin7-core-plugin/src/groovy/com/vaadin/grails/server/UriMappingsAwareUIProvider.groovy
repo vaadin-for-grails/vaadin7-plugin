@@ -33,8 +33,7 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
 
     protected Navigator createNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)
-        def viewProvider = Vaadin.newInstance(ViewProvider, ui.class)
-        navigator.addProvider(viewProvider)
+        navigator.addProvider(Vaadin.newInstance(ViewProvider))
         navigator
     }
 
@@ -54,10 +53,11 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
     Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         def uiClass = uriMappings.getUIClass(path)
-        log.debug("UI class [${uiClass?.name}] found for path [${path}]")
         if (uiClass == null) {
 //            TODO warn: No UI class found
+            return null
         }
+        log.debug("UI class [${uiClass?.name}] found for path [${path}]")
         uiClass
     }
 
