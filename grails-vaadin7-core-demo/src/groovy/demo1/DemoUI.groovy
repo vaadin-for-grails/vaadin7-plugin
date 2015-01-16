@@ -12,8 +12,7 @@ class DemoUI extends UI {
         content = new Button("I am an UI only!", new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent event) {
-                Vaadin.enter(ui: "/demo1", view: "two", params: [back: true])
-                println "Ok"
+                Vaadin.enter(path: "/demo1", fragment: "two", params: [back: true])
             }
         })
     }

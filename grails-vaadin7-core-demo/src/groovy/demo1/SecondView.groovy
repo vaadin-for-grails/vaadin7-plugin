@@ -21,7 +21,7 @@ class SecondView extends CustomComponent implements View {
         compositionRoot.addComponent(new Button("Go back", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
-                Vaadin.enter(ui: "/demo1")
+                Vaadin.enter(path: "/demo1")
             }
         }))
     }

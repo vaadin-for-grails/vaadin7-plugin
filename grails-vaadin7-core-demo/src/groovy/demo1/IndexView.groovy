@@ -21,7 +21,7 @@ class IndexView extends CustomComponent implements View {
         def button = new Button("Go to second view", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
-                Vaadin.enter(ui: "/demo2", params: [a: 1])
+                Vaadin.enter(path: "/demo2", params: [a: 1])
             }
         })
         compositionRoot.addComponent(button)

@@ -58,25 +58,25 @@ class NavigationHelper {
     }
 
     void enter(Map args) {
-        def ui = args.remove('ui')
-        def view = args.remove('view')
+        def path = args.remove('path')
+        def fragment = args.remove('fragment')
         def params = args.remove('params')
 
-        if (ui && !ui.equals(currentPath)) {
+        if (path && !path.equals(currentPath)) {
             def helper = new UrlPathHelper()
             def contextPath = helper.getContextPath(currentWebRequest.nativeRequest)
             if (contextPath.endsWith("/")) {
                 contextPath.substring(0, contextPath.length() - 1)
             }
 
-            def uri = contextPath + ui
+            def uri = contextPath + path
 
-            if (view) {
-                uri += "#!${view}"
+            if (fragment) {
+                uri += "#!${fragment}"
             }
 
             if (params) {
-                if (view == null) {
+                if (fragment == null) {
                     uri += "#!"
                 }
                 uri += "/${encodeParams(params)}"
@@ -85,9 +85,9 @@ class NavigationHelper {
             Page.current.setLocation(uri)
         } else {
             if (params) {
-                UI.current.navigator.navigateTo("$view/${encodeParams(params)}")
+                UI.current.navigator.navigateTo("$fragment/${encodeParams(params)}")
             } else {
-                UI.current.navigator.navigateTo(view)
+                UI.current.navigator.navigateTo(fragment)
             }
         }
     }
