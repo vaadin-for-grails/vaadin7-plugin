@@ -2,9 +2,11 @@ Vaadin Core Plugin for Grails
 =========================
 Plugin for integrating Vaadin into Grails.
 
-The Plugin uses plain [Vaadin](https://vaadin.com) classes, but made simpler by following the coding by convention paradigm. UIs and Views for example are accessible via the [Grails Artefact API](https://grails.org/Developer+-+Artefact+API). 
+Manage your [Vaadin](https://vaadin.com) UI and View classes in one simple file.
 
-![Plugins](https://github.com/vaadin-for-grails/organization/wiki/uis_and_views.png)
+![UIs](https://github.com/vaadin-for-grails/organization/wiki/uis_only.png)
+
+![UIs and Views](https://github.com/vaadin-for-grails/organization/wiki/uis_and_views.png)
 
 ## Setup
 Add the follwing line to your BuildConfig.groovy.
@@ -14,12 +16,12 @@ Add the follwing line to your BuildConfig.groovy.
     }
 
     plugins {
-        compile "com.github.vaadin-for-grails:vaadin-core:2.5-SNAPSHOT"
+        compile "com.github.vaadin-for-grails:vaadin-core:1.0-SNAPSHOT"
     }
     
 ## Usage
 ### Working with UIs
-Create your [UI](https://vaadin.com/book/vaadin7/-/page/application.architecture.html) class somewhere below `grails-app/vaadin`.
+Create your [UI](https://vaadin.com/book/vaadin7/-/page/application.architecture.html) class.
 
     class MyUI extents UI {
     
@@ -33,14 +35,14 @@ Map your UI to an URI by adding the following lines to your `VaadinConfig.groovy
     mapping {
         
         "/app" {
-            ui = "my"
+            ui = MyUI
         }
     }
 
 Your Vaadin application is accessible via `http://localhost:8080/<grails app>/app`.
 
 ### Working with Views
-Create your [View](https://vaadin.com/book/-/page/advanced.navigator.html) classes somewhere below `grails-app/vaadin`.
+Create your [View](https://vaadin.com/book/-/page/advanced.navigator.html) class.
 
     class SimpleView extents CustomComponent implements View {
 
@@ -52,11 +54,11 @@ Create your [View](https://vaadin.com/book/-/page/advanced.navigator.html) class
     mapping {
     
         "/app" {
-            ui = "my"
+            ui = MyUI
         
             fragments {
                 "about" {
-                    view = "simple"
+                    view = SimpleView
                 }
             }
         }
@@ -66,9 +68,9 @@ Your View is accessible via `http://localhost:8080/<grails app>/app#!about`.
 
 ### Switching between Views and UIs
 
-Simply call `Vaadin.enter(view: "simple")` to switch the view in the current UI. If you'd like to jump into a different UI, call `Vaadin.enter(ui: "users", view: "list")`.
+Simply call `Vaadin.enter(fragment: "simple")` to switch the view in the current UI. If you'd like to jump into a different UI, call `Vaadin.enter(path: "/other", fragment: "list")`.
 
-What about Parameters? Append a map: `Vaadin.enter(view: "simple", params: [foo: "bar"])`.
+What about Parameters? Append a map: `Vaadin.enter(fragment: "simple", params: [foo: "bar"])`.
 
 ## Embedding UIs in GSPs
 Add the following line to your GSP
