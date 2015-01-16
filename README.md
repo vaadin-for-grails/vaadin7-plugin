@@ -68,12 +68,12 @@ Your View is accessible via `http://localhost:8080/<grails app>/app#!about`.
 
 Simply call `Vaadin.enter(fragment: "simple")` to switch the view in the current UI. If you'd like to jump into a different UI, call `Vaadin.enter(path: "/other", fragment: "list")`.
 
-What about Parameters? Append a map: `Vaadin.enter(fragment: "simple", params: [foo: "bar"])`.
+What about parameters? Append a map: `Vaadin.enter(fragment: "simple", params: [foo: "bar"])`.
 
 ## Embedding UIs in GSPs
 Add the following line to your GSP
 
-    <vaadin:embed ui="default" />
+    <vaadin:embed path="/vaadin" />
     
 The `embed` tag supports the following attributes:
 * id: DOM element id
