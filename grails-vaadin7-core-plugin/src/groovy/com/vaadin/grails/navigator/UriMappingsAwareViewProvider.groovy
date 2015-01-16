@@ -20,10 +20,14 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
-    protected final String path
+//    protected final String path
+//
+//    UriMappingsAwareViewProvider(String path) {
+//        this.path = path
+//    }
 
-    UriMappingsAwareViewProvider(String path) {
-        this.path = path
+    String getPath() {
+        Vaadin.navigationHelper.currentPath
     }
 
     UriMappings getUriMappings() {

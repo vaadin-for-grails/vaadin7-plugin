@@ -53,8 +53,19 @@ class NavigationHelper {
     }
 
     String getCurrentPath() {
-        def url = Page.current.location as String
-        url.substring(currentWebRequest.baseUrl.length())
+        String url
+        def page = Page.current
+        if (page == null) {
+            url = currentWebRequest.parameterMap["v-loc"]
+        } else {
+            url = page.location.toString()
+        }
+        def path = url.substring(currentWebRequest.baseUrl.length())
+        def indexOfFragment = path.indexOf("#")
+        if (indexOfFragment > -1) {
+            path = path.substring(0, indexOfFragment)
+        }
+        path
     }
 
     void enter(Map args) {
@@ -87,7 +98,7 @@ class NavigationHelper {
             if (params) {
                 UI.current.navigator.navigateTo("$fragment/${encodeParams(params)}")
             } else {
-                UI.current.navigator.navigateTo(fragment)
+                UI.current.navigator.navigateTo(fragment ?: '')
             }
         }
     }

@@ -27,9 +27,9 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
         Vaadin.getInstance(UriMappingsHolder)
     }
 
-    protected Navigator createNavigator(UI ui, String path) {
+    protected Navigator createDefaultNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(Vaadin.newInstance(ViewProvider, path))
+        navigator.addProvider(Vaadin.newInstance(ViewProvider))
         navigator
     }
 
@@ -40,7 +40,7 @@ class UriMappingsAwareUIProvider extends com.vaadin.server.UIProvider {
         def path = pathHelper.getPathWithinApplication(event.request)
         def fragments = uriMappings.getAllFragments(path)
         if (fragments?.size() > 0) {
-            ui.navigator = createNavigator(ui, path)
+            ui.navigator = createDefaultNavigator(ui)
         }
         ui
     }
