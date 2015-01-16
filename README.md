@@ -77,7 +77,7 @@ Add the following line to your GSP
     
 The `embed` tag supports the following attributes:
 * id: DOM element id
-* ui: The name of the UI
+* path: The path mappted to an UI
 * namespace: The namespace the UI is assigned to
 * widgetset: The widgetset to be used
 * theme: The name of the theme, such as one of the built-in themes (reindeer, runo, or chameleon) or a custom theme
