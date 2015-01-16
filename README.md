@@ -4,8 +4,6 @@ Plugin for integrating Vaadin into Grails.
 
 Manage your [Vaadin](https://vaadin.com) UI and View classes in one simple file.
 
-![UIs](https://github.com/vaadin-for-grails/organization/wiki/uis_only.png)
-
 ![UIs and Views](https://github.com/vaadin-for-grails/organization/wiki/uis_and_views.png)
 
 ## Setup
