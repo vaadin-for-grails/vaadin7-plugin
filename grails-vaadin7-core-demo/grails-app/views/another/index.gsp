@@ -14,6 +14,6 @@
 <body>
     <h1>Embedding a Vaadin UI into a Grails GSP</h1>
     <p>Here we go:</p>
-    <vaadin:embed ui="demo4"  />
+    <vaadin:embed path="/demo1"  />
 </body>
 </html>

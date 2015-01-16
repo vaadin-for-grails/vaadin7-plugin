@@ -1,7 +1,5 @@
 package com.vaadin.grails
 
-import com.vaadin.grails.server.UriMappingsHolder
-
 /**
  * Vaadin GSP TagLib.
  *
@@ -14,19 +12,16 @@ class VaadinTagLib {
 
     static namespace = "vaadin"
 
-    UriMappingsHolder uriMappingsHolder
-
     /**
      * Embedding a Vaadin UI.
      * <p>
      *     Example:
      *     <code>
-     *         <vaadin:embed ui="default" />
+     *         <vaadin:embed path="/vaadin" />
      *     </code>
      * </p>
      * @attr id DOM element id
-     * @attr ui The name of the UI
-     * @attr namespace The namespace the UI is assigned to
+     * @attr path The path mappted to an UI
      * @attr widgetset
      * @attr theme Name of the theme, such as one of the built-in themes (reindeer, runo, or chameleon) or a custom theme
      * @attr vaadinDir Relative path to the VAADIN directory
@@ -37,11 +32,15 @@ class VaadinTagLib {
         def id = attrs.remove("id") ?: UUID.randomUUID().toString()
         def style = attrs.remove("style") ?: ""
 
-        def ui = attrs.remove("ui")
-        if (ui == null) {
-            throwTagError "Missing [ui] attribute"
+        def path = attrs.remove("path") as String
+        if (path == null) {
+            throwTagError "Missing [path] attribute"
         }
-        def namespace = attrs.remove("namespace") ?: null
+
+        if (path.startsWith("/")) {
+            path = path.substring(1)
+        }
+
         def widgetset = attrs.remove("widgetset") ?: "com.vaadin.DefaultWidgetSet"
         def theme = attrs.remove("theme") ?: "valo"
         def vaadinDir = attrs.remove("vaadinDir") ?: "VAADIN"
@@ -49,16 +48,6 @@ class VaadinTagLib {
         def debug = attrs.remove("debug") ?: false
 
         def vaadinVersion = com.vaadin.shared.Version.fullVersion
-
-        def uiClass = Vaadin.utils.getUIArtefact(ui, namespace)
-        if (uiClass == null) {
-            throwTagError "No ui found for name [${ui}]" + (namespace != null ? " and namespace [${namespace}]" : "")
-        }
-        def uiPath = uriMappingsHolder.getPath(uiClass)
-
-        if (uiPath.startsWith("/")) {
-            uiPath = uiPath.substring(1)
-        }
 
         out << """
 <script type='text/javascript' src='./${vaadinDir}/vaadinBootstrap.js'></script>
@@ -77,8 +66,8 @@ class VaadinTagLib {
         alert("Failed to load the bootstrap JavaScript: ${vaadinDir}/vaadinBootstrap.js");
     } else {
         vaadin.initApplication("$id", {
-            "browserDetailsUrl": "$uiPath",
-            "serviceUrl": "$uiPath",
+            "browserDetailsUrl": "$path",
+            "serviceUrl": "$path",
             "widgetset": "$widgetset",
             "theme": "$theme",
             "versionInfo": {"vaadinVersion": "$vaadinVersion"},
