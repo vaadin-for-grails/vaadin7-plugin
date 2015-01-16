@@ -1,6 +1,7 @@
 package com.vaadin.grails
 
 import com.vaadin.grails.navigator.NavigationHelper
+import com.vaadin.grails.ui.builders.ComponentBuilder
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
@@ -44,6 +45,10 @@ final class Vaadin {
 
     static void enter(Map params) {
         navigationHelper.enter(params)
+    }
+
+    static Object build(Closure closure) {
+        (new ComponentBuilder()).call(closure)
     }
 
     private Vaadin() { }
