@@ -3,7 +3,7 @@ package com.vaadin.grails.server
 /**
  * Provides mappings between URIs such as /vaadin/book#!show/id=1 and Vaadin UIs or Views.
  *
- * @since 2.0
+ * @since 1.0
  * @author Stephan Grundner
  */
 interface UriMappingsHolder {

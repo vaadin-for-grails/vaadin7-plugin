@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Default implementation for {@link UriMappingsHolder}.
  *
- * @since 2.0
+ * @since 1.0
  * @author Stephan Grundner
  */
 class DefaultUriMappingsHolder implements UriMappings {

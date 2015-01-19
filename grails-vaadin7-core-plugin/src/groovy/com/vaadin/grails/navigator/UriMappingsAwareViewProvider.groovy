@@ -13,18 +13,12 @@ import org.apache.log4j.Logger
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses mappings
  * defined in the <code>VaadinConfig</code> script.
  *
- * @since 2.0
+ * @since 1.0
  * @author Stephan Grundner
  */
 class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
-
-//    protected final String path
-//
-//    UriMappingsAwareViewProvider(String path) {
-//        this.path = path
-//    }
 
     String getPath() {
         Vaadin.navigationHelper.currentPath

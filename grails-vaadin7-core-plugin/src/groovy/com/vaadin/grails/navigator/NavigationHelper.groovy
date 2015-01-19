@@ -11,7 +11,7 @@ import org.springframework.web.util.UrlPathHelper
 /**
  * Helper for ease navigation between Views and UIs.
  *
- * @since 2.0
+ * @since 1.0
  * @author Stephan Grundner
  */
 class NavigationHelper {
