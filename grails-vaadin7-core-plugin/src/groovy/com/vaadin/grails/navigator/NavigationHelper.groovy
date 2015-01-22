@@ -53,18 +53,21 @@ class NavigationHelper {
     }
 
     String getCurrentPath() {
-        String url
+        URL url
+
         def page = Page.current
         if (page == null) {
-            url = currentWebRequest.parameterMap["v-loc"]
+            url = new URL(currentWebRequest.parameterMap["v-loc"])
         } else {
-            url = page.location.toString()
+            url = page.location.toURL()
         }
-        def path = url.substring(currentWebRequest.baseUrl.length())
-        def indexOfFragment = path.indexOf("#")
-        if (indexOfFragment > -1) {
-            path = path.substring(0, indexOfFragment)
+
+        def path = url.path
+        def contextPathLength = currentWebRequest.contextPath.length()
+        if (contextPathLength > 0) {
+            path = path.substring(contextPathLength, path.length())
         }
+
         path
     }
 
