@@ -8,6 +8,5 @@
   <type>VaadinCoreGrailsPlugin</type>
   <resources>
     <resource>com.vaadin.grails.VaadinTagLib</resource>
-    <resource>com.vaadin.grails.ui.DefaultUI</resource>
   </resources>
 </plugin>
