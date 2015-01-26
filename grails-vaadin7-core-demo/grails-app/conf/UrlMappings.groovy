@@ -7,7 +7,8 @@ class UrlMappings {
             }
         }
 
-        "/"(view: "index")
+//        "/"(view: "index")
+        "/"(redirect: "/vaadin")
         "500"(view:'/error')
 	}
 }

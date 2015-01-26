@@ -2,9 +2,6 @@ import com.vaadin.grails.ui.DefaultUI
 
 vaadin {
 
-//    defaultFragment = "index"
-//    productionMode = false
-
     mappings {
 
         "/vaadin" {
@@ -14,10 +11,7 @@ vaadin {
 
             fragments {
                 "index" {
-                    view = demo1.IndexView
-                }
-                "two" {
-                    view = demo1.SecondView
+                    view = demo.IndexView
                 }
             }
         }
@@ -43,6 +37,23 @@ vaadin {
             theme = "valo"
             pageTitle = "Demo Nr 2"
 
+        }
+
+        "/demo3" {
+            ui = demo3.DemoUI
+            theme = "valo"
+            pageTitle = "Demo Nr 3"
+
+            fragments {
+
+                "index" {
+                    view = demo3.IndexView
+                }
+
+                "different" {
+                    view = demo3.DifferentView
+                }
+            }
         }
 
     }
