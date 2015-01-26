@@ -3,6 +3,12 @@ package com.vaadin.grails.data.util
 import com.vaadin.data.Container
 import com.vaadin.data.Item
 import com.vaadin.data.Property
+import com.vaadin.data.Container.Filter
+import com.vaadin.data.Container.Filterable
+import com.vaadin.data.Container.PropertySetChangeListener
+import com.vaadin.data.Container.PropertySetChangeNotifier
+import com.vaadin.data.Container.Sortable
+import com.vaadin.data.Property.ValueChangeListener
 import com.vaadin.data.util.AbstractInMemoryContainer
 import com.vaadin.data.util.NestedPropertyDescriptor
 import com.vaadin.data.util.VaadinPropertyDescriptor
@@ -12,7 +18,7 @@ import com.vaadin.data.util.filter.UnsupportedFilterException
  * @author Stephan Grundner
  */
 class DomainItemContainer<T> extends AbstractInMemoryContainer<Serializable, DomainItemProperty<T, ?>, DomainItem<T>>
-        implements Container.Filterable, Container.Sortable, Property.ValueChangeListener, Container.PropertySetChangeNotifier {
+implements Filterable, Sortable, ValueChangeListener, PropertySetChangeNotifier {
 
     final Class<T> type
 
@@ -74,7 +80,7 @@ class DomainItemContainer<T> extends AbstractInMemoryContainer<Serializable, Dom
         internalAddItemAtEnd(item.id, item, true)
     }
 
-//    TODO implement remove*Item() and removeAllItems()
+    //    TODO implement remove*Item() and removeAllItems()
 
     @Override
     protected DomainItem<T> getUnfilteredItem(Object itemId) {
@@ -131,6 +137,16 @@ class DomainItemContainer<T> extends AbstractInMemoryContainer<Serializable, Dom
     }
 
     @Override
+    boolean hasContainerFilters() {
+        super.hasContainerFilters()
+    }
+
+    @Override
+    Collection<Filter> getContainerFilters() {
+        return super.getContainerFilters();
+    }
+
+    @Override
     void removeAllContainerFilters() {
         super.removeAllFilters()
     }
@@ -150,8 +166,25 @@ class DomainItemContainer<T> extends AbstractInMemoryContainer<Serializable, Dom
         super.filterAll()
     }
 
+    //** @deprecated
+    @Deprecated
+    void addListener(PropertySetChangeListener listener) {
+        this.addPropertySetChangeListener(listener)
+    }
+
     @Override
     void addPropertySetChangeListener(Container.PropertySetChangeListener listener) {
         super.addPropertySetChangeListener(listener)
+    }
+
+    //** @deprecated
+    @Deprecated
+    void removeListener(PropertySetChangeListener listener) {
+        this.removePropertySetChangeListener(listener)
+    }
+
+    @Override
+    void removePropertySetChangeListener(Container.PropertySetChangeListener listener) {
+        super.removePropertySetChangeListener(listener)
     }
 }
