@@ -1,6 +1,7 @@
 package com.vaadin.grails.ui
 
 import com.vaadin.grails.server.UIAttributesHolder
+import com.vaadin.grails.ui.builders.ComponentBuilder
 import com.vaadin.ui.UI
 
 import java.util.concurrent.Future
@@ -12,6 +13,10 @@ import java.util.concurrent.Future
  * @since 1.0
  */
 final class UIUtils {
+
+    static Object build(Closure<?> closure) {
+        (new ComponentBuilder()).call(closure)
+    }
 
     /**
      * @see {@link UI#access(java.lang.Runnable)}

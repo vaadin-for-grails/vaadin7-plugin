@@ -1,4 +1,4 @@
-import com.vaadin.grails.SpringHelper
+import com.vaadin.grails.spring.BeanHelper
 import com.vaadin.grails.navigator.NavigationHelper
 import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
 import com.vaadin.grails.server.DefaultUriMappingsHolder
@@ -46,7 +46,7 @@ Plugin for integrating Vaadin into Grails.
         def config = loadConfig(application)
         application.config.merge(config)
 
-        'springHelper'(SpringHelper)
+        'springHelper'(BeanHelper)
         'navigationHelper'(NavigationHelper)
         'uriMappingsHolder'(DefaultUriMappingsHolder)
         'uiProvider'(UriMappingsAwareUIProvider) { bean ->

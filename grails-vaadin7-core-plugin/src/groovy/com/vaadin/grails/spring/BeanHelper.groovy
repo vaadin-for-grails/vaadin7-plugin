@@ -1,5 +1,6 @@
-package com.vaadin.grails
+package com.vaadin.grails.spring
 
+import com.vaadin.grails.Vaadin
 import com.vaadin.server.VaadinSession
 import org.springframework.beans.BeanInstantiationException
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException
@@ -8,7 +9,13 @@ import org.springframework.context.MessageSource
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
 
-class SpringHelper {
+/**
+ * Helper for ease access to beans.
+ *
+ * @since 1.0
+ * @author Stephan Grundner
+ */
+class BeanHelper {
 
     protected ApplicationContext getApplicationContext() {
         Vaadin.applicationContext
@@ -23,7 +30,7 @@ class SpringHelper {
      * @param messageSource The message source or null
      * @return A localized message for the specified property key
      */
-    String i18n(String key, Object[] args = null, Locale locale = null, MessageSource messageSource = null) {
+    String getMessage(String key, Object[] args = null, Locale locale = null, MessageSource messageSource = null) {
         if (messageSource == null) {
             messageSource = applicationContext.getBean("messageSource")
         }

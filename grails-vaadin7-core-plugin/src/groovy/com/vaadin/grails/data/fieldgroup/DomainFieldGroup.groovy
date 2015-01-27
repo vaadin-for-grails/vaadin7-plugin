@@ -48,39 +48,6 @@ class DomainFieldGroup<T> extends FieldGroup {
         }
     }
 
-//    @Override
-//    public Field<?> buildAndBind(String caption, Object propertyId) throws BindException {
-//        try {
-//            fieldFactory.propertyId = propertyId
-//            return super.buildAndBind(caption, propertyId)
-//        } finally {
-//            fieldFactory.propertyId = null
-//        }
-//    }
-//
-//    @Override
-//    public Field<?> buildAndBind(Object propertyId) throws BindException {
-//        def domainClassName = GrailsNameUtils.getPropertyName(type.name)
-//        def caption = Grails.i18n("${domainClassName}.${propertyId}")
-//        try {
-//            fieldFactory.propertyId = propertyId
-//            def field = super.buildAndBind(caption, propertyId)
-//            return field
-//        } finally {
-//            fieldFactory.propertyId = null
-//        }
-//    }
-//
-//    @Override
-//    public def <T extends Field> T buildAndBind(String caption, Object propertyId, Class<T> fieldType) throws BindException {
-//        try {
-//            fieldFactory.propertyId = propertyId
-//            return super.buildAndBind(caption, propertyId, fieldType)
-//        } finally {
-//            fieldFactory.propertyId = null
-//        }
-//    }
-
     private final Locale determineLocale() {
         locale ?: VaadinSession.current.locale ?: Locale.default
     }
