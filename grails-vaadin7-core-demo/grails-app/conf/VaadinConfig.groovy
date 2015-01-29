@@ -1,4 +1,5 @@
 import com.vaadin.grails.ui.DefaultUI
+import demo4.BooksView
 
 vaadin {
 
@@ -52,6 +53,18 @@ vaadin {
 
                 "different" {
                     view = demo3.DifferentView
+                }
+            }
+        }
+
+        "/demo4" {
+            ui = DefaultUI
+            theme = "valo"
+            pageTitle = "Demo Nr 4"
+
+            fragments {
+                "index" {
+                    view = BooksView
                 }
             }
         }

@@ -31,8 +31,9 @@ class BuildNodeHandler extends ComponentNodeHandler {
             if (fieldGroup == null) {
                 throw new RuntimeException("No field group found for key [${key}]")
             }
-
-        } else if (fieldGroup == null) {
+        } else if (fieldGroupOrKey instanceof FieldGroup) {
+            fieldGroup = fieldGroupOrKey
+        } else if (fieldGroupOrKey == null) {
             fieldGroup = tree.defaultFieldGroup
 
             if (fieldGroup == null) {

@@ -1,85 +1,48 @@
 package com.vaadin.grails.ui
 
-import com.vaadin.grails.server.UIAttributesHolder
-import com.vaadin.grails.ui.builders.ComponentBuilder
-import com.vaadin.ui.UI
+import com.vaadin.grails.Vaadin
 
 import java.util.concurrent.Future
 
 /**
- * Utilities for UI related operations.
- *
- * @author Stephan Grundner
- * @since 1.0
+ * @deprecated As of release 1.0, replaced by {@link UIHelper}
  */
+@Deprecated
 final class UIUtils {
 
+    @Deprecated
     static Object build(Closure<?> closure) {
-        (new ComponentBuilder()).call(closure)
+        Vaadin.getUIHelper().build(closure)
     }
 
-    /**
-     * @see {@link UI#access(java.lang.Runnable)}
-     */
+    @Deprecated
     static Future<Void> access(Closure<Void> closure) {
-        UI.current.access(new Runnable() {
-            @Override
-            void run() {
-                closure?.call()
-            }
-        })
+        Vaadin.getUIHelper().access(closure)
     }
 
-    /**
-     * @see {@link UI#accessSynchronously(java.lang.Runnable)}
-     */
+    @Deprecated
     static void accessSynchronously(Closure<Void> closure) {
-        UI.current.accessSynchronously(new Runnable() {
-            @Override
-            void run() {
-                closure?.call()
-            }
-        })
+        Vaadin.getUIHelper().accessSynchronously(closure)
     }
 
-    /**
-     * Retrieve a stored value associated with the current UI.
-     *
-     * @param name The name of the attribute
-     * @return The value of the attribute
-     */
+    @Deprecated
     static Object getAttribute(String name) {
-        UIAttributesHolder.instance.getAttribute(name)
+        Vaadin.getUIHelper().getAttribute(name)
     }
 
-    /**
-     * Retrieve a stored value associated with the current UI.
-     *
-     * @param type The type of the attribute
-     * @return The value of the attribute
-     */
+    @Deprecated
     static Object getAttribute(Class type) {
-        UIAttributesHolder.instance.getAttribute(type)
+        Vaadin.getUIHelper().getAttribute(type)
     }
 
-    /**
-     * Store a value associated with the current UI.
-     *
-     * @param name The name of the attribute
-     * @param value The value of the attribute
-     */
+    @Deprecated
     static void setAttribute(String name, Object value) {
-        UIAttributesHolder.instance.setAttribute(name, value)
+        Vaadin.getUIHelper().setAttribute(name, value)
     }
 
-    /**
-     * Store a value associated with the current UI.
-     *
-     * @param type The type of the attribute
-     * @param value The value of the attribute
-     */
+    @Deprecated
     static void setAttribute(Class type, Object value) {
-        UIAttributesHolder.instance.setAttribute(type, value)
+        Vaadin.getUIHelper().setAttribute(type, value)
     }
 
     private UIUtils() { }

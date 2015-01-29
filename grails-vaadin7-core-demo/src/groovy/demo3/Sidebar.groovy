@@ -1,16 +1,16 @@
 package demo3
 
 import com.vaadin.grails.Vaadin
-import com.vaadin.grails.ui.UIUtils
+import com.vaadin.grails.ui.UIHelper
 import com.vaadin.ui.CustomComponent
 
     class Sidebar extends CustomComponent {
 
         static Sidebar getInstance() {
-            def sidebar = UIUtils.getAttribute(Sidebar)
+            def sidebar = Vaadin.getUIHelper().getAttribute(Sidebar)
             if (sidebar == null) {
                 sidebar = new Sidebar()
-                UIUtils.setAttribute(Sidebar, sidebar)
+                Vaadin.getUIHelper().setAttribute(Sidebar, sidebar)
             }
             sidebar
         }

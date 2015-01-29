@@ -6,7 +6,6 @@ import com.vaadin.grails.server.UriMappingsHolder
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewProvider
 import com.vaadin.server.VaadinSession
-import com.vaadin.ui.UI
 import org.apache.log4j.Logger
 
 /**
@@ -20,10 +19,8 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
-    String path
-
-    UriMappingsAwareViewProvider(String path) {
-        this.path = path
+    String getPath() {
+        Vaadin.getUIHelper().getAttribute("path")
     }
 
     UriMappings getUriMappings() {

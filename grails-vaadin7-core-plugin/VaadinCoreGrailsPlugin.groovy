@@ -4,6 +4,9 @@ import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
 import com.vaadin.grails.server.DefaultUriMappingsHolder
 import com.vaadin.grails.server.UriMappings
 import com.vaadin.grails.server.UriMappingsAwareUIProvider
+import com.vaadin.grails.ui.UIHelper
+import com.vaadin.grails.ui.UIHelper
+import com.vaadin.grails.ui.UIHelper
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -48,6 +51,7 @@ Plugin for integrating Vaadin into Grails.
 
         'springHelper'(BeanHelper)
         'navigationHelper'(NavigationHelper)
+        'uiHelper'(UIHelper)
         'uriMappingsHolder'(DefaultUriMappingsHolder)
         'uiProvider'(UriMappingsAwareUIProvider) { bean ->
             bean.scope = 'prototype'

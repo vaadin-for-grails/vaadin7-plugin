@@ -10,6 +10,7 @@ import com.vaadin.data.Container.PropertySetChangeNotifier
 import com.vaadin.data.Container.Sortable
 import com.vaadin.data.Property.ValueChangeListener
 import com.vaadin.data.util.AbstractInMemoryContainer
+import com.vaadin.data.util.BeanItemContainer
 import com.vaadin.data.util.NestedPropertyDescriptor
 import com.vaadin.data.util.VaadinPropertyDescriptor
 import com.vaadin.data.util.filter.UnsupportedFilterException
@@ -80,7 +81,32 @@ implements Filterable, Sortable, ValueChangeListener, PropertySetChangeNotifier 
         internalAddItemAtEnd(item.id, item, true)
     }
 
-    //    TODO implement remove*Item() and removeAllItems()
+    @Override
+    boolean removeItem(Object itemId) throws UnsupportedOperationException {
+        int sizeBefore = size()
+        int position = indexOfId(itemId)
+        if (internalRemoveItem(itemId)) {
+//            Item item = getItem(itemId)
+//            TODO removeAllValueChangeListeners(item)
+            internalRemoveItem(itemId)
+            if (size() != sizeBefore) {
+                fireItemRemoved(position, itemId)
+            }
+            return true
+        }
+        false
+    }
+
+    @Override
+    boolean removeAllItems() throws UnsupportedOperationException {
+        int sizeBefore = size()
+        internalRemoveAllItems()
+//        TODO removeAllValueChangeListeners(item)
+        if (sizeBefore != 0) {
+            fireItemSetChange()
+        }
+        true
+    }
 
     @Override
     protected DomainItem<T> getUnfilteredItem(Object itemId) {

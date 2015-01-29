@@ -1,9 +1,9 @@
 package com.vaadin.grails.server
 
+import com.vaadin.server.ClientConnector
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
-
-import java.util.concurrent.ConcurrentHashMap
+import org.apache.log4j.Logger
 
 /**
  * Store and retrieve attributes by name,
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Stephan Grundner
  * @since 1.0
  */
-class UIAttributesHolder {
+class UIAttributesHolder implements ClientConnector.DetachListener {
 
     static UIAttributesHolder getInstance() {
         def session = VaadinSession.current
@@ -24,14 +24,34 @@ class UIAttributesHolder {
         instance
     }
 
-    protected final Map<String, Object> attributes
+    private static final log = Logger.getLogger(UIAttributesHolder)
 
-    protected UIAttributesHolder() {
-        attributes = createAttributes()
+    protected static class UIAttributes implements Map<String, Object> {
+
+        @Delegate
+        final Map<String, Object> delegate
+
+        UIAttributes(Map<String, Object> delegate) {
+            this.delegate = delegate
+        }
+
+        UIAttributes() {
+            this(new HashMap<String, Object>())
+        }
     }
 
-    protected Map<String, Object> createAttributes() {
-        new ConcurrentHashMap<String, Object>()
+    protected final Map<UI, UIAttributes> attributesByUI
+
+    protected UIAttributesHolder() {
+        attributesByUI = createAttributesByUIMap()
+    }
+
+    protected Map<UI, UIAttributes> createAttributesByUIMap() {
+        new IdentityHashMap<String, UIAttributes>()
+    }
+
+    protected UIAttributes createAttributesMap() {
+        new UIAttributes()
     }
 
     /**
@@ -41,8 +61,8 @@ class UIAttributesHolder {
      * @return The value of the attribute
      */
     Object getAttribute(UI ui, String name) {
-        def id = ui.getUIId()
-        attributes.get("$id#$name")
+        def attributes = attributesByUI.get(ui, createAttributesMap())
+        attributes.get(name)
     }
 
     Object getAttribute(UI ui, Class type) {
@@ -70,8 +90,10 @@ class UIAttributesHolder {
      * @param value The value of the attribute
      */
     void setAttribute(UI ui, String name, Object value) {
-        def id = ui.getUIId()
-        attributes.put("$id#$name", value)
+        log.debug("set attribute [$value] with name [$name] on UI [$ui]")
+        ui.addDetachListener(this)
+        def attributes = attributesByUI.get(ui, createAttributesMap())
+        attributes.put(name, value)
     }
 
     void setAttribute(UI ui, Class type, Object value) {
@@ -90,5 +112,14 @@ class UIAttributesHolder {
 
     void setAttribute(Class type, Object value) {
         setAttribute(type.name, value)
+    }
+
+    @Override
+    void detach(ClientConnector.DetachEvent event) {
+        def ui = event.connector.getUI()
+        if (attributesByUI.containsKey(ui)) {
+            attributesByUI.remove(ui)
+            log.debug("removed attributes for UI [$ui]")
+        }
     }
 }

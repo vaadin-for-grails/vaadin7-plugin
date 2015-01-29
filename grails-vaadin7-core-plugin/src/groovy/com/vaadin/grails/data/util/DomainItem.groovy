@@ -74,4 +74,8 @@ class DomainItem<T> implements Item {
     T save(boolean flush = false) {
         object.invokeMethod("save", [flush: flush])
     }
+
+    void delete(boolean flush = false) {
+        object.invokeMethod("delete", [flush: flush])
+    }
 }
