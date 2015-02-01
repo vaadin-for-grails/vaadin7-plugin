@@ -103,7 +103,8 @@ Plugin for integrating Vaadin into Grails.
 
             def filter = xml.'filter'
             mappings.eachWithIndex { mapping, i ->
-                def urlPattern = mapping.key + "/*"
+                def urlPattern = mapping.key as String
+                urlPattern += urlPattern.endsWith('/') ? '*' : '/*'
                 filter[filter.size() - 1] + {
                     'filter-mapping' {
                         'filter-name'('openSessionInView')
@@ -140,7 +141,8 @@ Plugin for integrating Vaadin into Grails.
 
         def servletMappings = xml."servlet-mapping"
         mappings.eachWithIndex { mapping, i ->
-            def urlPattern = mapping.key + "/*"
+            def urlPattern = mapping.key as String
+            urlPattern += urlPattern.endsWith('/') ? '*' : '/*'
             servletMappings[servletMappings.size() - 1] + {
                 "servlet-mapping" {
                     "servlet-name"("vaadin ${i}")
