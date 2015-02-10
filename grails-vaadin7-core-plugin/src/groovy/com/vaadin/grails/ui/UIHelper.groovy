@@ -43,10 +43,6 @@ class UIHelper {
         })
     }
 
-    private final getAttributesHolder() {
-        UIAttributesHolder.getInstance()
-    }
-
     /**
      * Retrieve a stored value associated with the current UI.
      *
@@ -54,6 +50,7 @@ class UIHelper {
      * @return The value of the attribute
      */
     Object getAttribute(String name) {
+        def attributesHolder = UIAttributesHolder.getInstance()
         attributesHolder.getAttribute(name)
     }
 
@@ -64,6 +61,7 @@ class UIHelper {
      * @return The value of the attribute
      */
     Object getAttribute(Class type) {
+        def attributesHolder = UIAttributesHolder.getInstance()
         attributesHolder.getAttribute(type)
     }
 
@@ -74,6 +72,7 @@ class UIHelper {
      * @param value The value of the attribute
      */
     void setAttribute(String name, Object value) {
+        def attributesHolder = UIAttributesHolder.getInstance()
         attributesHolder.setAttribute(name, value)
     }
 
@@ -84,6 +83,7 @@ class UIHelper {
      * @param value The value of the attribute
      */
     void setAttribute(Class type, Object value) {
+        def attributesHolder = UIAttributesHolder.getInstance()
         attributesHolder.setAttribute(type, value)
     }
 
