@@ -12,7 +12,7 @@ import org.apache.log4j.Logger
  * @author Stephan Grundner
  * @since 1.0
  */
-class UIAttributesHolder implements ClientConnector.DetachListener {
+class UIAttributesHolder implements ClientConnector.DetachListener, Serializable {
 
     static UIAttributesHolder getInstance() {
         def session = VaadinSession.current
