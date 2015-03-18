@@ -124,6 +124,7 @@ Plugin for integrating Vaadin into Grails.
         }
 
         def servletClass = config.servletClass ?: "com.vaadin.server.VaadinServlet"
+
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
             servlets[servlets.size() - 1] + {

@@ -36,21 +36,20 @@ class VaadinTagLib {
         if (path == null) {
             throwTagError "Missing [path] attribute"
         }
-
-        if (path.startsWith("/")) {
-            path = path.substring(1)
-        }
+        path = createLink(uri: path)
 
         def widgetset = attrs.remove("widgetset") ?: "com.vaadin.DefaultWidgetSet"
         def theme = attrs.remove("theme") ?: "valo"
+
         def vaadinDir = attrs.remove("vaadinDir") ?: "VAADIN"
+        vaadinDir = createLink(uri: "/$vaadinDir")
+
         def heartbeatInterval = attrs.remove("heartbeatInterval") ?: 100
         def debug = attrs.remove("debug") ?: false
-
         def vaadinVersion = com.vaadin.shared.Version.fullVersion
 
         out << """
-<script type='text/javascript' src='./${vaadinDir}/vaadinBootstrap.js'></script>
+<script type='text/javascript' src='${"$vaadinDir/vaadinBootstrap.js"}'></script>
 <iframe tabindex="-1" id="__gwt_historyFrame"
         style="position: absolute; width: 0; height: 0; border: 0; overflow: hidden"
         src="javascript:false">
