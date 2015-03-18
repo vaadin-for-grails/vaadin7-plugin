@@ -29,17 +29,9 @@ class DomainItem<T> implements Item {
             throw new RuntimeException("No domain class")
         }
 
-        if (domainClass.getConstrainedProperties()) {
-            domainClass.getConstrainedProperties().each { cProperty ->
-                def property = domainClass.getPersistentProperty(cProperty.key)
-                def id = property.name
-                addItemProperty(id, new DomainItemProperty<T, Object>(this, id))
-            }
-        } else {
-             domainClass.getPersistentProperties().each { property ->
-                def id = property.name
-                addItemProperty(id, new DomainItemProperty<T, Object>(this, id))
-            }
+        domainClass.getPersistentProperties().each { property ->
+            def id = property.name
+            addItemProperty(id, new DomainItemProperty<T, Object>(this, id))
         }
     }
 
