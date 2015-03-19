@@ -19,6 +19,8 @@ class UriMappingsAwareViewProvider implements ViewProvider {
 
     private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
 
+    protected final Map<String, View> cache = new HashMap()
+
     String getPath() {
         Vaadin.getUIHelper().getAttribute("path")
     }
@@ -78,7 +80,11 @@ class UriMappingsAwareViewProvider implements ViewProvider {
         def viewClass = uriMappings.getViewClass(path, fragment)
         if (viewClass) {
             log.debug("View class [${viewClass?.name}] found for path [${path}] and fragment [${fragment}]")
-            def view = Vaadin.newInstance(viewClass)
+            def view = cache.get(fragment)
+            if (view == null) {
+                view = Vaadin.newInstance(viewClass)
+                cache.put(fragment, view)
+            }
             VaadinSession.current.setAttribute(View, view)
             return view
         }
