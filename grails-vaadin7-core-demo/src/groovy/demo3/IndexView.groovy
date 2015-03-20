@@ -4,8 +4,11 @@ import com.vaadin.grails.Vaadin
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.CustomComponent
+import com.vaadin.ui.HorizontalLayout
 
 class IndexView extends CustomComponent implements View {
+
+    HorizontalLayout sidebarAndContent
 
     IndexView() {
         init()
@@ -15,8 +18,7 @@ class IndexView extends CustomComponent implements View {
         compositionRoot = Vaadin.build {
             verticalLayout(sizeFull: true, margin: true, spacing: true) {
                 label(value: "Index view", styleName: "h1 colored")
-                horizontalLayout(sizeFull: true, spacing: true) {
-                    component(instance: Sidebar.instance, sizeUndefined: true)
+                sidebarAndContent = horizontalLayout(sizeFull: true, spacing: true) {
                     verticalLayout(sizeFull: true, expandRatio: 1, spacing: true) {
                         label(value: "Welcome to the Demo", styleName: "h2")
                         label(value: "Select a menu item and click next!", styleName: "light")
@@ -34,6 +36,7 @@ class IndexView extends CustomComponent implements View {
 
     @Override
     void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        Sidebar.instance.setSizeUndefined()
+        sidebarAndContent.addComponent(Sidebar.instance, 0)
     }
 }
