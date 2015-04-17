@@ -7,34 +7,46 @@ import com.vaadin.grails.ui.builders.ComponentBuilder
 import grails.util.Holders
 import org.springframework.context.ApplicationContext
 import org.springframework.context.MessageSource
+import org.vaadin.grails.navigator.Navigation
+import org.vaadin.grails.spring.ApplicationContextUtils
 
 /**
  * Your best friend when developing Vaadin applications.
  *
+ * @deprecated
  * @since 1.0
  * @author Stephan Grundner
  */
+@Deprecated
 final class Vaadin {
 
     /**
      * Return the Vaadin application context.
      *
+     * @deprecated
      * @return The Vaadin application context
      */
+    @Deprecated
     static ApplicationContext getApplicationContext() {
-        Holders.getApplicationContext()
+        Holders.applicationContext
     }
 
+    @Deprecated
     static BeanHelper getBeanHelper() {
-        applicationContext.getBean(com.vaadin.grails.spring.BeanHelper)
+//        applicationContext.getBean(com.vaadin.grails.spring.BeanHelper)
+        ApplicationContextUtils.instantiateType(com.vaadin.grails.spring.BeanHelper)
     }
 
+    @Deprecated
     static NavigationHelper getNavigationHelper() {
-        applicationContext.getBean(com.vaadin.grails.navigator.NavigationHelper)
+//        applicationContext.getBean(com.vaadin.grails.navigator.NavigationHelper)
+        ApplicationContextUtils.instantiateType(com.vaadin.grails.navigator.NavigationHelper)
     }
 
+    @Deprecated
     static UIHelper getUIHelper() {
-        applicationContext.getBean(com.vaadin.grails.ui.UIHelper)
+//        applicationContext.getBean(com.vaadin.grails.ui.UIHelper)
+        ApplicationContextUtils.instantiateType(com.vaadin.grails.ui.UIHelper)
     }
 
     /**
@@ -46,8 +58,10 @@ final class Vaadin {
      * @param args Constructor arguments
      * @return A new instance of the specified type
      */
+    @Deprecated
     static <T> T newInstance(Class<? extends T> type, Object ...args) {
-        getBeanHelper().newInstance(type, args)
+//        getBeanHelper().newInstance(type, args)
+        ApplicationContextUtils.instantiateType(type, args)
     }
 
     /**
@@ -58,8 +72,10 @@ final class Vaadin {
      * @param type The required type
      * @return An instance of the specified type
      */
+    @Deprecated
     static <T> T getInstance(Class<? extends T> type) {
-        getBeanHelper().getInstance(type)
+//        getBeanHelper().getInstance(type)
+        Holders.applicationContext.getBean(type)
     }
 
     /**
@@ -67,6 +83,7 @@ final class Vaadin {
      *
      * @see {@link BeanHelper#getMessage(java.lang.String, java.lang.Object[], java.util.Locale, org.springframework.context.MessageSource)}
      */
+    @Deprecated
     static String i18n(String key, Object[] args = null, Locale locale = null, MessageSource messageSource = null) {
         getBeanHelper().getMessage(key, args, locale, messageSource)
     }
@@ -85,9 +102,12 @@ final class Vaadin {
      *
      * @see VaadinConfig.groovy
      * @see {@link NavigationHelper#enter(java.util.Map)}
+     * @deprecated
      */
+    @Deprecated
     static void enter(Map params) {
-        getNavigationHelper().enter(params)
+//        getNavigationHelper().enter(params)
+        Navigation.enter(params)
     }
 
     /**
@@ -96,9 +116,11 @@ final class Vaadin {
      * @see {@link ComponentBuilder#call(groovy.lang.Closure)}
      * @see {@link UIHelper#build(groovy.lang.Closure)}
      *
+     * @deprecated
      * @param closure The builder closure
      * @return A Vaadin component
      */
+    @Deprecated
     static Object build(Closure closure) {
         getUIHelper().build(closure)
     }

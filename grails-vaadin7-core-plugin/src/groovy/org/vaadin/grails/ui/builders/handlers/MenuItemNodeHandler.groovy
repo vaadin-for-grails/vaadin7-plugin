@@ -1,6 +1,5 @@
-package com.vaadin.grails.ui.builders.handlers
+package org.vaadin.grails.ui.builders.handlers
 
-import com.vaadin.grails.ui.builders.ComponentTree
 import com.vaadin.ui.MenuBar
 
 /**
@@ -25,17 +24,17 @@ class MenuItemNodeHandler extends AbstractNodeHandler {
         }
     }
 
-    MenuItemNodeHandler(ComponentTree tree) {
+    MenuItemNodeHandler(org.vaadin.grails.ui.builders.ComponentTree tree) {
         super(tree)
     }
 
     @Override
-    boolean acceptNode(ComponentTree.TreeNode node) {
+    boolean acceptNode(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         node.name == "menuItem" || node.name == "separator"
     }
 
     @Override
-    void handle(ComponentTree.TreeNode node) {
+    void handle(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
 
         def parentComponent = node.parent.payload
         MenuBar.MenuItem menuItem

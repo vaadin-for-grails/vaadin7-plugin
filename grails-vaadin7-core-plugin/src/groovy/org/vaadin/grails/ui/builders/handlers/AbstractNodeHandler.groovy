@@ -1,6 +1,5 @@
-package com.vaadin.grails.ui.builders.handlers
+package org.vaadin.grails.ui.builders.handlers
 
-import com.vaadin.grails.ui.builders.ComponentTree
 import grails.util.GrailsNameUtils
 import org.apache.log4j.Logger
 
@@ -10,24 +9,24 @@ import org.apache.log4j.Logger
  * @author Stephan Grundner
  * @since 1.0
  */
-abstract class AbstractNodeHandler implements ComponentTree.TreeNodeHandler {
+abstract class AbstractNodeHandler implements org.vaadin.grails.ui.builders.ComponentTree.TreeNodeHandler {
 
     private static final def log = Logger.getLogger(AbstractNodeHandler)
 
-    final ComponentTree tree
+    final org.vaadin.grails.ui.builders.ComponentTree tree
 
-    AbstractNodeHandler(ComponentTree tree) {
+    AbstractNodeHandler(org.vaadin.grails.ui.builders.ComponentTree tree) {
         this.tree = tree
     }
 
     @Override
-    abstract boolean acceptNode(ComponentTree.TreeNode node)
+    abstract boolean acceptNode(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node)
 
     @Override
-    abstract void handle(ComponentTree.TreeNode node)
+    abstract void handle(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node)
 
     @Override
-    void handleChildren(ComponentTree.TreeNode node) { }
+    void handleChildren(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) { }
 
     protected void invokeSetter(Object object, String setterName, Object value) {
         def setters = object.class.getMethods().findAll { it.name == setterName }
@@ -51,13 +50,13 @@ abstract class AbstractNodeHandler implements ComponentTree.TreeNodeHandler {
         log.debug("invoked ${setterName}(${value} as ${value?.class}) on ${object?.class}")
     }
 
-    protected void applyListener(ComponentTree.TreeNode node, String listenerName, Object listener) {
+    protected void applyListener(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node, String listenerName, Object listener) {
         def expectedListenerClassName = GrailsNameUtils.getClassName(listenerName)
         def object = node.payload
         object.invokeMethod("add${expectedListenerClassName}", listener)
     }
 
-    protected void applyAttribute(ComponentTree.TreeNode node, String name, Object value) {
+    protected void applyAttribute(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node, String name, Object value) {
         def component = node.payload
         if (name.endsWith("Listener")) {
             applyListener(node, name, value)
@@ -66,7 +65,7 @@ abstract class AbstractNodeHandler implements ComponentTree.TreeNodeHandler {
         }
     }
 
-    protected void applyAttributes(ComponentTree.TreeNode node) {
+    protected void applyAttributes(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         def component = node.payload
         if (component) {
             node.attributes.each { name, value ->

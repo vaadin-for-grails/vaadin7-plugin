@@ -1,15 +1,11 @@
-import com.vaadin.grails.spring.BeanHelper
-import com.vaadin.grails.navigator.NavigationHelper
-import com.vaadin.grails.navigator.UriMappingsAwareViewProvider
-import com.vaadin.grails.server.DefaultUriMappingsHolder
-import com.vaadin.grails.server.UriMappings
-import com.vaadin.grails.server.UriMappingsAwareUIProvider
-import com.vaadin.grails.ui.UIHelper
-import com.vaadin.grails.ui.UIHelper
-import com.vaadin.grails.ui.UIHelper
+import com.vaadin.navigator.View
+import com.vaadin.ui.UI
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.vaadin.grails.navigator.DefaultNavigation
+import org.vaadin.grails.server.DefaultUriMappings
+import org.vaadin.grails.server.UriMappings
 
 class VaadinCoreGrailsPlugin {
 
@@ -49,22 +45,65 @@ Plugin for integrating Vaadin into Grails.
         def config = loadConfig(application)
         application.config.merge(config)
 
-        'springHelper'(BeanHelper)
-        'navigationHelper'(NavigationHelper)
-        'uiHelper'(UIHelper)
-        'uriMappingsHolder'(DefaultUriMappingsHolder)
-        'uiProvider'(UriMappingsAwareUIProvider) { bean ->
-            bean.scope = 'prototype'
-            bean.autowire = 'byName'
-        }
-        'viewProvider'(UriMappingsAwareViewProvider) { bean ->
-            bean.scope = 'prototype'
-            bean.autowire = 'byName'
-        }
+        'uriMappings'(DefaultUriMappings)
+        'navigation'(DefaultNavigation)
     }
 
     def doWithApplicationContext = { ctx ->
-        ctx.getBean(UriMappings).reload()
+        def uriMappings = ctx.getBean(UriMappings)
+
+        uriMappings.clear()
+
+        def mappingsConfig = Holders.config.vaadin.mappings
+        mappingsConfig.each { String path, ConfigObject pathConfig ->
+
+            def ui = pathConfig.get("ui")
+
+            uriMappings.putPathProperty(path, UriMappings.DEFAULT_FRAGMENT, pathConfig.get(UriMappings.DEFAULT_FRAGMENT) ?: "index")
+            uriMappings.putPathProperty(path, UriMappings.THEME_PATH_PROPERTY, pathConfig.get(UriMappings.THEME_PATH_PROPERTY))
+            uriMappings.putPathProperty(path, UriMappings.WIDGETSET_PATH_PROPERTY, pathConfig.get(UriMappings.WIDGETSET_PATH_PROPERTY))
+            uriMappings.putPathProperty(path, UriMappings.PRESERVED_ON_REFRESH_PATH_PROPERTY, pathConfig.get(UriMappings.PRESERVED_ON_REFRESH_PATH_PROPERTY))
+            uriMappings.putPathProperty(path, UriMappings.PAGE_TITLE_PATH_PROPERTY, pathConfig.get(UriMappings.PAGE_TITLE_PATH_PROPERTY))
+            uriMappings.putPathProperty(path, UriMappings.PUSH_MODE_PATH_PROPERTY, pathConfig.get(UriMappings.PUSH_MODE_PATH_PROPERTY))
+            uriMappings.putPathProperty(path, UriMappings.PUSH_TRANSPORT_PATH_PROPERTY, pathConfig.get(UriMappings.PUSH_TRANSPORT_PATH_PROPERTY))
+
+            Class<? extends UI> uiClass
+
+            if (ui instanceof String) {
+                def classLoader = application.classLoader
+                uiClass = classLoader.loadClass(ui)
+            } else {
+                uiClass = ui
+            }
+
+            if (uiClass == null) {
+                throw new RuntimeException("No class found for [${path}]")
+            }
+            log.debug("Register UI [${uiClass.name}] for path [${path}]")
+            uriMappings.setUIClass(path, uiClass)
+
+
+            def fragments = pathConfig.fragments
+            fragments.each { String fragment, ConfigObject fragmentConfig ->
+
+                def view = fragmentConfig.get("view")
+
+                Class<? extends View> viewClass
+
+                if (view instanceof String) {
+                    def classLoader = application.classLoader
+                    viewClass = classLoader.loadClass(view)
+                } else {
+                    viewClass = view
+                }
+
+                if (viewClass == null) {
+                    throw new RuntimeException("No class found for view [${view}]")
+                }
+                log.debug("Register View [${viewClass.name}] for path [${path}#!${fragment}]")
+                uriMappings.setViewClass(path, fragment, viewClass)
+            }
+        }
     }
 
     def doWithWebDescriptor = { xml ->
@@ -127,6 +166,9 @@ Plugin for integrating Vaadin into Grails.
 
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
+            def uiProviderClass = mapping.value.uiProvider ?:
+                    "org.vaadin.grails.server.UriMappingsAwareUIProvider"
+            println "uiProvider class: $uiProviderClass"
             servlets[servlets.size() - 1] + {
                 "servlet" {
                     "servlet-name"("vaadin ${i}")
@@ -134,7 +176,8 @@ Plugin for integrating Vaadin into Grails.
                     "init-param" {
                         "description"("Vaadin UI Provider")
                         "param-name"("UIProvider")
-                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
+//                        "param-value"("com.vaadin.grails.server.DispatcherUIProvider")
+                        "param-value"(uiProviderClass)
                     }
                     "load-on-startup"("1")
                 }

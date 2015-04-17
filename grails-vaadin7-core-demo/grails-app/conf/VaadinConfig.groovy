@@ -1,7 +1,9 @@
 import com.vaadin.grails.ui.DefaultUI
-import demo4.BooksView
+import demo4.BookListView
 
 vaadin {
+
+//    nullRepresentation = "."
 
     mappings {
 
@@ -64,7 +66,7 @@ vaadin {
 
             fragments {
                 "index" {
-                    view = BooksView
+                    view = BookListView
                 }
             }
         }

@@ -2,11 +2,11 @@ package com.vaadin.grails.data.fieldgroup
 
 import com.vaadin.data.Item
 import com.vaadin.data.fieldgroup.FieldGroup
-import com.vaadin.grails.*
 import com.vaadin.grails.data.util.DomainItem
 import com.vaadin.server.UserError
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.AbstractField
+import org.vaadin.grails.spring.ApplicationContextUtils
 
 /**
  * @author Stephan Grundner
@@ -70,7 +70,8 @@ class DomainFieldGroup<T> extends FieldGroup {
             errors.fieldErrors.each { fieldError ->
                 def field = getField(fieldError.field)
                 if (field instanceof AbstractField) {
-                    def errorMessage = Vaadin.applicationContext.getMessage(fieldError, determineLocale())
+                    def applicationContext = ApplicationContextUtils.applicationContext
+                    def errorMessage = applicationContext.getMessage(fieldError, determineLocale())
                     field.componentError = new UserError(errorMessage)
                 }
             }

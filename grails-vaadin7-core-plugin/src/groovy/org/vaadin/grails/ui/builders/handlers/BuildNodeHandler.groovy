@@ -1,7 +1,6 @@
-package com.vaadin.grails.ui.builders.handlers
+package org.vaadin.grails.ui.builders.handlers
 
 import com.vaadin.data.fieldgroup.FieldGroup
-import com.vaadin.grails.ui.builders.ComponentTree
 import grails.util.GrailsNameUtils
 
 /**
@@ -12,12 +11,12 @@ import grails.util.GrailsNameUtils
  */
 class BuildNodeHandler extends ComponentNodeHandler {
 
-    BuildNodeHandler(ComponentTree tree) {
+    BuildNodeHandler(org.vaadin.grails.ui.builders.ComponentTree tree) {
         super(tree)
     }
 
     @Override
-    boolean acceptNode(ComponentTree.TreeNode node) {
+    boolean acceptNode(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         node.name == "build"
     }
 
@@ -44,7 +43,7 @@ class BuildNodeHandler extends ComponentNodeHandler {
     }
 
     @Override
-    void handle(ComponentTree.TreeNode node) {
+    void handle(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         def caption = node.attributes.remove("caption")
         def propertyId = node.attributes.remove("propertyId")
         def fieldType = node.attributes.remove("fieldType")

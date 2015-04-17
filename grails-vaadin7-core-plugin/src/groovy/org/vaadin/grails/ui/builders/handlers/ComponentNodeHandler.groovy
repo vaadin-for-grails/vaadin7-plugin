@@ -1,6 +1,5 @@
-package com.vaadin.grails.ui.builders.handlers
+package org.vaadin.grails.ui.builders.handlers
 
-import com.vaadin.grails.ui.builders.ComponentTree
 import com.vaadin.ui.Component
 import com.vaadin.ui.ComponentContainer
 import com.vaadin.ui.SingleComponentContainer
@@ -14,15 +13,15 @@ import org.apache.log4j.Logger
  * @author Stephan Grundner
  * @since 1.0
  */
-class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTree.TreeNodeHandler {
+class ComponentNodeHandler extends org.vaadin.grails.ui.builders.handlers.AbstractNodeHandler implements org.vaadin.grails.ui.builders.ComponentTree.TreeNodeHandler {
 
     private static final def log = Logger.getLogger(ComponentNodeHandler)
 
-    ComponentNodeHandler(ComponentTree tree) {
+    ComponentNodeHandler(org.vaadin.grails.ui.builders.ComponentTree tree) {
         super(tree)
     }
 
-    Class<? extends Component> getComponentClass(ComponentTree.TreeNode node) {
+    Class<? extends Component> getComponentClass(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
 //        TODO Cache classes
         def classLoader = Holders.grailsApplication.classLoader
         try {
@@ -32,13 +31,13 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTree.
     }
 
     @Override
-    boolean acceptNode(ComponentTree.TreeNode node) {
+    boolean acceptNode(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         node.name == "component" ||
                 (getComponentClass(node) != null)
     }
 
     @Override
-    void handle(ComponentTree.TreeNode node) {
+    void handle(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         def component = null
         if (node.name == "component") {
             component = node.attributes?.remove('instance')
@@ -58,7 +57,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTree.
         applyAttributes(node)
     }
 
-    protected void attach(ComponentTree.TreeNode node) {
+    protected void attach(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node) {
         if (node.payload) {
             def parent = node.parent
             def parentComponent = parent?.payload
@@ -72,14 +71,14 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTree.
         }
     }
 
-    private void applyComponentAlignment(ComponentTree.TreeNode node, Object value) {
+    private void applyComponentAlignment(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node, Object value) {
         def parent = node.parent
         def parentComponent = parent.payload
         def component = node.payload
         parentComponent.invokeMethod("setComponentAlignment", [component, value])
     }
 
-    private void applyExpandRatio(ComponentTree.TreeNode node, Object value) {
+    private void applyExpandRatio(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node, Object value) {
         def parent = node.parent
         def parentComponent = parent.payload
         def component = node.payload
@@ -87,7 +86,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTree.
     }
 
     @Override
-    protected void applyAttribute(ComponentTree.TreeNode node, String name, Object value) {
+    protected void applyAttribute(org.vaadin.grails.ui.builders.ComponentTree.TreeNode node, String name, Object value) {
         switch (name) {
             case "componentAlignment":
                 applyComponentAlignment(node, value)
