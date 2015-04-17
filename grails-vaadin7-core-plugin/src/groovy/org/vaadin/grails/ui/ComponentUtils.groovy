@@ -7,6 +7,9 @@ import com.vaadin.ui.HasComponents
 import com.vaadin.ui.UI
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * @author Stephan Grundner
+ */
 final class ComponentUtils {
 
     static Locale getLocale(Component component) {
@@ -21,6 +24,22 @@ final class ComponentUtils {
         locale
     }
 
+    static void withEachComponent(Component parent, Closure<?> closure) {
+        if (parent instanceof HasComponents) {
+            parent.each { child ->
+                closure.call(child)
+                withEachComponent(child, closure)
+            }
+        }
+    }
+
+    static void withEachComponent(UI ui, Closure<?> closure) {
+        ui.windows.each { window ->
+            withEachComponent(window, closure)
+        }
+        withEachComponent(ui, closure)
+    }
+
     static setNullRepresentation(Component component, String nullRepresentation) {
         if (component instanceof AbstractTextField) {
             component.setNullRepresentation(nullRepresentation)
@@ -32,22 +51,6 @@ final class ComponentUtils {
 
     static setNullRepresentation(String nullRepresentation) {
         setNullRepresentation(UI.current, nullRepresentation)
-    }
-
-    static void withEachComponent(UI ui, Closure<?> closure) {
-        ui.windows.each { window ->
-            withEachComponent(window, closure)
-        }
-        withEachComponent(ui, closure)
-    }
-
-    static void withEachComponent(Component parent, Closure<?> closure) {
-        if (parent instanceof HasComponents) {
-            parent.each { child ->
-                closure.call(child)
-                withEachComponent(child, closure)
-            }
-        }
     }
 
     private ComponentUtils() { }
