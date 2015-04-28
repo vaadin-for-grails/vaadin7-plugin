@@ -18,6 +18,7 @@ import org.vaadin.grails.util.ApplicationContextUtils
 abstract class LazyInitializer {
 
     static LazyInitializer getCurrent() {
+//        Singleton is required!
         ApplicationContextUtils.getSingletonBean(LazyInitializer)
     }
 

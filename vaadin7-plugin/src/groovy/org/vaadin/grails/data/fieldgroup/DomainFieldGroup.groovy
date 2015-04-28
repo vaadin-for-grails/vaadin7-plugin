@@ -115,7 +115,7 @@ class DomainFieldGroup<T> extends FieldGroup {
 
     @Override
     Field<?> buildAndBind(Object propertyId) throws BindException {
-        String caption = DomainClassUtils.getCaption(type, propertyId, null)
+        String caption = DomainClassUtils.getCaption(type, propertyId)
         buildAndBind(caption, propertyId)
     }
 

@@ -3,7 +3,7 @@ package org.vaadin.grails.ui.builders
 import org.vaadin.grails.ui.builders.handlers.*
 
 /**
- * Vaadin component tree
+ * Vaadin component tree handler
  *
  * @author Stephan Grundner
  * @since 1.0

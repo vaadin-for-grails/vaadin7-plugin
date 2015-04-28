@@ -12,11 +12,14 @@ import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
  * @author Stephan Grundner
+ *
+ * @since 2.0
  */
 class DefaultLazyInitializer extends LazyInitializer {
 
     @Override
     protected void initialize(VaadinSession session) {
+
         def converterFactory = ApplicationContextUtils.getBeanOrInstance(ConverterFactory, DefaultConverterFactory)
         session.setConverterFactory(converterFactory)
 

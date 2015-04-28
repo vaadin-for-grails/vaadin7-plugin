@@ -19,7 +19,7 @@ import org.vaadin.grails.util.ApplicationContextUtils
 class Design {
 
     private static final getCurrent() {
-        ApplicationContextUtils.getBeanOrInstance(Design)
+        ApplicationContextUtils.getSingletonBean(Design)
     }
 
     protected static DesignService getDesignService() {

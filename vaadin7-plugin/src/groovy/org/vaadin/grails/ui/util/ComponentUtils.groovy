@@ -52,9 +52,5 @@ final class ComponentUtils {
         }
     }
 
-    static setNullRepresentation(String nullRepresentation) {
-        setNullRepresentation(UI.current, nullRepresentation)
-    }
-
     private ComponentUtils() { }
 }

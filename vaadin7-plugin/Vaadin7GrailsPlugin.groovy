@@ -10,17 +10,22 @@ import org.vaadin.grails.server.UriMappings
 import org.vaadin.grails.ui.DefaultUI
 import org.vaadin.grails.ui.declarative.Design
 
+/**
+ * Vaadin 7 Plugin.
+ *
+ * @author Stephan Grundner
+ */
 class Vaadin7GrailsPlugin {
 
     def version = "2.0-SNAPSHOT"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"
-    def title = "Vaadin Core Plugin"
+    def title = "Vaadin 7 Plugin"
     def author = "Stephan Grundner"
     def authorEmail = "stephan.grundner@gmail.com"
     def description = '''\
-Plugin for integrating Vaadin7 into Grails.
+Plugin for integrating Vaadin 7 into Grails.
 '''
     def documentation = "https://github.com/vaadin-for-grails/vaadin7-plugin"
 
@@ -172,7 +177,8 @@ Plugin for integrating Vaadin7 into Grails.
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
             def uiProviderClass = mapping.value['uiProvider'] ?:
-                    "org.vaadin.grails.server.UriMappingsAwareUIProvider"
+//                    "org.vaadin.grails.server.UriMappingsAwareUIProvider"
+                    "org.vaadin.grails.server.DelegateUIProvider"
 
             servlets[servlets.size() - 1] + {
                 "servlet" {

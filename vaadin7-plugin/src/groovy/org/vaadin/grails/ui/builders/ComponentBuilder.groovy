@@ -1,6 +1,7 @@
 package org.vaadin.grails.ui.builders
 
 import org.apache.log4j.Logger
+import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
  * A helper class for creating a Vaadin component tree.
@@ -80,7 +81,7 @@ class ComponentBuilder extends BuilderSupport {
     }
 
     ComponentBuilder() {
-        treeHandler = new ComponentTreeHandler()
+        treeHandler = ApplicationContextUtils.getBeanOrInstance(ComponentTreeHandler)
     }
 
     Object call(Closure<?> closure) {

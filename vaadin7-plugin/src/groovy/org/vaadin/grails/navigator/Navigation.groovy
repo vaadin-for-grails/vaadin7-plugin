@@ -17,7 +17,7 @@ abstract class Navigation {
         def session = VaadinSession.current
         def navigation = session.getAttribute(Navigation)
         if (navigation == null) {
-            navigation = ApplicationContextUtils.getBeanOrInstance(Navigation)
+            navigation = ApplicationContextUtils.getBeanOrInstance(Navigation, DefaultNavigation)
             session.setAttribute(Navigation, navigation)
         }
         navigation
