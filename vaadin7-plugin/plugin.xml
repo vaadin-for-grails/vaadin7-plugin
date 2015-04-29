@@ -1,0 +1,13 @@
+<plugin name='vaadin7' version='2.0-SNAPSHOT' grailsVersion='2.4 &gt; *'>
+  <author>Stephan Grundner</author>
+  <authorEmail>stephan.grundner@gmail.com</authorEmail>
+  <title>Vaadin 7 Plugin</title>
+  <description>Plugin for integrating Vaadin 7 into Grails.
+</description>
+  <documentation>https://github.com/vaadin-for-grails/vaadin7-plugin</documentation>
+  <type>Vaadin7GrailsPlugin</type>
+  <resources>
+    <resource>org.vaadin.grails.DesignService</resource>
+    <resource>com.vaadin.grails.VaadinTagLib</resource>
+  </resources>
+</plugin>
