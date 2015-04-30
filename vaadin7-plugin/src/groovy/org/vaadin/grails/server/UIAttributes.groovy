@@ -5,7 +5,6 @@ import com.vaadin.ui.UI
 
 /**
  * @author Stephan Grundner
- *
  * @since 1.0
  */
 class UIAttributes implements ClientConnector.DetachListener {

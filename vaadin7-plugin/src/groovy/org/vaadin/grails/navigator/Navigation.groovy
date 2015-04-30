@@ -8,7 +8,6 @@ import org.vaadin.grails.util.ApplicationContextUtils
  *
  * @see {@link org.vaadin.grails.server.UriMappings}
  * @author Stephan Grundner
- *
  * @since 2.0
  */
 abstract class Navigation {

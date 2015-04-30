@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest
  * A default implementation of {@link Navigation}.
  *
  * @author Stephan Grundner
- *
  * @since 2.0
  */
 class DefaultNavigation extends Navigation {

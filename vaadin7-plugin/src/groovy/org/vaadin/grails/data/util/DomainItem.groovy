@@ -2,33 +2,25 @@ package org.vaadin.grails.data.util
 
 import com.vaadin.data.Item
 import com.vaadin.data.Property
-import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.springframework.validation.Errors
+import org.vaadin.grails.util.DomainClassUtils
 
 /**
  * Domain Item.
  *
  * @author Stephan Grundner
- *
  * @since 1.0
  */
 class DomainItem<T> implements Item {
 
-    static GrailsDomainClass getDomainClass(Class type) {
-        def application = Holders.grailsApplication
-        application.getDomainClass(type.name) as GrailsDomainClass
-    }
-
     final T object
     final Map<String, Property<?>> propertyById = new HashMap()
-
-    boolean readOnly
 
     DomainItem(T object) {
         this.object = object
 
-        def domainClass = getDomainClass(object.getClass())
+        def domainClass = getDomainClass()
         if (domainClass == null) {
             throw new RuntimeException("No domain class")
         }
@@ -39,8 +31,16 @@ class DomainItem<T> implements Item {
         }
     }
 
+    DomainItem(Class<T> type, Object... args) {
+        this(type.newInstance(args))
+    }
+
+    DomainItem(Class<T> type) {
+        this(type.newInstance())
+    }
+
     GrailsDomainClass getDomainClass() {
-        getDomainClass(object.getClass())
+        DomainClassUtils.getDomainClass(object.getClass())
     }
 
     @Override

@@ -1,21 +1,20 @@
 package org.vaadin.grails.data.util
 
 import com.vaadin.data.Property
+import com.vaadin.data.util.AbstractProperty
+import groovy.transform.Memoized
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 
 /**
  * Domain Item Property.
  *
  * @author Stephan Grundner
- *
  * @since 1.0
  */
-class DomainItemProperty<T, P> implements Property<P> {
+class DomainItemProperty<T, P> extends AbstractProperty<P> implements Property<P> {
 
     protected final DomainItem<T> item
     final String propertyId
-
-    boolean readOnly = false
 
     DomainItemProperty(DomainItem<T> item, String propertyId) {
         this.item = item
@@ -32,32 +31,43 @@ class DomainItemProperty<T, P> implements Property<P> {
 
     @Override
     P getValue() {
-        def object = getObject()
         object[propertyId]
     }
 
     @Override
     void setValue(P value) throws Property.ReadOnlyException {
-        def object = getObject()
         object[propertyId] = value
+        fireValueChange()
+    }
+
+    @Memoized
+    public static Class<?> fromPrimitiveType(Class<?> type) {
+        if (type.isPrimitive()) {
+            if (type.equals(Boolean.TYPE)) {
+                type = Boolean.class
+            } else if (type.equals(Integer.TYPE)) {
+                type = Integer.class
+            } else if (type.equals(Float.TYPE)) {
+                type = Float.class
+            } else if (type.equals(Double.TYPE)) {
+                type = Double.class
+            } else if (type.equals(Byte.TYPE)) {
+                type = Byte.class
+            } else if (type.equals(Character.TYPE)) {
+                type = Character.class
+            } else if (type.equals(Short.TYPE)) {
+                type = Short.class
+            } else if (type.equals(Long.TYPE)) {
+                type = Long.class
+            }
+        }
+        type
     }
 
     @Override
     Class<? extends P> getType() {
         def domainClass = getDomainClass()
-        domainClass.getPropertyByName(propertyId)?.type
-    }
-
-    @Override
-    boolean isReadOnly() {
-        if (item.readOnly == false) {
-            return false
-        }
-        readOnly
-    }
-
-    @Override
-    void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly
+        def type = domainClass.getPropertyByName(propertyId)?.type
+        fromPrimitiveType(type)
     }
 }

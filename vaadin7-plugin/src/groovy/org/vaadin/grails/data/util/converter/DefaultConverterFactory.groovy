@@ -7,7 +7,6 @@ import com.vaadin.data.util.converter.Converter
  *
  * @see {@link com.vaadin.server.VaadinSession#setConverterFactory(com.vaadin.data.util.converter.ConverterFactory)}
  * @author Stephan Grundner
- *
  * @since 2.0
  */
 class DefaultConverterFactory extends com.vaadin.data.util.converter.DefaultConverterFactory {

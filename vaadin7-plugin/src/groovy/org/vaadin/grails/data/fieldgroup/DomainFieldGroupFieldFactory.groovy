@@ -1,23 +1,62 @@
 package org.vaadin.grails.data.fieldgroup
 
 import com.vaadin.data.fieldgroup.FieldGroupFieldFactory
+import com.vaadin.ui.DateField
 import com.vaadin.ui.Field
+import com.vaadin.ui.RichTextArea
+import com.vaadin.ui.TextArea
+import com.vaadin.ui.TextField
+import grails.util.GrailsUtil
+import groovy.transform.Memoized
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
+import org.vaadin.grails.util.DomainClassUtils
 
 /**
  * @author Stephan Grundner
  *
  * @since 1.0
  */
-public interface DomainFieldGroupFieldFactory extends FieldGroupFieldFactory {
+class DomainFieldGroupFieldFactory implements FieldGroupFieldFactory {
 
-    FieldGroupFieldFactory getFallbackFieldFactory()
+    private final FieldGroupFieldFactory fieldFactory
 
-    void setFallbackFieldFactory(FieldGroupFieldFactory fallbackFieldFactory)
+    DomainFieldGroupFieldFactory(FieldGroupFieldFactory fieldFactory) {
+        this.fieldFactory = fieldFactory
+    }
 
-    /**
-     * @see {@link FieldGroupFieldFactory#createField(java.lang.Class, java.lang.Class)}
-     */
-    def <T extends Field> T createField(Class<?> propertyType, Class<T> fieldType)
+    @Override
+    final def <T extends Field> T createField(Class<?> dataType, Class<T> fieldType) {
+        fieldFactory.createField(dataType, fieldType)
+    }
+
+    @Memoized
+    protected Class<?> getFieldTypeByWidgetName(String widgetName) {
+        ['textfield'   : TextField,
+        'textarea'    : TextArea,
+        'richtextarea': RichTextArea,
+        'datefield'   : DateField].get(widgetName)
+    }
+
+    protected def <T extends Field> T createFieldByWidget(Class<?> type, String propertyId) {
+        def domainClass = DomainClassUtils.getDomainClass(type)
+        def property = domainClass.getPropertyByName(propertyId)
+
+        T field = null
+
+        def constraints = domainClass.getConstrainedProperties()?.get(property.name)
+        if (constraints) {
+            def widgetName = constraints['widget'] as String
+            if (widgetName) {
+                def requiredFieldType = getFieldTypeByWidgetName(widgetName)
+                if (requiredFieldType) {
+                    field = createField(property.type, requiredFieldType)
+                }
+            }
+        }
+
+        field
+    }
 
     /**
      * Create a field for the specified domain class type and its property
@@ -27,5 +66,13 @@ public interface DomainFieldGroupFieldFactory extends FieldGroupFieldFactory {
      * @param fieldType
      * @return
      */
-    def <T extends Field> T createField(Class<?> type, String propertyId, Class<T> fieldType);
+    public def <T extends Field> T createField(Class<?> type, String propertyId, Class<T> fieldType) {
+        T field = null
+
+        if (fieldType == Field) {
+            field = createFieldByWidget(type, propertyId)
+        }
+
+        field
+    }
 }

@@ -12,7 +12,6 @@ import org.vaadin.grails.util.ApplicationContextUtils
  * Initialize UIs and Sessions once.
  *
  * @author Stephan Grundner
- *
  * @since 2.0
  */
 abstract class LazyInitializer {

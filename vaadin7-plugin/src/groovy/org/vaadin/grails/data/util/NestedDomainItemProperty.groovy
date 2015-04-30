@@ -11,6 +11,7 @@ import org.apache.commons.lang.ArrayUtils
  * @param < P > The property type
  *
  * @author Stephan Grundner
+ * @since 2.0
  */
 class NestedDomainItemProperty<T, P> extends DomainItemProperty<T, P> {
 
@@ -25,7 +26,7 @@ class NestedDomainItemProperty<T, P> extends DomainItemProperty<T, P> {
         propertyNames = ArrayUtils.remove(propertyNames, length)
 
         def current = object
-        propertyNames.each { propertyName ->
+        propertyNames.each { String propertyName ->
             current = current[propertyName]
         }
 

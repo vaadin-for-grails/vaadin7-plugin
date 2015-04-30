@@ -16,7 +16,9 @@ import org.vaadin.grails.util.DomainClassUtils
 class DomainFieldGroup<T> extends FieldGroup {
 
     final Class<T> type
-    private ValidationHandler validationHandler
+
+//    @since 2.0
+    private DomainFieldGroupValidator validator
 
     public DomainFieldGroup(DomainItem<T> itemDataSource) {
         super(itemDataSource)
@@ -29,11 +31,12 @@ class DomainFieldGroup<T> extends FieldGroup {
         initFieldFactory()
     }
 
-    private void initFieldFactory() {
+    protected void initFieldFactory() {
         def fallbackFieldFactory = fieldFactory
-        def fieldFactory = ApplicationContextUtils
-                .getBeanOrInstance(DomainFieldGroupFieldFactory, DefaultDomainFieldGroupFieldFactory)
-        fieldFactory.fallbackFieldFactory = fallbackFieldFactory
+        def fieldFactory = ApplicationContextUtils.getBeanOrInstance(
+                DomainFieldGroupFieldFactory,
+                fallbackFieldFactory)
+
         this.fieldFactory = fieldFactory
     }
 
@@ -47,7 +50,7 @@ class DomainFieldGroup<T> extends FieldGroup {
         if (itemDataSource) {
             return super.getPropertyType(propertyId)
         }
-        def domainClass = DomainItem.getDomainClass(type)
+        def domainClass = DomainClassUtils.getDomainClass(type)
         domainClass.getPropertyByName(propertyId)?.type
     }
 
@@ -60,27 +63,23 @@ class DomainFieldGroup<T> extends FieldGroup {
         }
     }
 
-    ValidationHandler getValidationHandler() {
-        if (validationHandler == null) {
-            validationHandler = ApplicationContextUtils
-                    .getBeanOrInstance(ValidationHandler, DefaultValidationHandler)
+    DomainFieldGroupValidator getValidator() {
+        if (validator == null) {
+            validator = ApplicationContextUtils.getBeanOrInstance(DomainFieldGroupValidator)
         }
-        validationHandler
+        validator
     }
 
-    void setValidationHandler(ValidationHandler validationHandler) {
-        this.validationHandler = validationHandler
+    void setValidator(DomainFieldGroupValidator validator) {
+        this.validator = validator
     }
 
     boolean validate() {
-        def handler = getValidationHandler()
-        if (handler.beforeValidate(this)) {
-            def domainItem = getItemDataSource()
-            def valid = domainItem.validate()
-            handler.afterValidate(this, domainItem.errors)
-            return valid
+        def validator = getValidator()
+        if (validator) {
+            return validator.validate(this)
         }
-        false
+        itemDataSource.validate()
     }
 
     @Override
@@ -96,11 +95,6 @@ class DomainFieldGroup<T> extends FieldGroup {
             }
         }
         super.discard()
-    }
-
-    @Override
-    void commit() throws FieldGroup.CommitException {
-        super.commit()
     }
 
     @Override
@@ -131,27 +125,23 @@ class DomainFieldGroup<T> extends FieldGroup {
         field
     }
 
-    @Override
-    protected <T extends Field> T build(String caption, Class<?> dataType, Class<T> fieldType) throws BindException {
-        throw new UnsupportedOperationException()
-    }
-
     protected <T extends Field> T build(String caption, String propertyId, Class<T> fieldType) throws BindException {
         def fieldFactory = getFieldFactory()
         if (fieldFactory instanceof DomainFieldGroupFieldFactory) {
             T field = fieldFactory.createField(type, propertyId, fieldType)
-
-            if (field == null) {
-                def propertyType = getPropertyType(propertyId)
-                throw new BindException("Unable to build a field of type " +
-                        "${fieldType.name} for editing ${propertyType.name}")
+            if (field) {
+                field.setCaption(caption)
+                return field
             }
-
-            field.setCaption(caption)
-
-            return field
-        } else {
-            return super.build(caption, propertyId, fieldType)
         }
+
+        def domainClass = DomainClassUtils.getDomainClass(type)
+        def property = domainClass.getPropertyByName(propertyId)
+        return super.build(caption, property.type, fieldType)
+    }
+
+    @Override
+    protected <T extends Field> T build(String caption, Class<?> dataType, Class<T> fieldType) throws BindException {
+        throw new UnsupportedOperationException()
     }
 }

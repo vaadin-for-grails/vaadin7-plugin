@@ -6,6 +6,10 @@ import com.vaadin.server.Page
 import com.vaadin.ui.Notification
 import org.codehaus.groovy.runtime.StackTraceUtils
 
+/**
+ * @author Stephan Grundner
+ * @since 2.0
+ */
 class DefaultErrorHandler implements ErrorHandler {
 
     @Override

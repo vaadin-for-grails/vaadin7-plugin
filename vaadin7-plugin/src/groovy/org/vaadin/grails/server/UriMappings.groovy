@@ -8,7 +8,6 @@ import com.vaadin.ui.UI
  * Map paths to UIs and fragments to Views.
  *
  * @author Stephan Grundner
- *
  * @since 1.0
  */
 public interface UriMappings {

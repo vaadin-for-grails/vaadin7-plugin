@@ -24,14 +24,17 @@ class BookListView extends Panel implements View {
     class BookEditor extends Window {
 
         DomainFieldGroup<Book> bookFieldGroup
+//        BeanFieldGroup<Book> bookFieldGroup
 
         BookEditor() {
             bookFieldGroup = new DomainFieldGroup<Book>(Book)
+//            bookFieldGroup = new BeanFieldGroup<>(Book)
             content = ComponentBuilder.build {
                 formLayout(sizeUndefined: true, margin: true) {
                     build(propertyId: 'title', fieldGroup: bookFieldGroup)
                     build(propertyId: 'author', fieldGroup: bookFieldGroup)
                     build(propertyId: 'released', fieldGroup: bookFieldGroup)
+                    build(propertyId: 'rating', fieldGroup: bookFieldGroup)
                     build(propertyId: 'available', fieldGroup: bookFieldGroup)
 
                     horizontalLayout(spacing: true) {
@@ -46,7 +49,8 @@ class BookListView extends Panel implements View {
         }
 
         void create() {
-            bookFieldGroup.itemDataSource = new DomainItem(new Book())
+            bookFieldGroup.itemDataSource = new DomainItem(Book)
+//            bookFieldGroup.itemDataSource = new BeanItem(new Book())
         }
 
         void open() {

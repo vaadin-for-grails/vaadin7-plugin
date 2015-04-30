@@ -3,6 +3,10 @@ package com.vaadin.grails
 import org.vaadin.grails.navigator.Navigation
 import org.vaadin.grails.ui.builders.ComponentBuilder
 
+/**
+ * @deprecated
+ */
+@Deprecated
 final class Vaadin {
 
     @Deprecated

@@ -6,6 +6,10 @@ import com.vaadin.ui.UI
 
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * @author Stephan Grundner
+ * @since 1.0
+ */
 class DefaultUriMappings implements UriMappings {
 
     protected final def uiClassByPath = new HashMap<String, Class<? extends UI>>()

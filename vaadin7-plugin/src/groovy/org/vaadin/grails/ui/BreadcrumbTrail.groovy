@@ -11,7 +11,6 @@ import com.vaadin.ui.*
  * A breadcrumb component.
  *
  * @author Stephan Grundner
- *
  * @since 2.0
  */
 class BreadcrumbTrail extends CustomComponent implements Container.ItemSetChangeListener {

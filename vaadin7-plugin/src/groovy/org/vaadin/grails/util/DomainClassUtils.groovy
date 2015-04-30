@@ -2,6 +2,7 @@ package org.vaadin.grails.util
 
 import grails.util.GrailsNameUtils
 import grails.util.Holders
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -13,7 +14,16 @@ import org.springframework.context.i18n.LocaleContextHolder
  */
 final class DomainClassUtils {
 
-    static String getCaption(Class<?> type, String propertyId, Locale locale) {
+    static GrailsDomainClass getDomainClass(String name) {
+        def grailsApplication = Holders.grailsApplication
+        grailsApplication.getDomainClass(name) as GrailsDomainClass
+    }
+
+    static GrailsDomainClass getDomainClass(Class<?> type) {
+        getDomainClass(type?.name)
+    }
+
+    static String getCaption(Class<?> type, String propertyName, Locale locale) {
 //        TODO Handle nested captions
 //        if (StringUtils.contains(propertyId, '.'.toCharacter())) {
 //            return getNestedCaption(type, propertyId, locale)
@@ -22,21 +32,21 @@ final class DomainClassUtils {
         def applicationContext = Holders.applicationContext
         def caption
         try {
-            def code = "$typePropertyName.$propertyId"
+            def code = "$typePropertyName.$propertyName"
             caption = applicationContext.getMessage(code, [] as Object[], locale ?: LocaleContextHolder.locale)
         } catch (NoSuchMessageException e) {
-            caption = GrailsNameUtils.getNaturalName(propertyId)
+            caption = GrailsNameUtils.getNaturalName(propertyName)
         }
         caption
     }
 
-    static String getCaption(Class<?> type, Object propertyId, Locale locale) {
-        getCaption(type, (String) propertyId?.toString(), locale)
+    static String getCaption(Class<?> type, Object propertyName, Locale locale) {
+        getCaption(type, (String) propertyName?.toString(), locale)
     }
 
-    static String getCaption(Class<?> type, String propertyId) {
+    static String getCaption(Class<?> type, String propertyName) {
         def locale = ApplicationContextUtils.locale
-        getCaption(type, propertyId, locale)
+        getCaption(type, propertyName, locale)
     }
 
     static String getCaption(Class<?> type, Object propertyId) {

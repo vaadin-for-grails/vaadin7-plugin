@@ -5,18 +5,17 @@ import com.vaadin.server.UserError
 import com.vaadin.ui.AbstractField
 import com.vaadin.ui.Notification
 import org.springframework.validation.Errors
-import org.vaadin.grails.util.ApplicationContextUtils
 import org.vaadin.grails.ui.util.ComponentUtils
+import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
  * @author Stephan Grundner
  *
  * @since 2.0
  */
-class DefaultValidationHandler implements ValidationHandler {
+class DomainFieldGroupValidator {
 
-    @Override
-    boolean beforeValidate(DomainFieldGroup<?> fieldGroup) {
+    protected boolean beforeValidate(DomainFieldGroup<?> fieldGroup) {
         fieldGroup.fields.each { field ->
             if (field instanceof AbstractField) {
                 field.componentError = null
@@ -25,8 +24,7 @@ class DefaultValidationHandler implements ValidationHandler {
         true
     }
 
-    @Override
-    void afterValidate(DomainFieldGroup<?> fieldGroup, Errors errors) {
+    protected void afterValidate(DomainFieldGroup<?> fieldGroup, Errors errors) {
         def applicationContext = ApplicationContextUtils.applicationContext
         def message = new StringBuilder()
         errors.globalErrors.each { globalError ->
@@ -49,6 +47,15 @@ class DefaultValidationHandler implements ValidationHandler {
             n.htmlContentAllowed = false
             n.description = message.toString()
             n.show(Page.current)
+        }
+    }
+
+    boolean validate(DomainFieldGroup<?> fieldGroup) {
+        def itemDataSource = fieldGroup.itemDataSource
+        if (beforeValidate(fieldGroup)) {
+            def valid = itemDataSource.validate()
+            afterValidate(fieldGroup, itemDataSource.errors)
+            return valid
         }
     }
 }

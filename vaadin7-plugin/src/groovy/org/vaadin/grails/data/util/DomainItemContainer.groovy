@@ -13,12 +13,12 @@ import com.vaadin.data.util.AbstractInMemoryContainer
 import com.vaadin.data.util.NestedPropertyDescriptor
 import com.vaadin.data.util.VaadinPropertyDescriptor
 import com.vaadin.data.util.filter.UnsupportedFilterException
+import org.vaadin.grails.util.DomainClassUtils
 
 /**
  * Domain Item Container.
  *
  * @author Stephan Grundner
- *
  * @since 1.0
  */
 class DomainItemContainer<T> extends AbstractInMemoryContainer<Serializable, DomainItemProperty<T, ?>, DomainItem<T>>
@@ -31,7 +31,7 @@ implements Filterable, Sortable, ValueChangeListener, PropertySetChangeNotifier 
 
     DomainItemContainer(Class<? super T> type) throws IllegalArgumentException {
         this.type = type
-        def domainClass = DomainItem.getDomainClass(type)
+        def domainClass = DomainClassUtils.getDomainClass(type)
         propertyIds = domainClass.persistentProperties.collect { it.name }
     }
 
@@ -159,7 +159,7 @@ implements Filterable, Sortable, ValueChangeListener, PropertySetChangeNotifier 
 
     @Override
     Class<?> getType(Object propertyId) {
-        def domainClass = DomainItem.getDomainClass(type)
+        def domainClass = DomainClassUtils.getDomainClass(type)
         domainClass.getPropertyByName(propertyId).type
     }
 
