@@ -9,7 +9,7 @@ import com.vaadin.data.util.converter.Converter
  * @author Stephan Grundner
  * @since 2.0
  */
-class DefaultConverterFactory extends com.vaadin.data.util.converter.DefaultConverterFactory {
+class GrailsAwareConverterFactory extends com.vaadin.data.util.converter.DefaultConverterFactory {
 
     @Override
     protected <PRESENTATION, MODEL> Converter<PRESENTATION, MODEL> findConverter(Class<PRESENTATION> presentationType, Class<MODEL> modelType) {

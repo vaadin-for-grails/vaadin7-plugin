@@ -7,6 +7,8 @@ import com.vaadin.ui.Notification
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 /**
+ * Default implementation for {@link ErrorHandler}.
+ *
  * @author Stephan Grundner
  * @since 2.0
  */

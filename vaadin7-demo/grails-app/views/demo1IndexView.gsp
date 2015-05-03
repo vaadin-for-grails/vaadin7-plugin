@@ -51,6 +51,8 @@
         </v-horizontal-layout>
 
 
+        <v-label _id="lang">[Locale]</v-label>
+
     </v-vertical-layout>
 </v-panel>
 </body>

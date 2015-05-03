@@ -37,7 +37,7 @@ grails.project.dependency.resolution = {
         mavenRepo "http://maven.vaadin.com/vaadin-addons"
     }
 
-    vaadinVersion = "7.4.4"
+    vaadinVersion = "7.4.5"
 
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.

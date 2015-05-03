@@ -4,7 +4,9 @@ import com.vaadin.annotations.DesignRoot
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.server.FontAwesome
+import com.vaadin.server.VaadinSession
 import com.vaadin.ui.Button
+import com.vaadin.ui.Label
 import com.vaadin.ui.Panel
 import org.vaadin.grails.navigator.Navigation
 import org.vaadin.grails.navigator.NavigationResource
@@ -22,6 +24,8 @@ class IndexView extends Panel implements View {
     Button button2
     Button button3
 //    Button button4
+
+    Label lang
 
     IndexView() {
         Design.read(this)
@@ -48,6 +52,8 @@ class IndexView extends Panel implements View {
                 Navigation.navigateTo(path: "/demo4")
             }
         })
+
+        lang.value = VaadinSession.current.locale.toString()
     }
 
     @Override

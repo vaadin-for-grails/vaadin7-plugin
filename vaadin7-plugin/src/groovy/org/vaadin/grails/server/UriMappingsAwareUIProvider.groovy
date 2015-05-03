@@ -8,11 +8,13 @@ import com.vaadin.server.UIProvider
 import com.vaadin.server.VaadinSession
 import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
+import com.vaadin.ui.HasComponents
 import com.vaadin.ui.UI
 import grails.util.Holders
 import org.apache.log4j.Logger
 import org.springframework.web.util.UrlPathHelper
 import org.vaadin.grails.navigator.UriMappingsAwareViewProvider
+import org.vaadin.grails.ui.util.ComponentUtils
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
@@ -41,16 +43,30 @@ class UriMappingsAwareUIProvider extends UIProvider {
         navigator
     }
 
+    void initUI(UI ui) {
+        def nullRepresentation = Holders.config.vaadin.nullRepresentation
+        if (nullRepresentation != null) {
+            ui.addComponentAttachListener(new HasComponents.ComponentAttachListener() {
+                @Override
+                void componentAttachedToContainer(HasComponents.ComponentAttachEvent e) {
+                    def component = e.attachedComponent
+                    if (component instanceof HasComponents.ComponentAttachDetachNotifier) {
+                        component.addComponentAttachListener(this)
+                    }
+                    ComponentUtils.setNullRepresentation(component, nullRepresentation.toString())
+                }
+            })
+        }
+    }
+
     @Override
     UI createInstance(UICreateEvent event) {
         def uiClass = event.getUIClass()
         def ui = ApplicationContextUtils.getBeanOrInstance(uiClass)
 
-//        Lazy initialize the current session and the newly created UI
-        LazyInitializer.current.ensureInitialized(ui, VaadinSession.current)
+        initUI(ui)
 
         def path = getPathHelper().getPathWithinApplication(event.request)
-
         def fragments = uriMappings.getAllFragments(path)
         if (fragments?.size() > 0) {
             def viewProvider = createViewProvider()

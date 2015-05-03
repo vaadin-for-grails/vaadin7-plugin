@@ -14,6 +14,7 @@ import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
 import org.codehaus.groovy.grails.web.pages.discovery.GroovyPageScriptSource
 import org.springframework.core.annotation.AnnotationUtils
 import org.vaadin.grails.ui.util.ComponentUtils
+import org.vaadin.grails.util.ApplicationContextUtils
 
 @Transactional
 class DesignService {
@@ -65,7 +66,7 @@ class DesignService {
                     def buffer = new ByteArrayOutputStream()
                     def locale = groovyPageRenderer.locale
                     try {
-                        groovyPageRenderer.locale = ComponentUtils.getLocale(rootComponent)
+                        groovyPageRenderer.locale = rootComponent.locale ?: ApplicationContextUtils.locale
                         def args = [view: source.view, plugin: source.plugin]
                         groovyPageRenderer.renderTo(args, buffer)
                     } finally {

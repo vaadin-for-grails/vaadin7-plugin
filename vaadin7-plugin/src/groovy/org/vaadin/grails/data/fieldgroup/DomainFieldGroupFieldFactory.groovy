@@ -6,11 +6,8 @@ import com.vaadin.ui.Field
 import com.vaadin.ui.RichTextArea
 import com.vaadin.ui.TextArea
 import com.vaadin.ui.TextField
-import grails.util.GrailsUtil
 import groovy.transform.Memoized
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
-import org.vaadin.grails.util.DomainClassUtils
+import org.vaadin.grails.util.GrailsUtils
 
 /**
  * @author Stephan Grundner
@@ -39,7 +36,7 @@ class DomainFieldGroupFieldFactory implements FieldGroupFieldFactory {
     }
 
     protected def <T extends Field> T createFieldByWidget(Class<?> type, String propertyId) {
-        def domainClass = DomainClassUtils.getDomainClass(type)
+        def domainClass = GrailsUtils.getDomainClass(type)
         def property = domainClass.getPropertyByName(propertyId)
 
         T field = null

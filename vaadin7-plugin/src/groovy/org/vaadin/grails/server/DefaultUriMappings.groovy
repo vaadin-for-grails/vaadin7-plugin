@@ -7,6 +7,8 @@ import com.vaadin.ui.UI
 import java.util.concurrent.ConcurrentHashMap
 
 /**
+ * Default implementation for {@link UriMappings}.
+ *
  * @author Stephan Grundner
  * @since 1.0
  */

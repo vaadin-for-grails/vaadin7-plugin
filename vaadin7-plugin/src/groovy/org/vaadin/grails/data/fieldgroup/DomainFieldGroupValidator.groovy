@@ -34,7 +34,7 @@ class DomainFieldGroupValidator {
         errors.fieldErrors.each { fieldError ->
             def field = fieldGroup.getField(fieldError.field)
             if (field instanceof AbstractField) {
-                def locale = ComponentUtils.getLocale(field)
+                def locale = field.locale ?: ApplicationContextUtils.locale
                 def errorMessage = applicationContext.getMessage(fieldError, locale)
                 field.componentError = new UserError(errorMessage)
             } else {

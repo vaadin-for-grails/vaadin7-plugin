@@ -4,7 +4,7 @@ import com.vaadin.data.Item
 import com.vaadin.data.Property
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.springframework.validation.Errors
-import org.vaadin.grails.util.DomainClassUtils
+import org.vaadin.grails.util.GrailsUtils
 
 /**
  * Domain Item.
@@ -40,7 +40,7 @@ class DomainItem<T> implements Item {
     }
 
     GrailsDomainClass getDomainClass() {
-        DomainClassUtils.getDomainClass(object.getClass())
+        GrailsUtils.getDomainClass(object.getClass())
     }
 
     @Override

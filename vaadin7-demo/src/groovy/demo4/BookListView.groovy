@@ -15,7 +15,7 @@ import org.vaadin.grails.data.util.DomainItemContainer
 import org.vaadin.grails.ui.BreadcrumbTrail
 import org.vaadin.grails.ui.builders.ComponentBuilder
 import org.vaadin.grails.util.ApplicationContextUtils
-import org.vaadin.grails.util.DomainClassUtils
+import org.vaadin.grails.util.GrailsUtils
 
 class BookListView extends Panel implements View {
 
@@ -98,7 +98,7 @@ class BookListView extends Panel implements View {
 
         def container = new DomainItemContainer(Book)
         booksTable.containerDataSource = container
-        booksTable.columnHeaders = DomainClassUtils.getCaptionList(Book, booksTable.visibleColumns, locale)
+        booksTable.columnHeaders = GrailsUtils.getCaptionList(Book, booksTable.visibleColumns, locale)
 
         bookEditor = new BookEditor()
     }

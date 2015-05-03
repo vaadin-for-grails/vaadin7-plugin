@@ -13,12 +13,13 @@ import org.vaadin.grails.util.ApplicationContextUtils
  *
  * @author Stephan Grundner
  */
-final class DelegateUIProvider extends UIProvider {
+final class GrailsAwareDelegateUIProvider extends UIProvider {
 
     private final UIProvider provider
 
-    DelegateUIProvider() {
-        provider = ApplicationContextUtils.getBeanOrInstance(UIProvider, UriMappingsAwareUIProvider)
+    GrailsAwareDelegateUIProvider() {
+        provider = ApplicationContextUtils
+                .getBeanOrInstance(UIProvider, UriMappingsAwareUIProvider)
     }
 
     @Override

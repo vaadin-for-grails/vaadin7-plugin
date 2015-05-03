@@ -6,7 +6,7 @@ import com.vaadin.ui.AbstractField
 import com.vaadin.ui.Field
 import org.vaadin.grails.data.util.DomainItem
 import org.vaadin.grails.util.ApplicationContextUtils
-import org.vaadin.grails.util.DomainClassUtils
+import org.vaadin.grails.util.GrailsUtils
 
 /**
  * @author Stephan Grundner
@@ -50,7 +50,7 @@ class DomainFieldGroup<T> extends FieldGroup {
         if (itemDataSource) {
             return super.getPropertyType(propertyId)
         }
-        def domainClass = DomainClassUtils.getDomainClass(type)
+        def domainClass = GrailsUtils.getDomainClass(type)
         domainClass.getPropertyByName(propertyId)?.type
     }
 
@@ -109,7 +109,7 @@ class DomainFieldGroup<T> extends FieldGroup {
 
     @Override
     Field<?> buildAndBind(Object propertyId) throws BindException {
-        String caption = DomainClassUtils.getCaption(type, propertyId)
+        String caption = GrailsUtils.getCaption(type, propertyId)
         buildAndBind(caption, propertyId)
     }
 
@@ -135,7 +135,7 @@ class DomainFieldGroup<T> extends FieldGroup {
             }
         }
 
-        def domainClass = DomainClassUtils.getDomainClass(type)
+        def domainClass = GrailsUtils.getDomainClass(type)
         def property = domainClass.getPropertyByName(propertyId)
         return super.build(caption, property.type, fieldType)
     }

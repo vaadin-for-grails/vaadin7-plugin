@@ -12,7 +12,7 @@ import org.springframework.context.i18n.LocaleContextHolder
  * @see {@link GrailsNameUtils}
  * @since 2.0
  */
-final class DomainClassUtils {
+final class GrailsUtils {
 
     static GrailsDomainClass getDomainClass(String name) {
         def grailsApplication = Holders.grailsApplication
@@ -28,6 +28,7 @@ final class DomainClassUtils {
 //        if (StringUtils.contains(propertyId, '.'.toCharacter())) {
 //            return getNestedCaption(type, propertyId, locale)
 //        }
+
         def typePropertyName = GrailsNameUtils.getPropertyNameRepresentation(type)
         def applicationContext = Holders.applicationContext
         def caption
@@ -61,5 +62,5 @@ final class DomainClassUtils {
         result
     }
 
-    private DomainClassUtils() { }
+    private GrailsUtils() { }
 }

@@ -3,8 +3,6 @@ import com.vaadin.ui.UI
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.vaadin.grails.navigator.DefaultNavigation
-import org.vaadin.grails.server.DefaultLazyInitializer
 import org.vaadin.grails.server.DefaultUriMappings
 import org.vaadin.grails.server.UriMappings
 import org.vaadin.grails.ui.DefaultUI
@@ -54,8 +52,6 @@ Plugin for integrating Vaadin 7 into Grails.
         application.config.merge(config)
 
         'uriMappings'(DefaultUriMappings)
-        'navigation'(DefaultNavigation)
-        'lazyInitializer'(DefaultLazyInitializer)
         'design'(Design)
     }
 
@@ -172,13 +168,13 @@ Plugin for integrating Vaadin 7 into Grails.
             }
         }
 
-        def servletClass = config.servletClass ?: "com.vaadin.server.VaadinServlet"
+        def servletClass = config.servletClass ?: "org.vaadin.grails.server.GrailsAwareVaadinServlet"
 
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
             def uiProviderClass = mapping.value['uiProvider'] ?:
 //                    "org.vaadin.grails.server.UriMappingsAwareUIProvider"
-                    "org.vaadin.grails.server.DelegateUIProvider"
+                    "org.vaadin.grails.server.GrailsAwareDelegateUIProvider"
 
             servlets[servlets.size() - 1] + {
                 "servlet" {
