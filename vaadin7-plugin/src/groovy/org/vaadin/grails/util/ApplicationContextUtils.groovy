@@ -148,12 +148,12 @@ final class ApplicationContextUtils {
         (T) getSingletonBean(beanName)
     }
 
-    static def Object getPrototypeBean(String name) throws BeanInstantiationException {
+    static def Object getPrototypeBean(String name, Object... args) throws BeanInstantiationException {
         if (!applicationContext.isPrototype(name)) {
             def beanClass = applicationContext.getType(name)
             throw new BeanInstantiationException(beanClass, "Prototype bean required")
         }
-        applicationContext.getBean(name)
+        applicationContext.getBean(name, args)
     }
 
     static def <T> T getPrototypeBean(Class<T> type) throws BeanInstantiationException, NoUniqueBeanDefinitionException {
