@@ -4,7 +4,7 @@ includeTargets << grailsScript("_GrailsInit")
 
 target(vaadinCreateTheme: "The description of the script goes here!") {
 
-    def pluginDir = vaadinCorePluginDir
+    def pluginDir = vaadin7PluginDir
     def templateEngine = new SimpleTemplateEngine()
 
     List params = argsMap.params

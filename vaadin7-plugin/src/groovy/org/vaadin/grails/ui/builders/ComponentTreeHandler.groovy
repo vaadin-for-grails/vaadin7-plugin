@@ -2,6 +2,8 @@ package org.vaadin.grails.ui.builders
 
 import org.vaadin.grails.ui.builders.handlers.*
 
+import java.util.concurrent.ConcurrentLinkedDeque
+
 /**
  * Vaadin component tree handler
  *
@@ -32,29 +34,35 @@ class ComponentTreeHandler {
         void handleChildren(TreeNode node)
     }
 
-    final Set<TreeNodeHandler> nodeHandlers = new LinkedHashSet<>()
+    static final Deque<TreeItemNodeHandler> nodeHandlers
 
-    ComponentTreeHandler() {
-        addNodeHandler(createNodeHandler(I18nNodeHandler))
-        addNodeHandler(createNodeHandler(BuildNodeHandler))
-        addNodeHandler(createNodeHandler(TreeItemNodeHandler))
-        addNodeHandler(createNodeHandler(TabSheetTabNodeHandler))
-        addNodeHandler(createNodeHandler(AccordionTabNodeHandler))
-        addNodeHandler(createNodeHandler(MenuItemNodeHandler))
-        addNodeHandler(createNodeHandler(BreadcrumbNodeHandler))
-        addNodeHandler(createNodeHandler(ComponentNodeHandler))
+    static {
+        nodeHandlers = new ConcurrentLinkedDeque<TreeItemNodeHandler>()
+        addNodeHandler(new ComponentNodeHandler())
+        addNodeHandler(new BuildNodeHandler())
+        addNodeHandler(new I18nNodeHandler())
+        addNodeHandler(new MenuItemNodeHandler())
+        addNodeHandler(new TreeItemNodeHandler())
+        addNodeHandler(new TabSheetTabNodeHandler())
+        addNodeHandler(new AccordionTabNodeHandler())
     }
 
-    protected TreeNodeHandler createNodeHandler(Class<? extends TreeNodeHandler> nodeHandlerClass) {
-        nodeHandlerClass.newInstance(this)
-    }
-
-    void addNodeHandler(TreeNodeHandler nodeHandler) {
+    static boolean addNodeHandler(TreeNodeHandler nodeHandler) {
         assert nodeHandler != null
-        nodeHandlers.add(nodeHandler)
+        def existingNodeHandler = nodeHandlers.find { it.getClass() == nodeHandler.getClass() }
+        if (existingNodeHandler) {
+            if (existingNodeHandler == nodeHandler) {
+                return false
+            } else {
+                if (!nodeHandlers.remove(existingNodeHandler)) {
+                    return false
+                }
+            }
+        }
+        return nodeHandlers.push(nodeHandler)
     }
 
-    void removeNodeHandler(TreeNodeHandler nodeHandler) {
+    static boolean removeNodeHandler(TreeNodeHandler nodeHandler) {
         assert nodeHandler != null
         nodeHandlers.remove(nodeHandler)
     }

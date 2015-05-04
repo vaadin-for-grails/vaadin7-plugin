@@ -24,10 +24,10 @@ class GrailsAwareSessionInitListener implements SessionInitListener {
         def converterFactory = ApplicationContextUtils.getBeanOrInstance(ConverterFactory, GrailsAwareConverterFactory)
         session.setConverterFactory(converterFactory)
 
-        def errorHandler = ApplicationContextUtils.getBeanOrInstance(ErrorHandler, DefaultErrorHandler)
-        session.setErrorHandler(errorHandler)
-
         def requestHandler = ApplicationContextUtils.getBeanOrInstance(RequestHandler, GrailsAwareRequestHandler)
         session.addRequestHandler(requestHandler)
+
+        def errorHandler = ApplicationContextUtils.getBeanOrInstance(ErrorHandler, DefaultErrorHandler)
+        session.setErrorHandler(errorHandler)
     }
 }

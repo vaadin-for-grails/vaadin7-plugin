@@ -33,6 +33,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://maven.apache.org"
         mavenRepo "http://oss.sonatype.org/content/repositories/vaadin-snapshots"
         mavenRepo "http://maven.vaadin.com/vaadin-addons"
     }
@@ -49,6 +50,7 @@ grails.project.dependency.resolution = {
         compile "com.vaadin:vaadin-client-compiler:${vaadinVersion}"
         compile "com.vaadin:vaadin-themes:${vaadinVersion}"
         compile "com.vaadin:vaadin-push:${vaadinVersion}"
+//        compile 'org.apache.maven.plugins:maven-gpg-plugin:1.6'
     }
 
     plugins {
@@ -56,6 +58,7 @@ grails.project.dependency.resolution = {
               ":rest-client-builder:1.0.3") {
             export = false
         }
+
     }
 }
 

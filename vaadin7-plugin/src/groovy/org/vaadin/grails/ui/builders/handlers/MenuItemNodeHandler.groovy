@@ -11,11 +11,11 @@ import org.vaadin.grails.ui.builders.ComponentTreeHandler
  */
 class MenuItemNodeHandler extends AbstractNodeHandler {
 
-    static final class CloseCommandAdapter implements MenuBar.Command {
+    static final class ClosureCommandAdapter implements MenuBar.Command {
 
         final Closure<Void> closure
 
-        CloseCommandAdapter(Closure<Void> closure) {
+        ClosureCommandAdapter(Closure<Void> closure) {
             this.closure = closure
         }
 
@@ -57,7 +57,7 @@ class MenuItemNodeHandler extends AbstractNodeHandler {
         if (command) {
 
             if (command instanceof Closure) {
-                menuItem.command = new CloseCommandAdapter(command)
+                menuItem.command = new ClosureCommandAdapter(command)
             } else {
                 menuItem.command = command
             }

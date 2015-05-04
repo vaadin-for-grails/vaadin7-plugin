@@ -3,12 +3,12 @@ import demo4.BookListView
 vaadin {
 
     nullRepresentation = ''
+    theme = "valo"
+    pageTitle = "Vaadin 7 Grails Plugin Demos"
 
     mappings {
 
         "/vaadin" {
-            theme = "valo"
-            pageTitle = "Vaadin"
 
             fragments {
                 "index" {
@@ -18,9 +18,7 @@ vaadin {
         }
 
         "/demo1" {
-            ui = demo1.DemoUI
-            theme = "valo"
-            pageTitle = "Demo Nr 1"
+            ui = 'demo1.DemoUI'
 
             fragments {
                 "index" {
@@ -34,16 +32,12 @@ vaadin {
         }
 
         "/demo2" {
-            ui = demo1.DemoUI
-            theme = "valo"
-            pageTitle = "Demo Nr 2"
+            ui = 'demo1.DemoUI'
 
         }
 
         "/demo3" {
             ui = demo3.DemoUI
-            theme = "valo"
-            pageTitle = "Demo Nr 3"
 
             fragments {
 
@@ -58,8 +52,6 @@ vaadin {
         }
 
         "/demo4" {
-            pageTitle = "Demo Nr 4"
-            theme = "valo"
 
             fragments {
                 "index" {

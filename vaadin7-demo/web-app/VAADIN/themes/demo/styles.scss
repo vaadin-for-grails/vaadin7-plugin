@@ -1,6 +1,6 @@
-$v-app-background-color: hsl(200, 15%, 90%);
-
 @import "../valo/valo";
+
+$v-app-background-color: hsl(200, 15%, 90%);
 
 .demo {
   @include valo;

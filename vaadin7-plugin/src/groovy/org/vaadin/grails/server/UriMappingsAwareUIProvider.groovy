@@ -1,11 +1,9 @@
 package org.vaadin.grails.server
 
 import com.vaadin.navigator.Navigator
-import com.vaadin.navigator.ViewProvider
 import com.vaadin.server.UIClassSelectionEvent
 import com.vaadin.server.UICreateEvent
 import com.vaadin.server.UIProvider
-import com.vaadin.server.VaadinSession
 import com.vaadin.shared.communication.PushMode
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.HasComponents
@@ -33,17 +31,23 @@ class UriMappingsAwareUIProvider extends UIProvider {
         applicationContext.getBean(UriMappings)
     }
 
-    protected ViewProvider createViewProvider() {
-        new UriMappingsAwareViewProvider()
-    }
-
-    protected Navigator createNavigator(UI ui, ViewProvider viewProvider) {
+    protected Navigator createNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(viewProvider)
+        navigator.addProvider(new UriMappingsAwareViewProvider())
         navigator
     }
 
-    void initUI(UI ui) {
+    @Override
+    UI createInstance(UICreateEvent event) {
+        def uiClass = event.getUIClass()
+        def ui = ApplicationContextUtils.getBeanOrInstance(uiClass)
+
+        def path = getPathHelper().getPathWithinApplication(event.request)
+        def fragments = uriMappings.getAllFragments(path)
+        if (fragments?.size() > 0) {
+            ui.navigator = createNavigator(ui)
+        }
+
         def nullRepresentation = Holders.config.vaadin.nullRepresentation
         if (nullRepresentation != null) {
             ui.addComponentAttachListener(new HasComponents.ComponentAttachListener() {
@@ -56,21 +60,6 @@ class UriMappingsAwareUIProvider extends UIProvider {
                     ComponentUtils.setNullRepresentation(component, nullRepresentation.toString())
                 }
             })
-        }
-    }
-
-    @Override
-    UI createInstance(UICreateEvent event) {
-        def uiClass = event.getUIClass()
-        def ui = ApplicationContextUtils.getBeanOrInstance(uiClass)
-
-        initUI(ui)
-
-        def path = getPathHelper().getPathWithinApplication(event.request)
-        def fragments = uriMappings.getAllFragments(path)
-        if (fragments?.size() > 0) {
-            def viewProvider = createViewProvider()
-            ui.navigator = createNavigator(ui, viewProvider)
         }
 
         ui
@@ -88,18 +77,22 @@ class UriMappingsAwareUIProvider extends UIProvider {
         uiClass
     }
 
+    protected ConfigObject getConfig() {
+        Holders.config.vaadin
+    }
+
     @Override
     String getTheme(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         uriMappings.getPathProperty(path, UriMappings.THEME_PATH_PROPERTY) ?:
-                super.getTheme(event)
+                config.theme ?: super.getTheme(event)
     }
 
     @Override
     String getWidgetset(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         uriMappings.getPathProperty(path, UriMappings.WIDGETSET_PATH_PROPERTY) ?:
-                super.getWidgetset(event)
+                config.widgetset ?: super.getWidgetset(event)
     }
 
     @Override
@@ -109,6 +102,10 @@ class UriMappingsAwareUIProvider extends UIProvider {
         if (result != null) {
             return result
         }
+        result = config.getProperty(UriMappings.PRESERVED_ON_REFRESH_PATH_PROPERTY)
+        if (Boolean.isAssignableFrom(result.getClass())) {
+            return result
+        }
         super.isPreservedOnRefresh(event)
     }
 
@@ -116,20 +113,20 @@ class UriMappingsAwareUIProvider extends UIProvider {
     String getPageTitle(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         uriMappings.getPathProperty(path, UriMappings.PAGE_TITLE_PATH_PROPERTY) ?:
-                super.getPageTitle(event)
+                config.pageTitle ?: super.getPageTitle(event)
     }
 
     @Override
     PushMode getPushMode(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         uriMappings.getPathProperty(path, UriMappings.PUSH_MODE_PATH_PROPERTY) as PushMode ?:
-                super.getPushMode(event)
+                config.pushMode ?: super.getPushMode(event)
     }
 
     @Override
     Transport getPushTransport(UICreateEvent event) {
         def path = pathHelper.getPathWithinApplication(event.request)
         uriMappings.getPathProperty(path, UriMappings.PUSH_TRANSPORT_PATH_PROPERTY) as Transport ?:
-                super.getPushTransport(event)
+                config.pushTransport ?: super.getPushTransport(event)
     }
 }
