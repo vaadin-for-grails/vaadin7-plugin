@@ -3,15 +3,19 @@ package org.vaadin.grails.navigator
 import com.vaadin.server.ExternalResource
 
 /**
+ * Navigation resource class.
+ *
  * @author Stephan Grundner
  *
- * @see {@link Navigation#navigateTo(java.lang.Object)}
+ * @see {@link com.vaadin.server.Resource}
+ * @see {@link Navigation}
+ * @see {@link Navigation#navigateTo(java.util.Map)}
  * @since 2.0
  */
 class NavigationResource extends ExternalResource {
 
     private static final String createUri(String path, String fragment, Map params) {
-        Navigation.getCurrent().getUri(path, fragment, params)
+        Navigation.getUri(path, fragment, params)
     }
 
     private static final String createUri(Map params) {

@@ -7,7 +7,7 @@ import com.vaadin.server.VaadinSession
 import org.apache.commons.lang.LocaleUtils
 
 /**
- * Default implementation for {@link RequestHandler}.
+ * Grails sepecific implementation for {@link RequestHandler}.
  *
  * @author Stephan Grundner
  * @since 2.0
@@ -24,6 +24,7 @@ class GrailsAwareRequestHandler implements RequestHandler {
             session.locale = locale
         }
 
+//        Must always return false!
         false
     }
 }

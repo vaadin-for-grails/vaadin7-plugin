@@ -27,8 +27,7 @@ class UriMappingsAwareUIProvider extends UIProvider {
     final def pathHelper = new UrlPathHelper()
 
     UriMappings getUriMappings() {
-        def applicationContext = Holders.applicationContext
-        applicationContext.getBean(UriMappings)
+        UriMappingsUtils.uriMappings
     }
 
     protected Navigator createNavigator(UI ui) {

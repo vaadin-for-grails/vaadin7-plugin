@@ -10,7 +10,7 @@ import org.vaadin.grails.data.util.converter.GrailsAwareConverterFactory
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
- * Default implementation for {@link SessionInitListener}.
+ * Grails sepecific implementation for {@link SessionInitListener}.
  *
  * @author Stephan Grundner
  * @since 2.0
