@@ -18,6 +18,7 @@ grails.project.fork = [
 
 grails.project.dependency.resolver = "maven" // or ivy
 grails.project.dependency.resolution = {
+//    pom true
     // inherit Grails' default dependencies
     inherits("global") {
         // uncomment to disable ehcache
