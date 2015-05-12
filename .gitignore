@@ -32,11 +32,18 @@
 # IntelliJ files
 work
 target
+plugins
 wrapper/*
 .idea/*
 *.iml
 *.zip
 *.zip.sha1
+*.xml.sha1
 *.asc
+
+.project
+.classpath
+
+hs_err_*.log
 
 *.graffle

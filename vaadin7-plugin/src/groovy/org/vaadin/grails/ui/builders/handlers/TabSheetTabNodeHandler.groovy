@@ -2,7 +2,7 @@ package org.vaadin.grails.ui.builders.handlers
 
 import com.vaadin.ui.TabSheet
 import grails.util.GrailsNameUtils
-import org.vaadin.grails.ui.builders.ComponentTreeHandler
+import org.vaadin.grails.ui.builders.ComponentBuilder
 
 /**
  * TabSheet.Tab node handler.
@@ -12,23 +12,21 @@ import org.vaadin.grails.ui.builders.ComponentTreeHandler
  */
 class TabSheetTabNodeHandler extends AbstractNodeHandler {
 
-    TabSheetTabNodeHandler(ComponentTreeHandler tree) {
-        super(tree)
+    TabSheetTabNodeHandler(ComponentBuilder builder) {
+        super(builder)
     }
 
     @Override
-    boolean acceptNode(ComponentTreeHandler.TreeNode node) {
+    boolean acceptNode(ComponentBuilder.BuilderNode node) {
         def parent = node.parent
         parent?.name == "tabSheet" && node.name == "tab"
     }
 
     @Override
-    void handle(ComponentTreeHandler.TreeNode node) {
-
-    }
+    void handle(ComponentBuilder.BuilderNode node) { }
 
     @Override
-    void handleChildren(ComponentTreeHandler.TreeNode node) {
+    void handleChildren(ComponentBuilder.BuilderNode node) {
         def tabSheet = node.parent.payload as TabSheet
 
         def children = node.children

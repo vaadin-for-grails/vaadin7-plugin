@@ -1,6 +1,6 @@
 package org.vaadin.grails.ui.builders.handlers
 
-import org.vaadin.grails.ui.builders.ComponentTreeHandler
+import org.vaadin.grails.ui.builders.ComponentBuilder
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
@@ -11,17 +11,17 @@ import org.vaadin.grails.util.ApplicationContextUtils
  */
 class I18nNodeHandler extends AbstractNodeHandler {
 
-    I18nNodeHandler(ComponentTreeHandler tree) {
-        super(tree)
+    I18nNodeHandler(ComponentBuilder builder) {
+        super(builder)
     }
 
     @Override
-    boolean acceptNode(ComponentTreeHandler.TreeNode node) {
+    boolean acceptNode(ComponentBuilder.BuilderNode node) {
         node.name == "i18n"
     }
 
     @Override
-    void handle(ComponentTreeHandler.TreeNode node) {
+    void handle(ComponentBuilder.BuilderNode node) {
         if (node.value) {
             node.payload = ApplicationContextUtils.getMessage(node.value)
         } else {

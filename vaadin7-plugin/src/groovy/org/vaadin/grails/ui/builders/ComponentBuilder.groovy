@@ -1,17 +1,23 @@
 package org.vaadin.grails.ui.builders
 
 import org.apache.log4j.Logger
-import org.vaadin.grails.util.ApplicationContextUtils
+import org.vaadin.grails.ui.builders.handlers.*
+
+import java.util.concurrent.ConcurrentLinkedDeque
 
 /**
- * A helper class for creating a Vaadin component tree.
+ * A helper class for building Vaadin component trees the Groovy way.
  *
  * @author Stephan Grundner
  * @since 1.0
  */
 class ComponentBuilder extends BuilderSupport {
 
-    static class BuilderNode extends Node implements ComponentTreeHandler.TreeNode {
+    static class BuilderNode extends Node {
+
+        String prefix
+        Object payload
+        BuilderNodeHandler handler
 
         BuilderNode(Node parent, String prefix, Object name) {
             super(parent, name)
@@ -33,55 +39,72 @@ class ComponentBuilder extends BuilderSupport {
             this.prefix = prefix
         }
 
-        String prefix
-        Object payload
-        ComponentTreeHandler.TreeNodeHandler handler
-
-        @Override
-        ComponentTreeHandler.TreeNode getParent() {
+        BuilderNode getParent() {
             super.parent()
         }
 
-        @Override
-        List<ComponentTreeHandler.TreeNode> getChildren() {
+        List<BuilderNode> getChildren() {
             def children = children()
             children.findAll { it != null }
         }
 
-        @Override
         Object getName() {
             super.name()
         }
 
-        @Override
         Map getAttributes() {
             super.attributes()
         }
 
-        @Override
         Object getValue() {
             super.value()
         }
     }
 
+    static interface BuilderNodeHandler {
+
+        boolean acceptNode(BuilderNode node)
+        void handle(BuilderNode node)
+        void handleChildren(BuilderNode node)
+    }
+
     private static final def log = Logger.getLogger(ComponentBuilder)
 
-    static Object build(ComponentTreeHandler tree, Closure<?> closure) {
-        (new ComponentBuilder(tree)).call(closure)
+    static final Deque<BuilderNodeHandler> nodeHandlers
+
+    static {
+        nodeHandlers = new ConcurrentLinkedDeque<BuilderNodeHandler>()
+        addNodeHandler(new ComponentNodeHandler())
+        addNodeHandler(new BuildNodeHandler())
+        addNodeHandler(new I18nNodeHandler())
+        addNodeHandler(new MenuItemNodeHandler())
+        addNodeHandler(new TreeItemNodeHandler())
+        addNodeHandler(new TabSheetTabNodeHandler())
+        addNodeHandler(new AccordionTabNodeHandler())
+    }
+
+    synchronized static boolean addNodeHandler(BuilderNodeHandler nodeHandler) {
+        assert nodeHandler != null
+        def existingNodeHandler = nodeHandlers.find { it.getClass() == nodeHandler.getClass() }
+        if (existingNodeHandler) {
+            if (existingNodeHandler == nodeHandler) {
+                return false
+            } else {
+                if (!nodeHandlers.remove(existingNodeHandler)) {
+                    return false
+                }
+            }
+        }
+        return nodeHandlers.push(nodeHandler)
+    }
+
+    synchronized static boolean removeNodeHandler(BuilderNodeHandler nodeHandler) {
+        assert nodeHandler != null
+        nodeHandlers.remove(nodeHandler)
     }
 
     static Object build(Closure<?> closure) {
         (new ComponentBuilder()).call(closure)
-    }
-
-    final ComponentTreeHandler treeHandler
-
-    ComponentBuilder(ComponentTreeHandler treeHandler) {
-        this.treeHandler = treeHandler
-    }
-
-    ComponentBuilder() {
-        treeHandler = ApplicationContextUtils.getBeanOrInstance(ComponentTreeHandler)
     }
 
     Object call(Closure<?> closure) {
@@ -120,8 +143,25 @@ class ComponentBuilder extends BuilderSupport {
             }
         }
 
-        def node = new BuilderNode(current, prefix, name, attributes, value)
-        treeHandler.handleNode(node)
+        def node = new BuilderNode((BuilderNode) current, prefix, name, attributes, value)
+
+        def handler = nodeHandlers.find { it.acceptNode(node) }
+        if (handler) {
+            def attributesCopy = node.attributes?.clone()
+            try {
+                node.handler = handler
+                handler.handle(node)
+                node.parent?.handler?.handleChildren(node.parent)
+            } finally {
+                if (attributesCopy) {
+                    node.attributes.putAll(attributesCopy)
+                }
+            }
+        } else {
+            throw new RuntimeException("Unexpected node with name [${node.name}]" +
+                    (node.prefix ? " and prefix [${node.prefix}]" : ""))
+        }
+
         node
     }
 

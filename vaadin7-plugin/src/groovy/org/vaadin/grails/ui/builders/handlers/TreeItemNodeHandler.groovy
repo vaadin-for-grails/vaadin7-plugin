@@ -1,7 +1,7 @@
 package org.vaadin.grails.ui.builders.handlers
 
 import com.vaadin.ui.Tree
-import org.vaadin.grails.ui.builders.ComponentTreeHandler
+import org.vaadin.grails.ui.builders.ComponentBuilder
 
 /**
  * Tree item node handler.
@@ -11,11 +11,11 @@ import org.vaadin.grails.ui.builders.ComponentTreeHandler
  */
 class TreeItemNodeHandler extends AbstractNodeHandler {
 
-    TreeItemNodeHandler(ComponentTreeHandler tree) {
-        super(tree)
+    TreeItemNodeHandler(ComponentBuilder builder) {
+        super(builder)
     }
 
-    Tree getTree(ComponentTreeHandler.TreeNode node) {
+    Tree getTree(ComponentBuilder.BuilderNode node) {
         def current = node
         while (true) {
 
@@ -28,20 +28,20 @@ class TreeItemNodeHandler extends AbstractNodeHandler {
     }
 
     @Override
-    boolean acceptNode(ComponentTreeHandler.TreeNode node) {
+    boolean acceptNode(ComponentBuilder.BuilderNode node) {
         def parent = node.parent
         (parent?.name == "tree" || parent?.name == "treeItem") &&
                 node.name == "treeItem"
     }
 
     @Override
-    void handle(ComponentTreeHandler.TreeNode node) {
+    void handle(ComponentBuilder.BuilderNode node) {
         node.payload = node.attributes.get("itemId")
         applyAttributes(node)
     }
 
     @Override
-    void handleChildren(ComponentTreeHandler.TreeNode node) {
+    void handleChildren(ComponentBuilder.BuilderNode node) {
         def tree = getTree(node)
         def parent = node.parent
         if (parent) {
@@ -56,12 +56,12 @@ class TreeItemNodeHandler extends AbstractNodeHandler {
     }
 
     @Override
-    protected void applyAttribute(ComponentTreeHandler.TreeNode node, String name, Object value) {
+    protected void applyAttribute(ComponentBuilder.BuilderNode node, String name, Object value) {
         throw new UnsupportedOperationException()
     }
 
     @Override
-    protected void applyAttributes(ComponentTreeHandler.TreeNode node) {
+    protected void applyAttributes(ComponentBuilder.BuilderNode node) {
         def tree = getTree(node)
         def itemId = node.payload
         tree.addItem(itemId)

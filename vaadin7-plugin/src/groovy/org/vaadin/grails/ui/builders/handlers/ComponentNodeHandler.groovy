@@ -8,7 +8,7 @@ import grails.util.Holders
 import groovy.transform.Memoized
 import org.apache.commons.lang.StringUtils
 import org.apache.log4j.Logger
-import org.vaadin.grails.ui.builders.ComponentTreeHandler
+import org.vaadin.grails.ui.builders.ComponentBuilder
 
 /**
  * Component node handler.
@@ -16,12 +16,12 @@ import org.vaadin.grails.ui.builders.ComponentTreeHandler
  * @author Stephan Grundner
  * @since 1.0
  */
-class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeHandler.TreeNodeHandler {
+class ComponentNodeHandler extends AbstractNodeHandler implements ComponentBuilder.BuilderNodeHandler {
 
     private static final def log = Logger.getLogger(ComponentNodeHandler)
 
-    ComponentNodeHandler(ComponentTreeHandler tree) {
-        super(tree)
+    ComponentNodeHandler(ComponentBuilder builder) {
+        super(builder)
     }
 
     @Memoized
@@ -56,17 +56,17 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
         componentClass
     }
 
-    Class<? extends Component> getComponentClass(ComponentTreeHandler.TreeNode node) {
+    Class<? extends Component> getComponentClass(ComponentBuilder.BuilderNode node) {
         getComponentClass(node.prefix, node.name)
     }
 
     @Override
-    boolean acceptNode(ComponentTreeHandler.TreeNode node) {
+    boolean acceptNode(ComponentBuilder.BuilderNode node) {
         node.name == "component" || (getComponentClass(node) != null)
     }
 
     @Override
-    void handle(ComponentTreeHandler.TreeNode node) {
+    void handle(ComponentBuilder.BuilderNode node) {
         def component
         if (node.name == "component") {
             component = node.value ?: node.attributes?.remove('instance')
@@ -82,7 +82,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
         applyAttributes(node)
     }
 
-    protected void attach(ComponentTreeHandler.TreeNode node) {
+    protected void attach(ComponentBuilder.BuilderNode node) {
         if (node.payload) {
             def parent = node.parent
             def parentComponent = parent?.payload
@@ -96,14 +96,14 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
         }
     }
 
-    private void applyComponentAlignment(ComponentTreeHandler.TreeNode node, Object value) {
+    private void applyComponentAlignment(ComponentBuilder.BuilderNode node, Object value) {
         def parent = node.parent
         def parentComponent = parent.payload
         def component = node.payload
         parentComponent.invokeMethod("setComponentAlignment", [component, value])
     }
 
-    private void applyExpandRatio(ComponentTreeHandler.TreeNode node, Object value) {
+    private void applyExpandRatio(ComponentBuilder.BuilderNode node, Object value) {
         def parent = node.parent
         def parentComponent = parent.payload
         def component = node.payload
@@ -111,7 +111,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
     }
 
     @Override
-    protected void applyAttribute(ComponentTreeHandler.TreeNode node, String name, Object value) {
+    protected void applyAttribute(ComponentBuilder.BuilderNode node, String name, Object value) {
         switch (name) {
             case "componentAlignment":
                 applyComponentAlignment(node, value)
