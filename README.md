@@ -85,8 +85,9 @@ Your View is accessible via `http://localhost:8080/<grails app>/app#!about`.
 
 ### Embedding UIs in GSPs
 Add the following line to your GSP
-
-    <vaadin:embed path="/vaadin" />
+```gsp
+<vaadin:embed path="/vaadin" />
+```
     
 The `embed` tag supports the following attributes:
 * id: DOM element id
