@@ -1,13 +1,11 @@
-import com.vaadin.navigator.View
-import com.vaadin.ui.UI
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.vaadin.grails.server.DefaultUriMappings
 import org.vaadin.grails.server.UIScope
 import org.vaadin.grails.server.UriMappings
-import org.vaadin.grails.ui.DefaultUI
 import org.vaadin.grails.ui.declarative.Design
+import org.vaadin.grails.util.VaadinConfigUtils
 
 /**
  * Vaadin 7 Plugin.
@@ -16,7 +14,7 @@ import org.vaadin.grails.ui.declarative.Design
  */
 class Vaadin7GrailsPlugin {
 
-    def version = "2.0"
+    def version = "2.1"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"
@@ -37,15 +35,7 @@ Plugin for integrating Vaadin 7 into Grails.
     def artefacts = []
 
     ConfigObject loadConfig(GrailsApplication application) {
-        def configScriptClass
-        try {
-            configScriptClass = application.classLoader.loadClass("VaadinConfig")
-        } catch (ClassNotFoundException e) {
-            return null
-        }
-
-        def parser = new ConfigSlurper(Environment.current.name)
-        parser.parse(configScriptClass)
+        VaadinConfigUtils.loadConfig(application)
     }
 
     def doWithSpring = {
@@ -65,59 +55,7 @@ Plugin for integrating Vaadin 7 into Grails.
 
     def doWithApplicationContext = { ctx ->
         def uriMappings = ctx.getBean(UriMappings)
-
-        uriMappings.clear()
-
-        def mappingsConfig = Holders.config.vaadin.mappings
-        mappingsConfig.each { String path, ConfigObject pathConfig ->
-
-            def ui = pathConfig.get("ui")
-
-            uriMappings.putPathProperty(path, UriMappings.DEFAULT_FRAGMENT_PATH_PROPERTY, pathConfig.get(UriMappings.DEFAULT_FRAGMENT_PATH_PROPERTY) ?: "index")
-            uriMappings.putPathProperty(path, UriMappings.THEME_PATH_PROPERTY, pathConfig.get(UriMappings.THEME_PATH_PROPERTY))
-            uriMappings.putPathProperty(path, UriMappings.WIDGETSET_PATH_PROPERTY, pathConfig.get(UriMappings.WIDGETSET_PATH_PROPERTY))
-            uriMappings.putPathProperty(path, UriMappings.PRESERVED_ON_REFRESH_PATH_PROPERTY, pathConfig.get(UriMappings.PRESERVED_ON_REFRESH_PATH_PROPERTY))
-            uriMappings.putPathProperty(path, UriMappings.PAGE_TITLE_PATH_PROPERTY, pathConfig.get(UriMappings.PAGE_TITLE_PATH_PROPERTY))
-            uriMappings.putPathProperty(path, UriMappings.PUSH_MODE_PATH_PROPERTY, pathConfig.get(UriMappings.PUSH_MODE_PATH_PROPERTY))
-            uriMappings.putPathProperty(path, UriMappings.PUSH_TRANSPORT_PATH_PROPERTY, pathConfig.get(UriMappings.PUSH_TRANSPORT_PATH_PROPERTY))
-
-            Class<? extends UI> uiClass
-
-            if (ui instanceof String) {
-                def classLoader = application.classLoader
-                uiClass = classLoader.loadClass(ui)
-            } else {
-                uiClass = ui ?: DefaultUI
-            }
-
-            if (uiClass == null) {
-                throw new RuntimeException("No class found for [${path}]")
-            }
-            log.debug("Register UI [${uiClass.name}] for path [${path}]")
-            uriMappings.setUIClass(path, uiClass)
-
-
-            def fragments = pathConfig.fragments
-            fragments.each { String fragment, ConfigObject fragmentConfig ->
-
-                def view = fragmentConfig.get("view")
-
-                Class<? extends View> viewClass
-
-                if (view instanceof String) {
-                    def classLoader = application.classLoader
-                    viewClass = classLoader.loadClass(view)
-                } else {
-                    viewClass = view
-                }
-
-                if (viewClass == null) {
-                    throw new RuntimeException("No class found for view [${view}]")
-                }
-                log.debug("Register View [${viewClass.name}] for path [${path}#!${fragment}]")
-                uriMappings.setViewClass(path, fragment, viewClass)
-            }
-        }
+        VaadinConfigUtils.loadUriMappings(application, uriMappings)
     }
 
     def doWithWebDescriptor = { xml ->
