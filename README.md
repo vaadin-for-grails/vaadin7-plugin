@@ -83,3 +83,18 @@ mapping {
 
 Your View is accessible via `http://localhost:8080/<grails app>/app#!about`.
 
+### Embedding UIs in GSPs
+Add the following line to your GSP
+
+    <vaadin:embed path="/vaadin" />
+    
+The `embed` tag supports the following attributes:
+* id: DOM element id
+* path: The path mappted to an UI
+* namespace: The namespace the UI is assigned to
+* widgetset: The widgetset to be used
+* theme: The name of the theme, such as one of the built-in themes (reindeer, runo, or chameleon) or a custom theme
+* vaadinDir: Relative path to the VAADIN directory
+* heartbeatInterval: The hearbeatInterval parameter defines the frequency of the keep-alive hearbeat for the UI in seconds
+* debug: The parameter defines whether the debug window is enabled
+
