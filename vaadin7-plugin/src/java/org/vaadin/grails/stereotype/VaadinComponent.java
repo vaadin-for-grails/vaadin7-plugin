@@ -1,8 +1,14 @@
 package org.vaadin.grails.stereotype;
 
-public class VaadinComponent {
+import org.springframework.stereotype.Component;
 
-    VaadinComponent() {
+import java.lang.annotation.*;
 
-    }
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface VaadinComponent {
+
+    String value() default "";
 }
