@@ -2,24 +2,21 @@ package demo4
 
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.server.FontAwesome
 import com.vaadin.ui.Button
 import com.vaadin.ui.Panel
 import com.vaadin.ui.Table
 import com.vaadin.ui.Window
 import demo.Book
-import demo.IndexView
 import org.vaadin.grails.data.fieldgroup.DomainFieldGroup
 import org.vaadin.grails.data.util.DomainItem
 import org.vaadin.grails.data.util.DomainItemContainer
-import org.vaadin.grails.ui.BreadcrumbTrail
 import org.vaadin.grails.ui.builders.ComponentBuilder
 import org.vaadin.grails.util.ApplicationContextUtils
 import org.vaadin.grails.util.GrailsUtils
 
 class BookListView extends Panel implements View {
 
-    static final breadcrumb = new BreadcrumbTrail.Breadcrumb(icon: FontAwesome.BOOK, caption: "Books")
+//    static final breadcrumb = new BreadcrumbTrail.Breadcrumb(icon: FontAwesome.BOOK, caption: "Books")
 
     class BookEditor extends Window {
 
@@ -74,7 +71,7 @@ class BookListView extends Panel implements View {
         }
     }
 
-    BreadcrumbTrail trail
+//    BreadcrumbTrail trail
     Table booksTable
     Button createBookButton
     private BookEditor bookEditor
@@ -83,10 +80,10 @@ class BookListView extends Panel implements View {
         styleName = 'borderless'
         content = ComponentBuilder.build {
             verticalLayout(spacing: true, margin: true) {
-                trail = breadcrumbTrail() {
-                    breadcrumb(IndexView.breadcrumb)
-                    breadcrumb(this.breadcrumb)
-                }
+//                trail = breadcrumbTrail() {
+//                    breadcrumb(IndexView.breadcrumb)
+//                    breadcrumb(this.breadcrumb)
+//                }
                 label(value: "Book Demo", styleName: "h1 colored")
                 booksTable = table(sizeFull: true, pageLength: 0)
                 createBookButton = button(caption: "Create Book", styleName: "primary", clickListener: {

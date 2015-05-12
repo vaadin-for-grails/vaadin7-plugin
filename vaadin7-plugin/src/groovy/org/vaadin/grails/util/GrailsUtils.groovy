@@ -7,9 +7,9 @@ import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**
- * @author Stephan Grundner
+ * Convenience methods for working with Grails specific API.
  *
- * @see {@link GrailsNameUtils}
+ * @author Stephan Grundner
  * @since 2.0
  */
 final class GrailsUtils {

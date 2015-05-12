@@ -5,7 +5,7 @@ import com.vaadin.navigator.ViewProvider
 import com.vaadin.server.VaadinSession
 import org.apache.log4j.Logger
 import org.vaadin.grails.server.UriMappings
-import org.vaadin.grails.server.UriMappingsUtils
+import org.vaadin.grails.server.UriMappingUtils
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
@@ -15,14 +15,14 @@ import org.vaadin.grails.util.ApplicationContextUtils
  * @since 1.0
  * @author Stephan Grundner
  */
-class UriMappingsAwareViewProvider implements ViewProvider {
+class GrailsAwareViewProvider implements ViewProvider {
 
-    private  static final def log = Logger.getLogger(UriMappingsAwareViewProvider)
+    private  static final def log = Logger.getLogger(GrailsAwareViewProvider)
 
     @Override
     String getViewName(String fragmentAndParameters) {
         def path = Navigation.currentPath
-        def viewName = UriMappingsUtils.lookupFragment(path, fragmentAndParameters)
+        def viewName = UriMappingUtils.lookupFragment(path, fragmentAndParameters)
 
         viewName
     }
@@ -30,7 +30,7 @@ class UriMappingsAwareViewProvider implements ViewProvider {
     @Override
     View getView(String fragment) {
         def path = Navigation.currentPath
-        def uriMappings = UriMappingsUtils.uriMappings
+        def uriMappings = UriMappingUtils.uriMappings
 
         if (fragment == "") {
             fragment = uriMappings.getPathProperty(path,

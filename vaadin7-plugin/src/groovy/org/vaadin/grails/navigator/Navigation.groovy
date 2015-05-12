@@ -1,12 +1,13 @@
 package org.vaadin.grails.navigator
 
+import com.vaadin.server.ExternalResource
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinService
 import com.vaadin.ui.UI
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.web.util.UrlPathHelper
-import org.vaadin.grails.server.UriMappingsUtils
+import org.vaadin.grails.server.UriMappingUtils
 
 /**
  * Navigating between UIs and Views as defined in {@link org.vaadin.grails.server.UriMappings}.
@@ -38,12 +39,14 @@ abstract class Navigation {
         def path = currentPath
         def uri = Page.current.location
         def fragmentAndParameters = StringUtils.removeStart(uri.fragment, "!")
-        UriMappingsUtils.lookupFragment(path, fragmentAndParameters)
+        UriMappingUtils.lookupFragment(path, fragmentAndParameters)
     }
 
     /**
      * Get the current parameters as a map.
      *
+     * @see {@link #toParamsString(java.util.Map)}
+     * @see {@link #fromParamsString(java.lang.String)}
      * @return The current parameters as a map
      */
     static Map getCurrentParams() {
@@ -60,8 +63,8 @@ abstract class Navigation {
     /**
      * Convert a parameter map into a String like <code>/key1=foo/key2=bar</code>.
      *
-     * @param params
-     * @return
+     * @param params A parameter map
+     * @return A string representation from a parameter map
      */
     static String toParamsString(Map params) {
         def encoded = WebUtils.toQueryString(params)
@@ -75,8 +78,8 @@ abstract class Navigation {
     /**
      * Convert a String like <code>/key1=foo/key2=bar</code> into a parameter map.
      *
-     * @param paramsString
-     * @return
+     * @param paramsString A paramsString
+     * @return A map representation from a paramsString
      */
     static Map fromParamsString(String paramsString) {
         WebUtils.fromQueryString(paramsString.replace("/", "&"))
@@ -121,6 +124,20 @@ abstract class Navigation {
     }
 
     /**
+     * Get the uri for the specified named parameters.
+     *
+     * @see {@link #getUri(java.lang.String, java.lang.String, java.util.Map)}
+     * @param args The named parameters
+     * @return The uri for the specified named parameters
+     */
+    static String getUri(Map args) {
+        def path = args.get('path') as String
+        def fragment = args.get('fragment') as String
+        def params = args.get('params') as Map
+        getUri(path, fragment, params)
+    }
+
+    /**
      * Navigate to a different UI or View.
      *
      * @see {@link com.vaadin.navigator.Navigator#navigateTo(java.lang.String)}
@@ -151,15 +168,38 @@ abstract class Navigation {
     }
 
     /**
-     * Navigate to a different UI or View.
+     * Navigate to a different UI or View using the named parameters.
      *
      * @see {@link #navigateTo(java.lang.String, java.lang.String, java.util.Map)}
-     * @param args
+     * @param args The named parameters
      */
     static void navigateTo(Map args) {
         def path = args.get('path') as String
         def fragment = args.get('fragment') as String
         def params = args.get('params') as Map
         navigateTo(path, fragment, params)
+    }
+
+    /**
+     * Get an {@link ExternalResource} for the specified path, fragment and params.
+     *
+     * @param path The path mapped to a {@link com.vaadin.ui.UI}
+     * @param fragment The fragment mapped to a {@link com.vaadin.navigator.View}
+     * @param params A parameter map
+     * @return An {@link ExternalResource} for the specified path, fragment and params
+     */
+    static ExternalResource getResource(String path, String fragment, Map params) {
+        new ExternalResource(getUri(path, fragment, params))
+    }
+
+    /**
+     * Get an {@link ExternalResource} for the specified named parameters.
+     *
+     * @see {@link #getResource(java.lang.String, java.lang.String, java.util.Map)}
+     * @param args The named parameters
+     * @return An {@link ExternalResource} for the specified named parameters
+     */
+    static ExternalResource getResource(Map args) {
+        new ExternalResource(getUri(args))
     }
 }

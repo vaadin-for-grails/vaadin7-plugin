@@ -19,7 +19,7 @@ final class GrailsAwareDelegateUIProvider extends UIProvider {
 
     GrailsAwareDelegateUIProvider() {
         provider = ApplicationContextUtils
-                .getBeanOrInstance(UIProvider, UriMappingsAwareUIProvider)
+                .getBeanOrInstance(UIProvider, GrailsAwareUIProvider)
     }
 
     @Override

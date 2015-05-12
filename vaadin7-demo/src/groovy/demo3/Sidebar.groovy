@@ -1,20 +1,13 @@
 package demo3
 
 import com.vaadin.ui.CustomComponent
-import org.vaadin.grails.server.UIAttributes
+import org.springframework.context.annotation.Scope
+import org.vaadin.grails.stereotype.VaadinComponent
 import org.vaadin.grails.ui.builders.ComponentBuilder
 
+@VaadinComponent("mySideBar")
+@Scope('ui')
 class Sidebar extends CustomComponent {
-
-        static Sidebar getInstance() {
-            def ui = com.vaadin.ui.UI.current
-            def sidebar = UIAttributes.current.getAttribute(ui, Sidebar.name)
-            if (sidebar == null) {
-                sidebar = new Sidebar()
-                UIAttributes.current.setAttribute(ui, Sidebar.name, sidebar)
-            }
-            sidebar
-        }
 
         Sidebar() {
             init()

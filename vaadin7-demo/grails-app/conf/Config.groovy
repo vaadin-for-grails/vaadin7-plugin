@@ -114,7 +114,7 @@ log4j.main = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-    all    'com.vaadin.grails'
+    all    'org.vaadin.grails'
 }
 
 grails.war.copyToWebApp = { args ->

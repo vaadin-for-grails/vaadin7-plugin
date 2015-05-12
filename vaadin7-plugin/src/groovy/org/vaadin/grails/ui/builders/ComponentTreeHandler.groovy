@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedDeque
  * Vaadin component tree handler
  *
  * @author Stephan Grundner
- * @since 1.0
+ * @since 2.0
  */
 class ComponentTreeHandler {
 

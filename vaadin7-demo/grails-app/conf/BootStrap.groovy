@@ -1,5 +1,4 @@
 import org.vaadin.grails.ui.builders.ComponentTreeHandler
-import org.vaadin.grails.ui.builders.handlers.BreadcrumbNodeHandler
 
 class BootStrap {
 
@@ -7,8 +6,8 @@ class BootStrap {
 
         println ComponentTreeHandler.nodeHandlers
 
-        ComponentTreeHandler.
-            addNodeHandler(new BreadcrumbNodeHandler())
+//        ComponentTreeHandler.
+//            addNodeHandler(new BreadcrumbNodeHandler())
 //
 //        ComponentTreeHandler.
 //                addNodeHandler(new BreadcrumbNodeHandler())

@@ -11,33 +11,35 @@ import com.vaadin.ui.UI
 import grails.util.Holders
 import org.apache.log4j.Logger
 import org.springframework.web.util.UrlPathHelper
-import org.vaadin.grails.navigator.UriMappingsAwareViewProvider
+import org.vaadin.grails.navigator.GrailsAwareViewProvider
 import org.vaadin.grails.ui.util.ComponentUtils
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
- * An {@link com.vaadin.server.UIProvider} implementation that uses uri mappings.
+ * Grails specific implementation of {@link UIProvider}.
  *
  * @author Stephan Grundner
  */
-class UriMappingsAwareUIProvider extends UIProvider {
+class GrailsAwareUIProvider extends UIProvider {
 
-    private static final def log = Logger.getLogger(UriMappingsAwareUIProvider)
+    private static final def log = Logger.getLogger(GrailsAwareUIProvider)
 
     final def pathHelper = new UrlPathHelper()
 
     UriMappings getUriMappings() {
-        UriMappingsUtils.uriMappings
+        UriMappingUtils.uriMappings
     }
 
     protected Navigator createNavigator(UI ui) {
         def navigator = new Navigator(ui, ui)
-        navigator.addProvider(new UriMappingsAwareViewProvider())
+        navigator.addProvider(new GrailsAwareViewProvider())
         navigator
     }
 
     @Override
     UI createInstance(UICreateEvent event) {
+        UIIdHolder.setCurrent(event.uiId)
+
         def uiClass = event.getUIClass()
         def ui = ApplicationContextUtils.getBeanOrInstance(uiClass)
 

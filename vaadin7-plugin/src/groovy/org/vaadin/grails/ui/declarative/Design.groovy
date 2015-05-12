@@ -11,9 +11,8 @@ import org.vaadin.grails.util.ApplicationContextUtils
 /**
  * A facade for {@link com.vaadin.ui.declarative.Design}.
  *
+ * @see DesignService
  * @author Stephan Grundner
- *
- * @see {@link DesignService}
  * @since 2.0
  */
 class Design {

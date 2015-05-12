@@ -5,7 +5,7 @@ import grails.util.Holders
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
 /**
- * Grails Resource
+ * Grails specific implementation of {@link com.vaadin.server.Resource}.
  *
  * @see {@link LinkGenerator#link(java.util.Map)}
  * @author Stephan Grundner

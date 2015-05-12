@@ -6,7 +6,7 @@ import com.vaadin.ui.HasComponents
 import com.vaadin.ui.UI
 
 /**
- * Convenience methods for {@link Component}s.
+ * Convenience methods for working with {@link Component}s.
  *
  * @author Stephan Grundner
  * @since 2.0

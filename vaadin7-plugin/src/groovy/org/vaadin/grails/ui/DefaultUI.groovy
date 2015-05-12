@@ -4,7 +4,7 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
 
 /**
- * A default implementation of {@link UI}
+ * A default implementation for {@link UI}.
  *
  * @author Stephan Grundner
  * @since 1.0

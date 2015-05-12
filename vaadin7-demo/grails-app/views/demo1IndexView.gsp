@@ -8,8 +8,6 @@
 <v-panel style-name="borderless">
     <v-vertical-layout margin spacing>
 
-        <g-breadcrumb-trail _id="breadcrumbTrail"></g-breadcrumb-trail>
-
         <v-label style-name="h1 colored">
             Vaadin 7 Plugin Demos
         </v-label>

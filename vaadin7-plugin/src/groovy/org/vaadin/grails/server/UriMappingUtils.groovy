@@ -4,11 +4,12 @@ import org.apache.commons.lang.StringUtils
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**
+ * Convenience methods for working with {@link UriMappings}.
  *
  * @author Stephan Grundner
  * @since 2.0
  */
-final class UriMappingsUtils {
+final class UriMappingUtils {
 
     static UriMappings getUriMappings() {
         ApplicationContextUtils.getSingletonBean(UriMappings)
@@ -50,5 +51,5 @@ final class UriMappingsUtils {
         null
     }
 
-    private UriMappingsUtils() { }
+    private UriMappingUtils() { }
 }

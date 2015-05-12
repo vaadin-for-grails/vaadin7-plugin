@@ -29,6 +29,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
         def classLoader = Holders.grailsApplication.classLoader
         def componentClassName = GrailsNameUtils.getClassName(componentName)
         Class<? extends Component> componentClass = null
+//        If no prefix was specified...
         if (StringUtils.isEmpty(prefix)) {
             prefix = 'com.vaadin.ui'
             try {
@@ -46,6 +47,7 @@ class ComponentNodeHandler extends AbstractNodeHandler implements ComponentTreeH
                     componentClass = classLoader.loadClass(componentClassName)
                 }
             }
+//            If a prefix was specified
         } else {
             try {
                 componentClass = classLoader.loadClass("$prefix.$componentClassName")

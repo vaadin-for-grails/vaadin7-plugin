@@ -6,6 +6,11 @@ import org.vaadin.grails.util.ApplicationContextUtils
 
 import javax.servlet.ServletException
 
+/**
+ * Grails specific implementation of {@link VaadinServlet}.
+ *
+ * @author Stephan Grundner
+ */
 class GrailsAwareVaadinServlet extends VaadinServlet {
 
     @Override

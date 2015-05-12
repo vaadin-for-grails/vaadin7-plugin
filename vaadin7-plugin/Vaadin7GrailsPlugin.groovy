@@ -4,6 +4,7 @@ import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.vaadin.grails.server.DefaultUriMappings
+import org.vaadin.grails.server.UIScope
 import org.vaadin.grails.server.UriMappings
 import org.vaadin.grails.ui.DefaultUI
 import org.vaadin.grails.ui.declarative.Design
@@ -51,6 +52,13 @@ Plugin for integrating Vaadin 7 into Grails.
         def config = loadConfig(application)
         application.config.merge(config)
 
+        def packages = application.config.grails.spring.bean.packages
+        if (packages.isEmpty()) {
+            xmlns context:"http://www.springframework.org/schema/context"
+            context.'component-scan'('base-package': '*')
+        }
+
+        'uiScope'(UIScope)
         'uriMappings'(DefaultUriMappings)
         'design'(Design)
     }
@@ -173,7 +181,6 @@ Plugin for integrating Vaadin 7 into Grails.
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
             def uiProviderClass = mapping.value['uiProvider'] ?:
-//                    "org.vaadin.grails.server.UriMappingsAwareUIProvider"
                     "org.vaadin.grails.server.GrailsAwareDelegateUIProvider"
 
             servlets[servlets.size() - 1] + {
