@@ -36,6 +36,7 @@ Plugin for integrating Vaadin 7 into Grails.
 
     ConfigObject loadConfig(GrailsApplication application) {
         VaadinConfigUtils.loadConfig(application)
+
     }
 
     def doWithSpring = {
