@@ -22,6 +22,15 @@ compile "com.github.vaadin-for-grails:vaadin7:LATEST"
 ```
 
 ## Usage
+
+## Mapping & Navigation
+Simply register your UIs and Views in the `VaadinConfig.groovy` file and navigate between them using the [Navigation]() class.
+
+```groovy
+Navigation.navigateTo(fragment: "my-view", params: [foo: 'bar'])
+```
+
+### Mapping UIs
 Create a [UI](https://vaadin.com/book/vaadin7/-/page/application.architecture.html) class.
 ```groovy
 class MyUI extents UI {
@@ -31,7 +40,6 @@ class MyUI extents UI {
 }
 ```
 
-## Mapping UIs
 Map your UI to an URI by adding the following lines to your `VaadinConfig.groovy`.
 ```groovy
 mapping {
@@ -44,7 +52,7 @@ mapping {
 
 Your Vaadin application is accessible via `http://localhost:8080/<grails app>/app`.
 
-## Mapping Views
+### Mapping Views
 Create a [View](https://vaadin.com/book/-/page/advanced.navigator.html) class.
 ```groovy
 class SimpleView extents CustomComponent implements View {
