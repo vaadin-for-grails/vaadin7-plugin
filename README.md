@@ -60,11 +60,11 @@ Map your View to an URI by adding the following lines to your VaadinConfig.groov
 mapping {
 
     "/app" {
-        ui = MyUI
+        ui = "MyUI"
     
         fragments {
             "about" {
-                view = SimpleView
+                view = "MyAboutView"
             }
         }
     }
