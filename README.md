@@ -13,3 +13,10 @@ The [Vaadin 7 Plugin](https://github.com/vaadin-for-grails/vaadin7-plugin) integ
 * Vaadin specific UI [Bean Scope](http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#beans-factory-scopes)
 * Seamless Spring Security integration with the [Vaadin 7 Spring Security Plugin](https://github.com/vaadin-for-grails/vaadin7-spring-security-plugin)
 * [ComponentBuilder](https://github.com/vaadin-for-grails/vaadin7-plugin/blob/master/plugin/src/groovy/org/vaadin/grails/ui/builders/ComponentBuilder.groovy) class for building UIs the Groovy way
+
+## Installation
+Simply add the following line to your ```BuildConfig.groovy```.
+```
+compile "com.github.vaadin-for-grails:vaadin7:LATEST"
+```
+
