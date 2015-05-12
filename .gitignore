@@ -40,10 +40,8 @@ wrapper/*
 *.zip.sha1
 *.xml.sha1
 *.asc
-
+.DS_Store
 .project
 .classpath
-
 hs_err_*.log
-
 *.graffle
