@@ -52,7 +52,7 @@ mapping {
 
 Your Vaadin application is accessible via `http://localhost:8080/<grails app>/app`.
 
-There is a default implementation for [UI](https://vaadin.com/api/com/vaadin/ui/UI.html): `org.vaadin.ui.DefaultUI`. So instead of creating emty UI classes use that class for mapping.
+There is a default implementation `org.vaadin.ui.DefaultUI` for the [UI](https://vaadin.com/api/com/vaadin/ui/UI.html) class. So instead of creating countless empty UI classes use this one for mapping.
 
 #### Mapping Views
 Create a [View](https://vaadin.com/book/-/page/advanced.navigator.html) class.
