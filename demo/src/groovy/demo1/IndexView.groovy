@@ -1,12 +1,12 @@
 package demo1
 
-import com.vaadin.grails.Vaadin
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
 import com.vaadin.ui.CustomComponent
 import com.vaadin.ui.Label
 import com.vaadin.ui.VerticalLayout
+import org.vaadin.grails.navigator.Navigation
 
 class IndexView extends CustomComponent implements View {
 
@@ -21,7 +21,7 @@ class IndexView extends CustomComponent implements View {
         def button = new Button("Go to second view", (Button.ClickListener)new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent e) {
-                Vaadin.enter(fragment: "two", params: [a: 1])
+                Navigation.navigateTo(SecondView)
             }
         })
         compositionRoot.addComponent(button)

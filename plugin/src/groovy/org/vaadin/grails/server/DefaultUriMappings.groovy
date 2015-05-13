@@ -3,8 +3,7 @@ package org.vaadin.grails.server
 import com.vaadin.navigator.View
 import com.vaadin.server.UIProvider
 import com.vaadin.ui.UI
-
-import java.util.concurrent.ConcurrentHashMap
+import org.apache.log4j.Logger
 
 /**
  * Default implementation for {@link UriMappings}.
@@ -14,87 +13,175 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class DefaultUriMappings implements UriMappings {
 
-    protected final def uiClassByPath = new HashMap<String, Class<? extends UI>>()
-    protected final def uiProviderClassByPath = new HashMap<String, Class<? extends UIProvider>>()
-    protected final def viewClassByURI = new HashMap<URI, Class<? extends UIProvider>>()
+    private static final log = Logger.getLogger(DefaultUriMappings)
 
-    protected final Map<String, Object> propertiesByPath = new ConcurrentHashMap<>()
-    protected final Map<String, Object> propertiesByPathAndFragment = new ConcurrentHashMap<>()
+    protected abstract class AbstractMapping {
 
+        final Map<String, Object> properties = new HashMap()
+    }
+
+    protected class FragmentMapping extends AbstractMapping {
+
+        Class<? extends View> viewClass
+    }
+
+    protected class PathMapping extends AbstractMapping {
+
+        Class<? extends UI> uiClass
+        Class<? extends UIProvider> uiProviderClass
+
+        private final Map<String, FragmentMapping> mappingByFragment = new HashMap()
+        private final Map<Class<? extends View>, String> primaryFragmentByViewClass = new IdentityHashMap()
+
+        FragmentMapping getFragmentMapping(String fragment) {
+            def mapping = mappingByFragment.get(fragment)
+            if (mapping == null) {
+                synchronized (DefaultUriMappings.this) {
+                    mapping = mappingByFragment.get(fragment)
+                    if (mapping == null) {
+                        mapping = new FragmentMapping()
+                        mappingByFragment.put(fragment, mapping)
+                    }
+                }
+            }
+            mapping
+        }
+    }
+
+    private final Map<String, PathMapping> mappingByPath = new HashMap()
+    private final Map<Class<? extends UI>, String> primaryPathByUIClass = new IdentityHashMap()
+
+    protected PathMapping getPathMapping(String path) {
+        def mapping = mappingByPath.get(path)
+        if (mapping == null) {
+            synchronized (this) {
+                mapping = mappingByPath.get(path)
+                if (mapping == null) {
+                    mapping = new PathMapping()
+                    mappingByPath.put(path, mapping)
+                }
+            }
+        }
+        mapping
+    }
+
+    @Override
     Class<? extends UI> getUIClass(String path) {
-        uiClassByPath.get(path)
+        getPathMapping(path).uiClass
     }
 
+    @Override
     void setUIClass(String path, Class<? extends UI> uiClass) {
-        uiClassByPath.put(path, uiClass)
+        getPathMapping(path).uiClass = uiClass
     }
 
+    @Override
     Class<? extends UIProvider> getUIProviderClass(String path) {
-        uiProviderClassByPath.get(path)
+        getPathMapping(path).uiProviderClass
     }
 
+    @Override
     void setUIProviderClass(String path, Class<? extends UIProvider> uiProviderClass) {
-        uiProviderClassByPath.put(path, uiProviderClass)
+        getPathMapping(path).uiProviderClass = uiProviderClass
     }
 
-    protected URI createURI(String path, String fragment) {
-        URI.create("$path#$fragment")
-    }
-
+    @Override
     Class<? extends View> getViewClass(String path, String fragment) {
-        def uri = createURI(path, fragment)
-        viewClassByURI.get(uri)
+        def pathMapping = getPathMapping(path)
+        pathMapping.getFragmentMapping(fragment).viewClass
     }
 
+    @Override
     void setViewClass(String path, String fragment, Class<? extends View> viewClass) {
-        def uri = createURI(path, fragment)
-        viewClassByURI.put(uri, viewClass)
+        def pathMapping = getPathMapping(path)
+        def fragmentMapping = pathMapping.getFragmentMapping(fragment)
+        fragmentMapping.viewClass = viewClass
     }
 
+    @Override
     List<String> getAllPaths() {
-        uiClassByPath.keySet()
+        Arrays.asList(mappingByPath.keySet())
     }
 
+    @Override
     Object getPathProperty(String path, String name) {
-        def properties = propertiesByPath[path] as Map<String, Object>
-        properties?.get(name)
+        def pathMapping = getPathMapping(path)
+        pathMapping.properties.get(name)
     }
 
+    @Override
     Object putPathProperty(String path, String name, Object value) {
-        Map<String, Object> properties = propertiesByPath.get(path)
-        if (properties == null) {
-            properties = [:]
-            propertiesByPath.put(path, properties)
-        }
-        properties.put(name, value)
+        def pathMapping = getPathMapping(path)
+        pathMapping.properties.put(name, value)
     }
 
+    @Override
     List<String> getAllFragments(String path) {
-        viewClassByURI.keySet().findAll { it.path == path }.collect { it.fragment }
+        def pathMapping = getPathMapping(path)
+        Arrays.asList(pathMapping.mappingByFragment.keySet())
     }
 
+    @Override
     Object getFragmentProperty(String path, String fragment, String name) {
-        def key = "${path}#${fragment}"
-        def properties = propertiesByPathAndFragment.get(key) as Map<String, Object>
-        properties?.get(name)
+        def pathMapping = getPathMapping(path)
+        def fragmentMapping = pathMapping.getFragmentMapping(fragment)
+        fragmentMapping.properties.get(name)
     }
 
+    @Override
     Object putFragmentProperty(String path, String fragment, String name, Object value) {
-        def key = "${path}#${fragment}"
-        Map<String, Object> properties = propertiesByPathAndFragment.get(key)
-        if (properties == null) {
-            properties = [:]
-            propertiesByPathAndFragment.put(key, properties)
+        def pathMapping = getPathMapping(path)
+        def fragmentMapping = pathMapping.getFragmentMapping(fragment)
+        fragmentMapping.properties.put(name, value)
+    }
+
+    @Override
+    String getPrimaryPath(Class<? extends UI> uiClass) {
+        def primaryPath = primaryPathByUIClass.get(uiClass)
+        if (primaryPath == null) {
+            primaryPath = mappingByPath.findResult { path, mapping ->
+                if (mapping.uiClass == uiClass) {
+                    log.warn("No primary path set for UI [$uiClass], using [${path}]")
+                    primaryPathByUIClass.put(uiClass, path)
+                    return path
+                }
+                null
+            }
         }
-        properties.put(name, value)
+        primaryPath
+    }
+
+    @Override
+    void setPrimaryPath(Class<? extends UI> uiClass, String primaryPath) {
+        primaryPathByUIClass.put(uiClass, primaryPath)
+    }
+
+    @Override
+    String getPrimaryFragment(String path, Class<? extends View> viewClass) {
+        def pathMapping = getPathMapping(path)
+        def primaryFragment = pathMapping.primaryFragmentByViewClass.get(viewClass)
+        if (primaryFragment == null) {
+            primaryFragment = pathMapping.mappingByFragment.findResult { fragment, mapping ->
+                if (mapping.viewClass == viewClass) {
+                    log.warn("No primary fragment set for View [$viewClass] and path [$path], using [${fragment}]")
+                    pathMapping.primaryFragmentByViewClass.put(viewClass, fragment)
+                    return fragment
+                }
+                null
+            }
+        }
+        primaryFragment
+    }
+
+    @Override
+    void setPrimaryFragment(String path, Class<? extends View> viewClass, String primaryFragment) {
+        def pathMapping = getPathMapping(path)
+        pathMapping.primaryFragmentByViewClass.put(viewClass, primaryFragment)
     }
 
     @Override
     void clear() {
-        uiClassByPath.clear()
-        uiProviderClassByPath.clear()
-        viewClassByURI.clear()
-        propertiesByPath.clear()
-        propertiesByPathAndFragment.clear()
+        mappingByPath.clear()
+        primaryPathByUIClass.clear()
     }
 }
