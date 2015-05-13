@@ -7,6 +7,7 @@ import com.vaadin.server.VaadinSession
 import com.vaadin.ui.Button
 import com.vaadin.ui.Label
 import com.vaadin.ui.Panel
+import demo1.DemoUI
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Scope
@@ -34,7 +35,8 @@ class IndexView extends Panel implements View {
         button1.addClickListener(new Button.ClickListener() {
             @Override
             void buttonClick(Button.ClickEvent event) {
-                Navigation.navigateTo(path: "/demo1")
+//                Navigation.navigateTo(path: "/demo1")
+                Navigation.navigateTo(DemoUI)
             }
         })
 

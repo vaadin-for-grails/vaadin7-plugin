@@ -12,6 +12,8 @@ import com.vaadin.ui.UI
  */
 public interface UriMappings {
 
+    static final PRIMARY_PROPERTY = "primary"
+
     static final DEFAULT_FRAGMENT_PATH_PROPERTY = "defaultFragment"
     static final THEME_PATH_PROPERTY = "theme"
     static final WIDGETSET_PATH_PROPERTY = "widgetset"
@@ -37,5 +39,45 @@ public interface UriMappings {
     Object getFragmentProperty(String path, String fragment, String name)
     Object putFragmentProperty(String path, String fragment, String name, Object value)
 
+    /**
+     * Get the primary path mapped to the specified {@link UI} class.
+     *
+     * @param uiClass A {@link UI} class
+     * @return The primary path mapped to the specified {@link UI} class
+     * @since 2.1
+     */
+    String getPrimaryPath(Class<? extends UI> uiClass)
+
+    /**
+     * Set the primary path for the specified mapped {@link UI} class.
+     *
+     * @param uiClass A {@link UI} class
+     * @param primaryPath The primary path
+     * @since 2.1
+     */
+    void setPrimaryPath(Class<? extends UI> uiClass, String primaryPath)
+
+    /**
+     * Get the primary fragment mapped to the specified {@link View} class.
+     *
+     * @param viewClass A {@link View} class
+     * @return The primary fragment mapped to the specified {@link View} class
+     * @since 2.1
+     */
+    String getPrimaryFragment(String path, Class<? extends View> viewClass)
+
+    /**
+     * Set the primary fragment mapped to the specified {@link View} class.
+     *
+     * @param path
+     * @param viewClass A {@link View} class
+     * @param primaryFragment The primary fragment
+     * @since 2.1
+     */
+    void setPrimaryFragment(String path, Class<? extends View> viewClass, String primaryFragment)
+
+    /**
+     * Clear all mappings.
+     */
     void clear()
 }

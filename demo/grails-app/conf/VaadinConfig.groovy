@@ -9,7 +9,7 @@ vaadin {
     mappings {
 
         "/vaadin" {
-
+            primary = true
             fragments {
                 "index" {
                     view = demo.IndexView
@@ -18,6 +18,25 @@ vaadin {
         }
 
         "/demo1" {
+            ui = 'demo1.DemoUI'
+            primary = true
+
+            fragments {
+                "index" {
+                    view = demo1.IndexView
+                }
+                "one" {
+                    primary = true
+                    view = demo1.IndexView
+                }
+                "two" {
+                    view = demo1.SecondView
+                }
+            }
+
+        }
+
+        "/demo-one" {
             ui = 'demo1.DemoUI'
 
             fragments {

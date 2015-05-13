@@ -64,6 +64,9 @@ class VaadinConfigUtils {
             log.debug("Register UI [${uiClass.name}] for path [${path}]")
             uriMappings.setUIClass(path, uiClass)
 
+            if (pathConfig.get(UriMappings.PRIMARY_PROPERTY, false)) {
+                uriMappings.setPrimaryPath(uiClass, path)
+            }
 
             def fragments = pathConfig.fragments
             fragments.each { String fragment, ConfigObject fragmentConfig ->
@@ -84,6 +87,10 @@ class VaadinConfigUtils {
                 }
                 log.debug("Register View [${viewClass.name}] for path [${path}#!${fragment}]")
                 uriMappings.setViewClass(path, fragment, viewClass)
+
+                if (fragmentConfig.get(UriMappings.PRIMARY_PROPERTY, false)) {
+                    uriMappings.setPrimaryFragment(path, viewClass, fragment)
+                }
             }
         }
     }

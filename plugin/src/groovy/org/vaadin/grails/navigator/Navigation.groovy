@@ -1,5 +1,6 @@
 package org.vaadin.grails.navigator
 
+import com.vaadin.navigator.View
 import com.vaadin.server.ExternalResource
 import com.vaadin.server.Page
 import com.vaadin.server.VaadinService
@@ -177,6 +178,44 @@ abstract class Navigation {
         def path = args.get('path') as String
         def fragment = args.get('fragment') as String
         def params = args.get('params') as Map
+        navigateTo(path, fragment, params)
+    }
+
+    /**
+     * Navigate to a different UI or View by Class using the named parameters.
+     *
+     * @see org.vaadin.grails.server.UriMappings#getPrimaryPath(java.lang.Class)
+     * @see org.vaadin.grails.server.UriMappings#getPrimaryFragment(java.lang.String, java.lang.Class)
+     * @param uiOrViewClass A mapped UI or View class
+     * @param params The named parameters
+     * @since 2.1
+     */
+    static void navigateTo(Class<?> uiOrViewClass, Map params = null) {
+        Class<? extends UI> uiClass
+        Class<? extends View> viewClass
+        if (UI.isAssignableFrom(uiOrViewClass)) {
+            uiClass = uiOrViewClass
+        }
+        if (View.isAssignableFrom(uiOrViewClass)) {
+            viewClass = uiOrViewClass
+        }
+        navigateTo(uiClass, viewClass, params)
+    }
+
+    /**
+     * Navigate to a different UI or View by Class using the named parameters.
+     *
+     * @see org.vaadin.grails.server.UriMappings#getPrimaryPath(java.lang.Class)
+     * @see org.vaadin.grails.server.UriMappings#getPrimaryFragment(java.lang.String, java.lang.Class)
+     * @param uiClass A {@link UI} mapped to a path
+     * @param viewClass A {@link View} mapped to a path & fragment
+     * @param params The named parameters
+     * @since 2.1
+     */
+    static void navigateTo(Class<? extends UI> uiClass, Class<? extends View> viewClass, Map params = null) {
+        def uriMappings = UriMappingUtils.uriMappings
+        def path = uiClass ? uriMappings.getPrimaryPath(uiClass) : currentPath
+        def fragment = viewClass ? uriMappings.getPrimaryFragment(path, viewClass) : currentFragment
         navigateTo(path, fragment, params)
     }
 

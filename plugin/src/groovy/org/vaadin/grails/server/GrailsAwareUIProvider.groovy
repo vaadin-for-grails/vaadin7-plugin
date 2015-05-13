@@ -74,7 +74,6 @@ class GrailsAwareUIProvider extends UIProvider {
             log.warn("No UI class found for path [${path}]")
             return null
         }
-        log.debug("UI class [${uiClass?.name}] found for path [${path}]")
         uiClass
     }
 
