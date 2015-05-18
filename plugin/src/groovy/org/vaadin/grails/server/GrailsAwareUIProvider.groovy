@@ -9,6 +9,7 @@ import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.HasComponents
 import com.vaadin.ui.UI
 import grails.util.Holders
+import org.apache.commons.lang.StringUtils
 import org.apache.log4j.Logger
 import org.springframework.web.util.UrlPathHelper
 import org.vaadin.grails.navigator.GrailsAwareViewProvider
@@ -49,8 +50,9 @@ class GrailsAwareUIProvider extends UIProvider {
             ui.navigator = createNavigator(ui)
         }
 
-        def nullRepresentation = Holders.config.vaadin.nullRepresentation
-        if (nullRepresentation != null) {
+        def config = Holders.config.vaadin as ConfigObject
+        if (config.isSet('nullRepresentation')) {
+            def nullRepresentation = config.get('nullRepresentation')
             ui.addComponentAttachListener(new HasComponents.ComponentAttachListener() {
                 @Override
                 void componentAttachedToContainer(HasComponents.ComponentAttachEvent e) {

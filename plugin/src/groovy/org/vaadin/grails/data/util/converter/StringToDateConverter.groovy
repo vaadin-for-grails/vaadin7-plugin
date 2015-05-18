@@ -2,6 +2,7 @@ package org.vaadin.grails.data.util.converter
 
 import com.vaadin.data.util.converter.Converter
 import grails.util.Holders
+import org.apache.commons.lang.StringUtils
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
 import org.vaadin.grails.util.ApplicationContextUtils
@@ -62,7 +63,7 @@ class StringToDateConverter implements Converter<String, Date> {
         }
 
         def dateFormat = getDateFormat(locale)
-        if (dateFormat) {
+        if (dateFormat && StringUtils.isNotEmpty(value)) {
             return dateFormat.parse(value)
         }
 
@@ -72,7 +73,7 @@ class StringToDateConverter implements Converter<String, Date> {
     @Override
     String convertToPresentation(Date value, Class<? extends String> targetType, Locale locale) throws Converter.ConversionException {
         def dateFormat = getDateFormat(locale)
-        if (dateFormat) {
+        if (dateFormat && value) {
             return dateFormat.format(value)
         }
 

@@ -9,6 +9,8 @@ class Book {
     int rating
 
     static constraints = {
-        title widget: 'textArea'
+        title widget: 'textArea', nullable: false
+        author nullable: false
+        released nullable: true
     }
 }
