@@ -11,15 +11,18 @@ import org.vaadin.grails.util.ApplicationContextUtils
 import org.vaadin.grails.util.GrailsUtils
 
 /**
- * @author Stephan Grundner
+ * Grails specific implementation for {@link FieldGroup}
+ * using Domain objects for data binding.
  *
+ * @author Stephan Grundner
  * @since 1.0
  */
 class DomainFieldGroup<T> extends FieldGroup implements DomainObjectProvider<T> {
 
     final Class<T> type
 
-    protected final Map<Field<?>, DomainObjectValidator> validators = new IdentityHashMap<Field<?>, DomainObjectValidator>()
+    protected final Map<Field<?>, DomainObjectValidator> validators =
+            new IdentityHashMap<Field<?>, DomainObjectValidator>()
 
     public DomainFieldGroup(DomainItem<T> itemDataSource) {
         super(itemDataSource)
