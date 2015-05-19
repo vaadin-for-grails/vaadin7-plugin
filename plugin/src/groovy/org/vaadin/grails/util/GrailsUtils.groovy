@@ -3,6 +3,8 @@ package org.vaadin.grails.util
 import grails.util.GrailsNameUtils
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -14,9 +16,27 @@ import org.springframework.context.i18n.LocaleContextHolder
  */
 final class GrailsUtils {
 
+    static boolean isDomainClass(String name) {
+        def grailsApplication = Holders.grailsApplication
+        def classLoader = grailsApplication.classLoader
+        def type = classLoader.loadClass(name)
+        grailsApplication.isDomainClass(type)
+    }
+
+    static boolean isDomainClass(Class<?> type) {
+        def grailsApplication = Holders.grailsApplication
+        grailsApplication.isDomainClass(type)
+    }
+
     static GrailsDomainClass getDomainClass(String name) {
         def grailsApplication = Holders.grailsApplication
         grailsApplication.getDomainClass(name) as GrailsDomainClass
+    }
+
+    static GrailsDomainClass getDomainClass(Object object) {
+        def grailsApplication = Holders.grailsApplication
+        object = GrailsHibernateUtil.unwrapIfProxy(object)
+        grailsApplication.getDomainClass(object?.getClass()?.name) as GrailsDomainClass
     }
 
     static GrailsDomainClass getDomainClass(Class<?> type) {
@@ -39,6 +59,12 @@ final class GrailsUtils {
             caption = GrailsNameUtils.getNaturalName(propertyName)
         }
         caption
+    }
+
+    static ConstrainedProperty getConstrainedProperty(Class<?> type, String propertyName) {
+        def domainClass = getDomainClass(type)
+        def constraints = domainClass.getConstrainedProperties()
+        constraints?.get(propertyName)
     }
 
     static String getCaption(Class<?> type, Object propertyName, Locale locale) {

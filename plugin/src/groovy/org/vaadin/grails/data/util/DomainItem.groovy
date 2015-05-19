@@ -12,40 +12,50 @@ import org.vaadin.grails.util.GrailsUtils
  * @author Stephan Grundner
  * @since 1.0
  */
-class DomainItem<T> implements Item {
+class DomainItem<T> implements Item, DomainObjectProvider<T> {
 
-    final T object
+    protected T object
     final Map<String, Property<?>> propertyById = new HashMap()
 
     DomainItem(T object) {
         this.object = object
+        init()
+    }
 
+    DomainItem(Class<T> type, Object... args) {
+        object = type.newInstance(args)
+        init()
+    }
+
+    public DomainItem(Class<T> type) {
+        object = type.newInstance()
+        init()
+    }
+
+    @Override
+    T getObject() {
+        object
+    }
+
+    protected void init() {
         def domainClass = getDomainClass()
         if (domainClass == null) {
-            throw new RuntimeException("No domain class")
+            throw new RuntimeException("No domain class: ${object?.getClass()}")
         }
 
-        domainClass.getPersistentProperties().each { property ->
+        for (def property : domainClass.getProperties()) {
             def id = property.name
             addItemProperty(id, new DomainItemProperty<T, Object>(this, id))
         }
     }
 
-    DomainItem(Class<T> type, Object... args) {
-        this(type.newInstance(args))
-    }
-
-    DomainItem(Class<T> type) {
-        this(type.newInstance())
-    }
-
     GrailsDomainClass getDomainClass() {
-        GrailsUtils.getDomainClass(object.getClass())
+        GrailsUtils.getDomainClass(object)
     }
 
     @Override
     Property<?> getItemProperty(Object id) {
-        propertyById.get(id)
+        propertyById?.get(id)
     }
 
     @Override
@@ -55,14 +65,14 @@ class DomainItem<T> implements Item {
 
     @Override
     boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-        propertyById.put(id, property)
+        propertyById.put(id?.toString(), property)
     }
 
     boolean addItemProperty(Object id) throws UnsupportedOperationException {
         if (((String) id).contains('.')) {
-            return addItemProperty(id, new NestedDomainItemProperty(this, id))
+            return addItemProperty(id, new NestedDomainItemProperty(this, id?.toString()))
         }
-        addItemProperty(id, new DomainItemProperty<T, Object>(this, id))
+        addItemProperty(id, new DomainItemProperty<T, Object>(this, id?.toString()))
     }
 
     @Override
@@ -71,22 +81,26 @@ class DomainItem<T> implements Item {
     }
 
     Serializable getId() {
-        object.invokeMethod("getId", null)
+        (Serializable) object.invokeMethod("getId", null)
     }
 
     Errors getErrors() {
-        object.invokeMethod("getErrors", null) as Errors
+        (Errors) object.invokeMethod("getErrors", null) as Errors
     }
 
     boolean validate() {
-        object.invokeMethod("validate", null)
+        (boolean) object.invokeMethod("validate", null)
     }
 
     T save(boolean flush = false) {
-        object.invokeMethod("save", [flush: flush])
+        (T) object.invokeMethod("save", [flush: flush])
     }
 
     void delete(boolean flush = false) {
         object.invokeMethod("delete", [flush: flush])
+    }
+
+    void refresh() {
+        object.invokeMethod("refresh", null)
     }
 }

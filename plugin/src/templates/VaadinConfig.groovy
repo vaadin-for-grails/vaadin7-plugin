@@ -12,7 +12,11 @@ vaadin {
 //            theme = "custom"
 //            pageTitle = "Vaadin for Grails"
 
-            fragments { }
+            fragments {
+//                "index" {
+//                    view = 'org.vaadin.grails.addon.ui.CustomView'
+//                }
+            }
         }
 
     }

@@ -1,17 +1,15 @@
 package org.vaadin.grails.data.fieldgroup
 
 import com.vaadin.data.fieldgroup.FieldGroupFieldFactory
-import com.vaadin.ui.DateField
-import com.vaadin.ui.Field
-import com.vaadin.ui.RichTextArea
-import com.vaadin.ui.TextArea
-import com.vaadin.ui.TextField
+import com.vaadin.ui.*
 import groovy.transform.Memoized
+import org.apache.commons.lang.StringUtils
 import org.vaadin.grails.util.GrailsUtils
 
 /**
- * @author Stephan Grundner
+ * Factory for creating fields bound to Grails domain classes.
  *
+ * @author Stephan Grundner
  * @since 1.0
  */
 class DomainFieldGroupFieldFactory implements FieldGroupFieldFactory {
@@ -28,31 +26,11 @@ class DomainFieldGroupFieldFactory implements FieldGroupFieldFactory {
     }
 
     @Memoized
-    protected Class<?> getFieldTypeByWidgetName(String widgetName) {
+    protected Class<?> getFieldTypeByWidget(String widgetName) {
         ['textfield'   : TextField,
         'textarea'    : TextArea,
         'richtextarea': RichTextArea,
         'datefield'   : DateField].get(widgetName)
-    }
-
-    protected def <T extends Field> T createFieldByWidget(Class<?> type, String propertyId) {
-        def domainClass = GrailsUtils.getDomainClass(type)
-        def property = domainClass.getPropertyByName(propertyId)
-
-        T field = null
-
-        def constraints = domainClass.getConstrainedProperties()?.get(property.name)
-        if (constraints) {
-            def widgetName = constraints['widget'] as String
-            if (widgetName) {
-                def requiredFieldType = getFieldTypeByWidgetName(widgetName)
-                if (requiredFieldType) {
-                    field = createField(property.type, requiredFieldType)
-                }
-            }
-        }
-
-        field
     }
 
     /**
@@ -66,8 +44,32 @@ class DomainFieldGroupFieldFactory implements FieldGroupFieldFactory {
     public def <T extends Field> T createField(Class<?> type, String propertyId, Class<T> fieldType) {
         T field = null
 
+        def domainClass = GrailsUtils.getDomainClass(type)
+        def property = domainClass.getPropertyByName(propertyId)
+        def constrainedProperty = GrailsUtils.getConstrainedProperty(type, propertyId)
+
         if (fieldType == Field) {
-            field = createFieldByWidget(type, propertyId)
+
+            def widget = constrainedProperty?.widget
+            if (StringUtils.isNotEmpty(widget)) {
+                fieldType = getFieldTypeByWidget(widget) ?: Field
+            }
+
+            if (fieldType != Field) {
+                field = createField(property.type, fieldType)
+            } else if (Enum.isAssignableFrom(property.type)) {
+                field = createField(property.type, ComboBox)
+            }
+
+        } else {
+
+            if (Slider.isAssignableFrom(fieldType)) {
+                int min = (int) constrainedProperty?.min ?: Integer.MIN_VALUE
+                int max = (int) constrainedProperty?.max ?: Integer.MAX_VALUE
+                int resolution = constrainedProperty?.scale ?: 0
+                field = fieldType.newInstance(min, max, resolution)
+            }
+
         }
 
         field

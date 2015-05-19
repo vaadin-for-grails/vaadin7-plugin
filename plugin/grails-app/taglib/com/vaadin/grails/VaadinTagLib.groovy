@@ -86,15 +86,15 @@ class VaadinTagLib {
             "debug": $debug,
             "standalone": false,
             "authErrMsg": {
-                "message": "Take note of any unsaved data, and <u>click here<\\/u> to continue.",
+                "message": "Take note of any unsaved data, and <u>click here</u> to continue.",
                 "caption": "Authentication problem"
             },
             "comErrMsg": {
-                "message": "Take note of any unsaved data, and <u>click here<\\/u> to continue.",
+                "message": "Take note of any unsaved data, and <u>click here</u> to continue.",
                 "caption": "Communication problem"
             },
             "sessExpMsg": {
-                "message": "Take note of any unsaved data, and <u>click here<\\/u> to continue.",
+                "message": "Take note of any unsaved data, and <u>click here</u> to continue.",
                 "caption": "Session expired"
             }
         });

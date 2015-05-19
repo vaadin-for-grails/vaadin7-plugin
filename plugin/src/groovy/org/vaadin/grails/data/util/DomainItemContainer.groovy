@@ -16,8 +16,10 @@ import com.vaadin.data.util.filter.UnsupportedFilterException
 import org.vaadin.grails.util.GrailsUtils
 
 /**
- * Domain Item Container.
+ * An in-memory container for Grails domain objects.
  *
+ * @see DomainItem
+ * @see DomainItemProperty
  * @author Stephan Grundner
  * @since 1.0
  */

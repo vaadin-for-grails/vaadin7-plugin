@@ -2,10 +2,7 @@ package demo4
 
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.ui.Button
-import com.vaadin.ui.Panel
-import com.vaadin.ui.Table
-import com.vaadin.ui.Window
+import com.vaadin.ui.*
 import demo.Book
 import org.vaadin.grails.data.fieldgroup.DomainFieldGroup
 import org.vaadin.grails.data.util.DomainItem
@@ -16,26 +13,24 @@ import org.vaadin.grails.util.GrailsUtils
 
 class BookListView extends Panel implements View {
 
-//    static final breadcrumb = new BreadcrumbTrail.Breadcrumb(icon: FontAwesome.BOOK, caption: "Books")
-
     class BookEditor extends Window {
 
-        DomainFieldGroup<Book> bookFieldGroup
-//        BeanFieldGroup<Book> bookFieldGroup
+        DomainFieldGroup<Book> bookFieldGroup = new DomainFieldGroup<Book>(Book)
 
         BookEditor() {
-            bookFieldGroup = new DomainFieldGroup<Book>(Book)
-//            bookFieldGroup = new BeanFieldGroup<>(Book)
             content = ComponentBuilder.build {
                 formLayout(sizeUndefined: true, margin: true) {
                     build(propertyId: 'title', fieldGroup: bookFieldGroup)
                     build(propertyId: 'author', fieldGroup: bookFieldGroup)
+                    build(propertyId: 'type', fieldGroup: bookFieldGroup)
                     build(propertyId: 'released', fieldGroup: bookFieldGroup)
-                    build(propertyId: 'rating', fieldGroup: bookFieldGroup)
+                    build(propertyId: 'rating', fieldGroup: bookFieldGroup, fieldType: Slider)
                     build(propertyId: 'available', fieldGroup: bookFieldGroup)
+                    build(propertyId: 'related', fieldGroup: bookFieldGroup)
+                    build(propertyId: 'note', fieldGroup: bookFieldGroup)
 
                     horizontalLayout(spacing: true) {
-                        button(caption: i18n('book.save.button'), clickListener: {
+                        button(caption: "Save Book", clickListener: {
                             save()
                         })
                     }
@@ -47,31 +42,31 @@ class BookListView extends Panel implements View {
 
         void create() {
             bookFieldGroup.itemDataSource = new DomainItem(Book)
-//            bookFieldGroup.itemDataSource = new BeanItem(new Book())
         }
 
         void open() {
-            bookFieldGroup.discard()
-
+//            bookFieldGroup.discard()
             def ui = com.vaadin.ui.UI.current
             if (!ui.windows.contains(this)) {
                 ui.addWindow(this)
             }
-
             center()
         }
 
         void save() {
-            bookFieldGroup.commit()
-            if (bookFieldGroup.validate()) {
-                bookFieldGroup.itemDataSource.save(true)
-                close()
-                BookListView.this.reload()
+            if (bookFieldGroup.commit(true)) {
+                def item = bookFieldGroup.itemDataSource
+                def saved = item.save(true)
+                if (saved != null) {
+                    close()
+                    booksTable.addItem(saved)
+                } else {
+                    println item.errors
+                }
             }
         }
     }
 
-//    BreadcrumbTrail trail
     Table booksTable
     Button createBookButton
     private BookEditor bookEditor
@@ -80,10 +75,6 @@ class BookListView extends Panel implements View {
         styleName = 'borderless'
         content = ComponentBuilder.build {
             verticalLayout(spacing: true, margin: true) {
-//                trail = breadcrumbTrail() {
-//                    breadcrumb(IndexView.breadcrumb)
-//                    breadcrumb(this.breadcrumb)
-//                }
                 label(value: "Book Demo", styleName: "h1 colored")
                 booksTable = table(sizeFull: true, pageLength: 0)
                 createBookButton = button(caption: "Create Book", styleName: "primary", clickListener: {
@@ -102,8 +93,7 @@ class BookListView extends Panel implements View {
 
     void reload() {
         booksTable.removeAllItems()
-        def books = Book.list()
-        booksTable.addItems(books)
+        booksTable.addItems(Book.list())
     }
 
     @Override

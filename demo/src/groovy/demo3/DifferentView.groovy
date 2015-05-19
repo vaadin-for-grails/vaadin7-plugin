@@ -18,7 +18,7 @@ class DifferentView extends CustomComponent implements View {
             verticalLayout(sizeFull: true, margin: true, spacing: true) {
                 label(value: "Different view", styleName: "h1 colored")
                 horizontalLayout(sizeFull: true, spacing: true) {
-//                    component(instance: ApplicationContextUtils.applicationContext.getBean(Sidebar), sizeUndefined: true)
+                    component(instance: ApplicationContextUtils.applicationContext.getBean(Sidebar), sizeUndefined: true)
                     verticalLayout(sizeFull: true, expandRatio: 1, spacing: true) {
                         label(value: "Welcome to a different view", styleName: "h2")
                         label(value: "As you see, the Sidebar remembers its state!", styleName: "light")

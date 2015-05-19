@@ -2,9 +2,11 @@ package org.vaadin.grails.data.fieldgroup
 
 import com.vaadin.data.Item
 import com.vaadin.data.fieldgroup.FieldGroup
-import com.vaadin.ui.AbstractField
 import com.vaadin.ui.Field
+import org.vaadin.grails.data.fieldgroup.util.FieldGroupUtils
 import org.vaadin.grails.data.util.DomainItem
+import org.vaadin.grails.data.util.DomainObjectProvider
+import org.vaadin.grails.data.validator.DomainObjectValidator
 import org.vaadin.grails.util.ApplicationContextUtils
 import org.vaadin.grails.util.GrailsUtils
 
@@ -13,16 +15,15 @@ import org.vaadin.grails.util.GrailsUtils
  *
  * @since 1.0
  */
-class DomainFieldGroup<T> extends FieldGroup {
+class DomainFieldGroup<T> extends FieldGroup implements DomainObjectProvider<T> {
 
     final Class<T> type
 
-//    @since 2.0
-    private DomainFieldGroupValidator validator
+    protected final Map<Field<?>, DomainObjectValidator> validators = new IdentityHashMap<Field<?>, DomainObjectValidator>()
 
     public DomainFieldGroup(DomainItem<T> itemDataSource) {
         super(itemDataSource)
-        type = itemDataSource.object.getClass()
+        type = (Class<T>) itemDataSource.object.getClass()
         initFieldFactory()
     }
 
@@ -46,15 +47,6 @@ class DomainFieldGroup<T> extends FieldGroup {
     }
 
     @Override
-    protected Class<?> getPropertyType(Object propertyId) throws BindException {
-        if (itemDataSource) {
-            return super.getPropertyType(propertyId)
-        }
-        def domainClass = GrailsUtils.getDomainClass(type)
-        domainClass.getPropertyByName(propertyId)?.type
-    }
-
-    @Override
     void setItemDataSource(Item itemDataSource) {
         if (itemDataSource instanceof DomainItem) {
             super.setItemDataSource(itemDataSource)
@@ -63,38 +55,52 @@ class DomainFieldGroup<T> extends FieldGroup {
         }
     }
 
-    DomainFieldGroupValidator getValidator() {
-        if (validator == null) {
-            validator = ApplicationContextUtils.getBeanOrInstance(DomainFieldGroupValidator)
+    @Override
+    T getObject() {
+        getItemDataSource().object
+    }
+
+    @Override
+    protected Class<?> getPropertyType(Object propertyId) throws BindException {
+        if (itemDataSource) {
+            return super.getPropertyType(propertyId)
         }
-        validator
+        def domainClass = GrailsUtils.getDomainClass(type)
+        domainClass.getPropertyByName(propertyId?.toString())?.type
     }
 
-    void setValidator(DomainFieldGroupValidator validator) {
-        this.validator = validator
-    }
-
+    @Deprecated
     boolean validate() {
-        def validator = getValidator()
-        if (validator) {
-            return validator.validate(this)
+        commit(true)
+    }
+
+    boolean commit(boolean showErrors) {
+        if (!showErrors) {
+            commit()
+            return true
         }
-        itemDataSource.validate()
+        FieldGroupUtils.commit(this)
     }
 
     @Override
-    boolean isValid() {
-        super.isValid() && validate()
+    void bind(Field<?> field, Object propertyId) throws BindException {
+        def validator = validators.get(field)
+        if (validator == null) {
+            validator = new DomainObjectValidator(this, propertyId?.toString())
+            validators.put(field, validator)
+            field.addValidator(validator)
+        }
+        validator.locale = field.locale
+        super.bind(field, propertyId)
     }
 
     @Override
-    void discard() {
-        fields.each { field ->
-            if (field instanceof AbstractField) {
-                field.componentError = null
-            }
+    void unbind(Field<?> field) throws BindException {
+        super.unbind(field)
+        def validator = validators.remove(field)
+        if (validator != null) {
+            field.removeValidator(validator)
         }
-        super.discard()
     }
 
     @Override

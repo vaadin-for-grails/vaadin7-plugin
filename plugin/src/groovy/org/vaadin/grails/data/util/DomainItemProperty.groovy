@@ -67,7 +67,7 @@ class DomainItemProperty<T, P> extends AbstractProperty<P> implements Property<P
     @Override
     Class<? extends P> getType() {
         def domainClass = getDomainClass()
-        def type = domainClass.getPropertyByName(propertyId)?.type
-        fromPrimitiveType(type)
+        def property = domainClass.getPropertyByName(propertyId)
+        fromPrimitiveType(property?.type)
     }
 }

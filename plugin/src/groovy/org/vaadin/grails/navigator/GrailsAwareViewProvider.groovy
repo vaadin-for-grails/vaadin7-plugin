@@ -12,8 +12,8 @@ import org.vaadin.grails.util.ApplicationContextUtils
  * A {@link com.vaadin.navigator.ViewProvider} implementation that uses uri mappings
  * defined in the <code>VaadinConfig</code> script.
  *
- * @since 1.0
  * @author Stephan Grundner
+ * @since 1.0
  */
 class GrailsAwareViewProvider implements ViewProvider {
 
