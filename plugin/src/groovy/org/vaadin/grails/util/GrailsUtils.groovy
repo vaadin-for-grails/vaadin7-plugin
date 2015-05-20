@@ -3,7 +3,6 @@ package org.vaadin.grails.util
 import grails.util.GrailsNameUtils
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.springframework.context.NoSuchMessageException
 import org.springframework.context.i18n.LocaleContextHolder
@@ -35,7 +34,8 @@ final class GrailsUtils {
 
     static GrailsDomainClass getDomainClass(Object object) {
         def grailsApplication = Holders.grailsApplication
-        object = GrailsHibernateUtil.unwrapIfProxy(object)
+//        object = GrailsHibernateUtil.unwrapIfProxy(object)
+//        HibernateProxyHelper.getClassWithoutInitializingProxy()
         grailsApplication.getDomainClass(object?.getClass()?.name) as GrailsDomainClass
     }
 

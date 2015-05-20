@@ -84,8 +84,6 @@
             <artifactId>vaadin-server</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
         
         <dependency>
@@ -93,8 +91,6 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
         
         <dependency>
@@ -102,8 +98,6 @@
             <artifactId>vaadin-client</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
         
         <dependency>
@@ -111,8 +105,6 @@
             <artifactId>vaadin-client-compiler</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
         
         <dependency>
@@ -120,8 +112,6 @@
             <artifactId>vaadin-themes</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
         
         <dependency>
@@ -129,11 +119,8 @@
             <artifactId>vaadin-push</artifactId>
             <version>7.4.5</version>
             <scope>compile</scope>
-            
-            
         </dependency>
-        
-        
+
         <dependency>
             <groupId>org.grails.plugins</groupId>
             <artifactId>webxml</artifactId>

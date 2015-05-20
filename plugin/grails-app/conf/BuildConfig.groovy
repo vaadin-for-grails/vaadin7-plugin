@@ -64,8 +64,8 @@ grails.project.dependency.resolution = {
 }
 
 grails.project.repos.default = "sonatype"
-grails.project.repos.sonatype.url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-//grails.project.repos.sonatype.url = "https://oss.sonatype.org/content/repositories/snapshots"
+//grails.project.repos.sonatype.url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+grails.project.repos.sonatype.url = "https://oss.sonatype.org/content/repositories/snapshots"
 grails.project.repos.sonatype.type = "maven"
 
 // Add the following properties to ~/.grails/settings.groovy:

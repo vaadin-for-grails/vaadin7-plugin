@@ -100,7 +100,8 @@ class DefaultUriMappings implements UriMappings {
 
     @Override
     List<String> getAllPaths() {
-        Arrays.asList(mappingByPath.keySet())
+        def allPaths = mappingByPath.keySet()
+        allPaths.asList()
     }
 
     @Override
@@ -118,7 +119,8 @@ class DefaultUriMappings implements UriMappings {
     @Override
     List<String> getAllFragments(String path) {
         def pathMapping = getPathMapping(path)
-        Arrays.asList(pathMapping.mappingByFragment.keySet())
+        def allFragments = pathMapping.mappingByFragment.keySet()
+        allFragments.asList()
     }
 
     @Override
