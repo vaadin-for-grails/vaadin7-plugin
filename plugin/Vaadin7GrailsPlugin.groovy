@@ -15,7 +15,7 @@ import org.vaadin.grails.util.VaadinConfigUtils
  */
 class Vaadin7GrailsPlugin {
 
-    def version = "2.2-SNAPSHOT"
+    def version = "2.2"
     def grailsVersion = "2.4 > *"
 
     def group = "com.github.vaadin-for-grails"

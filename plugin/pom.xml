@@ -7,7 +7,7 @@
     <groupId>com.github.vaadin-for-grails</groupId>
     <artifactId>vaadin7</artifactId>
     <packaging>grails-plugin</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.2</version>
 
     <name>vaadin7-plugin</name>
     <description>Vaadin 7 Grails Plugin</description>
