@@ -1,3 +1,5 @@
+import com.vaadin.shared.communication.PushMode
+import com.vaadin.shared.ui.ui.Transport
 import demo4.BookListView
 
 vaadin {
@@ -71,6 +73,8 @@ vaadin {
         }
 
         "/demo4" {
+//            pushMode = PushMode.AUTOMATIC
+//            pushTransport = Transport.STREAMING
 
             fragments {
                 "index" {

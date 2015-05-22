@@ -91,6 +91,12 @@ implements Filterable, Sortable, ValueChangeListener, PropertySetChangeNotifier 
     @Override
     Item addItem(T object) throws UnsupportedOperationException {
         def item = createDomainItem(object)
+        if (containsId(item.id)) {
+            def index = indexOfId(item.id)
+            assert removeItem(item.id) == true
+            return internalAddItemAt(index, item.id, item, true)
+        }
+
         internalAddItemAtEnd(item.id, item, true)
     }
 

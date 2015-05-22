@@ -1,5 +1,6 @@
 package demo4
 
+import com.vaadin.event.ShortcutAction
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.*
@@ -13,14 +14,20 @@ import org.vaadin.grails.util.GrailsUtils
 
 class BookListView extends Panel implements View {
 
-    class BookEditor extends Window {
+    static class BookEditor extends Window {
 
         DomainFieldGroup<Book> bookFieldGroup = new DomainFieldGroup<Book>(Book)
 
-        BookEditor() {
+        Field fieldWithFocus
+        final BookListView view
+
+        BookEditor(BookListView view) {
+            this.view = view
+
+            Button saveButton
             content = ComponentBuilder.build {
                 formLayout(sizeUndefined: true, margin: true) {
-                    build(propertyId: 'title', fieldGroup: bookFieldGroup)
+                    fieldWithFocus = build(propertyId: 'title', fieldGroup: bookFieldGroup)
                     build(propertyId: 'author', fieldGroup: bookFieldGroup)
                     build(propertyId: 'type', fieldGroup: bookFieldGroup)
                     build(propertyId: 'released', fieldGroup: bookFieldGroup)
@@ -30,40 +37,37 @@ class BookListView extends Panel implements View {
                     build(propertyId: 'note', fieldGroup: bookFieldGroup)
 
                     horizontalLayout(spacing: true) {
-                        button(caption: "Save Book", clickListener: {
-                            save()
+                        saveButton = button(caption: "Save Book", styleName: "primary default", clickListener: {
+                            view.save()
+
                         })
                     }
                 }
             }
 
+            saveButton.setClickShortcut(ShortcutAction.KeyCode.ENTER)
             caption = ApplicationContextUtils.getMessage("book.editor.title", "Book Editor")
         }
 
         void create() {
-            bookFieldGroup.itemDataSource = new DomainItem(Book)
+            def book = new Book()
+            book.type = Book.Type.AUDIO
+            book.rating = 2d
+            bookFieldGroup.itemDataSource = new DomainItem(book)
+        }
+
+        void edit(Serializable id) {
+            def book = Book.get(id)
+            bookFieldGroup.itemDataSource = new DomainItem(book)
         }
 
         void open() {
-//            bookFieldGroup.discard()
             def ui = com.vaadin.ui.UI.current
             if (!ui.windows.contains(this)) {
                 ui.addWindow(this)
             }
             center()
-        }
-
-        void save() {
-            if (bookFieldGroup.commit(true)) {
-                def item = bookFieldGroup.itemDataSource
-                def saved = item.save(true)
-                if (saved != null) {
-                    close()
-                    booksTable.addItem(saved)
-                } else {
-                    println item.errors
-                }
-            }
+            fieldWithFocus.focus()
         }
     }
 
@@ -88,7 +92,32 @@ class BookListView extends Panel implements View {
         booksTable.containerDataSource = container
         booksTable.columnHeaders = GrailsUtils.getCaptionList(Book, booksTable.visibleColumns, locale)
 
-        bookEditor = new BookEditor()
+        booksTable.addGeneratedColumn('edit', new Table.ColumnGenerator() {
+            @Override
+            Object generateCell(Table components, Object o, Object o2) {
+                ComponentBuilder.build {
+                    button(caption: "Edit", styleName: "small", clickListener: {
+                        bookEditor.edit(o)
+                        bookEditor.open()
+                    })
+                }
+            }
+        })
+        booksTable.immediate = true
+        bookEditor = new BookEditor(this)
+    }
+
+    void save() {
+        if (bookEditor.bookFieldGroup.commit(true)) {
+            def item = bookEditor.bookFieldGroup.itemDataSource
+            def saved = item.merge(true)
+            if (saved != null) {
+                booksTable.addItem(saved)
+                bookEditor.close()
+            } else {
+                println item.errors
+            }
+        }
     }
 
     void reload() {

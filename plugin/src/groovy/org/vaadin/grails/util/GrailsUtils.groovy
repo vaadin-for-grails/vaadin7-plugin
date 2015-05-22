@@ -34,8 +34,6 @@ final class GrailsUtils {
 
     static GrailsDomainClass getDomainClass(Object object) {
         def grailsApplication = Holders.grailsApplication
-//        object = GrailsHibernateUtil.unwrapIfProxy(object)
-//        HibernateProxyHelper.getClassWithoutInitializingProxy()
         grailsApplication.getDomainClass(object?.getClass()?.name) as GrailsDomainClass
     }
 

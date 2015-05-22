@@ -1,3 +1,4 @@
+import com.vaadin.shared.ui.ui.Transport
 import grails.util.Environment
 import grails.util.Holders
 import org.codehaus.groovy.grails.commons.GrailsApplication
@@ -60,15 +61,15 @@ Plugin for integrating Vaadin 7 into Grails.
     }
 
     def doWithWebDescriptor = { xml ->
-        def config = loadConfig(application)?.vaadin
+        def config = loadConfig(application)?.vaadin as ConfigObject
 
         if (!config) {
             return
         }
 
         boolean productionMode = Environment.current == grails.util.Environment.PRODUCTION
-        if (config.containsKey("productionMode")) {
-            productionMode = config.productionMode
+        if (config.isSet("productionMode")) {
+            productionMode = true
         }
 
         def mappings = config.mappings as Map
@@ -119,8 +120,17 @@ Plugin for integrating Vaadin 7 into Grails.
 
         def servlets = xml."servlet"
         mappings.eachWithIndex { mapping, i ->
-            def uiProviderClass = mapping.value['uiProvider'] ?:
+            ConfigObject entry = mapping.value
+            def uiProviderClass = entry.get('uiProvider') ?:
                     "org.vaadin.grails.server.GrailsAwareDelegateUIProvider"
+            boolean asyncRequired = false
+            if (entry.isSet('pushTransport')) {
+                def pushTransport = entry.get('pushTransport')
+                if (pushTransport != Transport.LONG_POLLING) {
+                    log.warn("Unsupported value [${pushTransport}] for option [pushTransport], use it on your own risk!")
+                }
+                asyncRequired = true
+            }
 
             servlets[servlets.size() - 1] + {
                 "servlet" {
@@ -132,6 +142,7 @@ Plugin for integrating Vaadin 7 into Grails.
                         "param-value"(uiProviderClass)
                     }
                     "load-on-startup"("1")
+                    "async-supported"(asyncRequired)
                 }
             }
         }

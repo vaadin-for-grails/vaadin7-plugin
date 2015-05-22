@@ -1,12 +1,9 @@
 package org.vaadin.grails.server
 
 import com.vaadin.data.util.converter.ConverterFactory
-import com.vaadin.server.ErrorHandler
-import com.vaadin.server.RequestHandler
-import com.vaadin.server.ServiceException
-import com.vaadin.server.SessionInitEvent
-import com.vaadin.server.SessionInitListener
+import com.vaadin.server.*
 import org.vaadin.grails.data.util.converter.GrailsAwareConverterFactory
+import org.vaadin.grails.server.DefaultErrorHandler
 import org.vaadin.grails.util.ApplicationContextUtils
 
 /**

@@ -14,7 +14,7 @@ import org.vaadin.grails.util.GrailsUtils
  */
 class DomainItem<T> implements Item, DomainObjectProvider<T> {
 
-    protected T object
+    final T object
     final Map<String, Property<?>> propertyById = new HashMap()
 
     DomainItem(T object) {
@@ -30,11 +30,6 @@ class DomainItem<T> implements Item, DomainObjectProvider<T> {
     public DomainItem(Class<T> type) {
         object = type.newInstance()
         init()
-    }
-
-    @Override
-    T getObject() {
-        object
     }
 
     protected void init() {
@@ -94,6 +89,10 @@ class DomainItem<T> implements Item, DomainObjectProvider<T> {
 
     T save(boolean flush = false) {
         (T) object.invokeMethod("save", [flush: flush])
+    }
+
+    T merge(boolean flush = false) {
+        (T) object.invokeMethod("merge", [flush: flush])
     }
 
     void delete(boolean flush = false) {
