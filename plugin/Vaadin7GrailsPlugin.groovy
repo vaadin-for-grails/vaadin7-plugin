@@ -15,8 +15,8 @@ import org.vaadin.grails.util.VaadinConfigUtils
  */
 class Vaadin7GrailsPlugin {
 
-    def version = "2.2"
-    def grailsVersion = "2.4 > *"
+    def version = "2.3.0"
+    def grailsVersion = "2.5.0 > *"
 
     def group = "com.github.vaadin-for-grails"
     def title = "Vaadin 7 Plugin"
@@ -47,7 +47,9 @@ Plugin for integrating Vaadin 7 into Grails.
         def packages = application.config.grails.spring.bean.packages
         if (packages.isEmpty()) {
             xmlns context:"http://www.springframework.org/schema/context"
-            context.'component-scan'('base-package': '*')
+            context.'component-scan'('base-package': '*') {
+                context.'exclude-filter'(type: 'regex', expression: /org\.springframework\..*/)
+            }
         }
 
         'uiScope'(UIScope)
